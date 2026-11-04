@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AttendancePage"
+             Title="سجل التحضير اليدوي"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ========================================== -->
+        <!-- 1. الهيدر العلوي الخاص بالصفحة -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkBackground}">
+
+            <!-- زر رجوع أو إغلاق الصفحة -->
+            <Button Grid.Column="0"
+                    Text="✕"
+                    FontSize="16"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    CornerRadius="18"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"
+                    Command="{Binding ClosePageCommand}"/>
+
+            <!-- عنوان الصفحة في المنتصف -->
+            <Label Grid.Column="1"
+                   Text="التحضير اليدوي للمحاضرة"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- مساحة فارغة لموازنة الهيدر -->
+            <BoxView Grid.Column="2" WidthRequest="36" BackgroundColor="Transparent"/>
+        </Grid>
+
+
+        <!-- ========================================== -->
+        <!-- 2. محتوى الصفحة الرئيسي (قائمة الطلاب / خيارات التحضير) -->
+        <!-- ========================================== -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- بطاقة معلومات المحاضرة أو المجموعة الحالية -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                        StrokeShape="RoundRectangle 20" 
+                        StrokeThickness="0" 
+                        Padding="18">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="اختر المجموعة المستهدفة للتحضير" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                        <Label Text="مجموعة البرمجة المتقدمة (C#)" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                        <Label Text="📅 تاريخ اليوم: الاثنين، 2 نوفمبر 2026" FontSize="12" TextColor="{StaticResource AccentYellow}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- قسم تحذير أو تنبيه سريع -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                        StrokeShape="RoundRectangle 16" 
+                        StrokeThickness="0" 
+                        Padding="16">
+                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                        <Label Text="💡" FontSize="18" VerticalOptions="Center"/>
+                        <Label Text="قم بتحديد حالة الطالب (حاضر / غائب) ثم اضغط على حفظ السجل بالأسفل." 
+                               FontSize="12" 
+                               TextColor="{StaticResource TextSecondary}" 
+                               VerticalOptions="Center"
+                               LineBreakMode="WordWrap"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- مكان عرض قائمة الطلاب أو بيانات التحضير -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="قائمة الطلاب (0/0)" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+
+                    <!-- مثال لبطاقة طالب (يمكن تحويلها لاحقاً إلى CollectionView إذا رغبت) -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                <Label Text="أحمد محمد علي" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="الرقم الجامعي: 20230101" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            
+                            <!-- أزرار الحالة (حاضر/غائب) مصغرة وبنفس الثيم -->
+                            <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
+                                <Button Text="حاضر" FontSize="11" HeightRequest="32" Padding="10,0" 
+                                        BackgroundColor="{StaticResource DarkBackground}" 
+                                        TextColor="{StaticResource AccentYellow}" 
+                                        CornerRadius="10"/>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+
+        <!-- ========================================== -->
+        <!-- 3. شريط الإجراءات السفلي (زر الحفظ والاعتماد) -->
+        <!-- ========================================== -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12"
+                HeightRequest="75">
+
+            <Button Text="حفظ وتأكيد سجل التحضير"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold"
+                    CornerRadius="16"
+                    HeightRequest="48"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center"
+                    Command="{Binding SaveAttendanceCommand}"/>
+
+        </Border>
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.NotificationsPage"
+             Title="الإشعارات والتعاميم"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. Header -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="الإشعارات والتعاميم الأكاديمية" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="إرسال التنبيهات والرسائل لطلاب الدفعة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+                
+                <!-- Broadcast New Notification Button -->
+                <Button Grid.Column="1" Text="+ إرسال تعميم" 
+                        BackgroundColor="{StaticResource AccentYellow}" 
+                        TextColor="{StaticResource DarkBackground}" 
+                        FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="12,0"/>
+            </Grid>
+        </Border>
+
+        <!-- 2. Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Stats Card -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="12" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                            <Label Text="الإشعارات المرسلة" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="35" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" HorizontalOptions="Center"/>
+                            <Label Text="الطلاب المستلمون" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Notifications List -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="سجل التعاميم السابقة" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+
+                    <!-- Notification Item 1 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" Text="تأجيل موعد المحاضرة القادمة" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Grid.Column="1" Text="منذ ساعتين" FontSize="10" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                            </Grid>
+                            <Label Text="تم تأجيل محاضرة قواعد البيانات ليوم الأحمد القادم بنفس الساعات المقررة." FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                            <HorizontalStackLayout Spacing="6" HorizontalOptions="End">
+                                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="8,4" StrokeThickness="0">
+                                    <Label Text="مجموعة قواعد البيانات" FontSize="10" TextColor="{StaticResource AccentYellow}" />
+                                </Border>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Notification Item 2 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" Text="موعد تسليم التكليف الأول" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Grid.Column="1" Text="أمس" FontSize="10" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                            </Grid>
+                            <Label Text="تذكير لجميع الطلاب بسرعة تسليم مشروع واجهة .NET MAUI قبل الموعد النهائي." FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                            <HorizontalStackLayout Spacing="6" HorizontalOptions="End">
+                                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="8,4" StrokeThickness="0">
+                                    <Label Text="مجموعة البرمجة المتقدمة" FontSize="10" TextColor="{StaticResource AccentYellow}" />
+                                </Border>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

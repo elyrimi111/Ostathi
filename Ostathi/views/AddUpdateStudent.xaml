@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AddUpdateStudent"
+             Title="إضافة / تعديل طالب"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ========================================== -->
+        <!-- 1. الهيدر العلوي للصفحة -->
+        <!-- ========================================== -->
+        <Border Grid.Row="0" 
+                BackgroundColor="{StaticResource DarkSurface}" 
+                StrokeThickness="0" 
+                Padding="16,14" 
+                StrokeShape="RoundRectangle 0,0,24,24">
+            
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="بيانات الطالب" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="أدخل أو تعديل بيانات الطالب الأكاديمية والشخصية" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- 2. نموذج الإدخال (Scrollable Form) -->
+        <!-- ========================================== -->
+        <ScrollView Grid.Row="1" Padding="20">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- اسم الطالب الكامل -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="اسم الطالب الكامل" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
+                        <Entry Placeholder="أدخل اسم الطالب الثلاثي..." 
+                               FontSize="13" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               PlaceholderColor="{StaticResource TextSecondary}" 
+                               VerticalOptions="Center" 
+                               BackgroundColor="Transparent"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- الرقم الأكاديمي -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="الرقم الأكاديمي" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
+                        <Entry Placeholder="مثال: 20261050..." 
+                               Keyboard="Numeric"
+                               FontSize="13" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               PlaceholderColor="{StaticResource TextSecondary}" 
+                               VerticalOptions="Center" 
+                               BackgroundColor="Transparent"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- رقم الهاتف -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="رقم الهاتف (واتساب)" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
+                        <Entry Placeholder="مثال: 770000000..." 
+                               Keyboard="Telephone"
+                               FontSize="13" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               PlaceholderColor="{StaticResource TextSecondary}" 
+                               VerticalOptions="Center" 
+                               BackgroundColor="Transparent"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- اختيار التخصص -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="التخصص الأكاديمي" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,2">
+                        <Picker Title="اختر التخصص..." 
+                                TitleColor="{StaticResource TextSecondary}" 
+                                TextColor="{StaticResource TextPrimary}" 
+                                FontSize="12" 
+                                VerticalOptions="Center">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>علوم الحاسب (CIS)</x:String>
+                                    <x:String>تقنية المعلومات (IT)</x:String>
+                                    <x:String>هندسة البرمجيات (SE)</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- اختيار السنة الدراسية -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="السنة الدراسية" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,2">
+                        <Picker Title="اختر السنة..." 
+                                TitleColor="{StaticResource TextSecondary}" 
+                                TextColor="{StaticResource TextPrimary}" 
+                                FontSize="12" 
+                                VerticalOptions="Center">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>السنة الأولى</x:String>
+                                    <x:String>السنة الثانية</x:String>
+                                    <x:String>السنة الثالثة</x:String>
+                                    <x:String>سنة التخرج</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- اختيار المجموعة -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="المجموعة الدراسية" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,2">
+                        <Picker Title="اختر المجموعة..." 
+                                TitleColor="{StaticResource TextSecondary}" 
+                                TextColor="{StaticResource TextPrimary}" 
+                                FontSize="12" 
+                                VerticalOptions="Center">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>مجموعة C#</x:String>
+                                    <x:String>مجموعة قواعد البيانات</x:String>
+                                    <x:String>مجموعة MAUI</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ========================================== -->
+        <!-- 3. شريط الأزرار السفلي (حفظ / إغلاق) -->
+        <!-- ========================================== -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12">
+            
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <!-- زر إلغاء -->
+                <Button Grid.Column="0"
+                        Text="إلغاء"
+                        BackgroundColor="{StaticResource DarkBackground}"
+                        TextColor="{StaticResource TextSecondary}"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="14"
+                        HeightRequest="45" />
+
+                <!-- زر حفظ البيانات -->
+                <Button Grid.Column="1"
+                        Text="حفظ البيانات"
+                        BackgroundColor="{StaticResource AccentYellow}"
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="14"
+                        HeightRequest="45" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

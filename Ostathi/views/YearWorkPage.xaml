@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.YearWorkPage"
+             Title="أعمال السنة"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. الهيدر العلوي -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="إدارة أعمال السنة والدرجات" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="رصد ومتابعة درجات المشاركة والأنشطة (من 20 درجة)" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+                <!-- إجمالي الدرجة -->
+                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0">
+                    <Label Text="⭐ الدرجة الكلية: 20" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 2. المحتوى الرئيسي -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- بطاقة إحصائيات عامة للدفعة -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="35" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                            <Label Text="إجمالي الطلاب" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="18.5" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" HorizontalOptions="Center"/>
+                            <Label Text="متوسط درجات الدفعة" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- قسم رصد وتعديل درجات الطلاب -->
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="درجات أعمال السنة للطلاب" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="حفظ الدرجات" BackgroundColor="{StaticResource AccentYellow}" TextColor="{StaticResource DarkBackground}" FontSize="11" FontAttributes="Bold" CornerRadius="10" HeightRequest="32" Padding="12,0"/>
+                    </Grid>
+
+                    <!-- طالب 1 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="أحمد خالد علي" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="مشاركة فعالة + تسليم الواجبات بانتظام" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <!-- حقل عرض/تعديل الدرجة -->
+                            <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                <Label Text="الدرجة:" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="0">
+                                    <Label Text="19 / 20" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" />
+                                </Border>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <!-- طالب 2 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="خالد سعيد أحمد" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="مشاركة متوسطة • تأخر في بعض التكاليف" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                <Label Text="الدرجة:" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="0">
+                                    <Label Text="14 / 20" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                                </Border>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <!-- طالب 3 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="عبدالله محمد صالح" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="تميز في المشروع العملي والمشاركة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                <Label Text="الدرجة:" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="10,4" StrokeThickness="0">
+                                    <Label Text="20 / 20" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" />
+                                </Border>
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

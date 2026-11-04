@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.groupsPage"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. الهيدر العلوي المخصص لإدارة المجموعات -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="إدارة المجموعات والدفعات" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="نظرة عامة والتحكم بالشؤون الأكاديمية" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+
+                <!-- زر إضافة مجموعة أو دفعة جديدة -->
+                <Button Grid.Column="1" Text="+ إضافة دفعة" 
+                        Command="{Binding OpenAddGroupCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}" 
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold" FontSize="12" CornerRadius="14" HeightRequest="40" Padding="14,0" />
+
+            </Grid>
+        </Border>
+
+        <!-- 2. المحتوى الرئيسي بتصميم شبكة مربعات وبطاقات (Bento Grid) -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- شريط أسماء المجموعات في الأعلى للتنقل بينها مباشرة -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8">
+                        <Border BackgroundColor="{StaticResource AccentYellow}" StrokeShape="RoundRectangle 16" Padding="16,8" StrokeThickness="0">
+                            <Label Text="مجموعة البرمجة المتقدمة (C#)" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource DarkBackground}"/>
+                        </Border>
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" Padding="16,8" StrokeThickness="0">
+                            <Label Text="مجموعة قواعد البيانات" FontSize="12" TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" Padding="16,8" StrokeThickness="0">
+                            <Label Text="مجموعة .NET MAUI" FontSize="12" TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" Padding="16,8" StrokeThickness="0">
+                            <Label Text="مجموعة الخوارزميات" FontSize="12" TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                </ScrollView>
+
+                <!-- البطاقة البارزة العلوية -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 22" StrokeThickness="0" Padding="20,16" HeightRequest="160">
+                    <Grid RowDefinitions="*, Auto">
+                        
+                        <!-- القسم العلوي: النصوص ووسم نشطة حالياً -->
+                        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="إجمالي الطلاب المسجلين في المجموعة" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                                <Label Text="35 طالباً وطالبة" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0" VerticalOptions="Center">
+                                <Label Text="نشطة حالياً" FontSize="11" TextColor="{StaticResource AccentLime}" FontAttributes="Bold"/>
+                            </Border>
+                        </Grid>
+                        
+                        <!-- القسم السفلي: أزرار الإجراءات السريعة -->
+                        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="10" VerticalOptions="End">
+                            <Button Grid.Column="0" Text="📥 استيراد كشف" Command="{Binding ImportCommand}" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" FontSize="11" CornerRadius="12" HeightRequest="42"/>
+                            <Button Grid.Column="1" Text="📊 تصدير الشامل" Command="{Binding ExportCommand}" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource AccentYellow}" FontSize="11" CornerRadius="12" HeightRequest="42"/>
+                        </Grid>
+
+                    </Grid>
+                </Border>
+
+                <!-- شبكة المربعات التفاعلية مع جعل زر الاختبار النهائي ممتداً في الصف الثالث ليغطي الجزئية بالكامل -->
+                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="12" RowDefinitions="Auto, Auto, Auto" RowSpacing="12">
+                    
+                    <!-- صف 1 - زر 1: سجل الحضور -->
+                    <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110" VerticalOptions="Fill">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenAttendanceCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="📋" FontSize="26" HorizontalOptions="Center"/>
+                            <Label Text="سجل الحضور" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- صف 1 - زر 2: أعمال السنة -->
+                    <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110" VerticalOptions="Fill">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenYearWorkCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="📊" FontSize="26" HorizontalOptions="Center"/>
+                            <Label Text="أعمال السنة" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- صف 1 - زر 3: التكاليف -->
+                    <Border Grid.Row="0" Grid.Column="2" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110" VerticalOptions="Fill">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenAssignmentsCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="⏰" FontSize="26" HorizontalOptions="Center"/>
+                            <Label Text="التكاليف" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- صف 2 - زر 4: الإشعارات -->
+                    <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110" VerticalOptions="Fill">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenNotificationsCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="📢" FontSize="26" HorizontalOptions="Center"/>
+                            <Label Text="الإشعارات" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- صف 2 - زر 5: المحاضرات -->
+                    <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110" VerticalOptions="Fill">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenLecturesCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="🏛️" FontSize="26" HorizontalOptions="Center"/>
+                            <Label Text="المحاضرات" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- صف 2 - زر 6: الاختبار النصفي -->
+                    <Border Grid.Row="1" Grid.Column="2" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110" VerticalOptions="Fill">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenMidtermCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="📝" FontSize="26" HorizontalOptions="Center"/>
+                            <Label Text="الاختبار النصفي" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- صف 3 - زر الاختبار النهائي (ممتد بعرض الثلاثة أعمدة ليغطي الجزئية بالكامل بدون أي فراغات) -->
+                    <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="100" VerticalOptions="Fill">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenFinalExamCommand}" />
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
+                            <Label Text="🎯" FontSize="26" VerticalOptions="Center"/>
+                            <Label Text="الاختبار النهائي" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentView>

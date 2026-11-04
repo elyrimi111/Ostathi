@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.StudentsPage"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- ========================================== -->
+        <!-- 1. الهيدر العلوي: البحث، الفلترة الثلاثية، وزر الاستيراد -->
+        <!-- ========================================== -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="16,14" StrokeShape="RoundRectangle 0,0,24,24">
+            <VerticalStackLayout Spacing="12">
+                
+                <!-- أ. العنوان وأزرار العمليات الرئيسية (استيراد كشف طلاب + إضافة طالب) -->
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                        <Label Text="إدارة الطلاب والشؤون الأكاديمية" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                        <Label Text="البحث عن الطلاب وتصفيتهم حسب التخصص والسنة والمجموعة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+
+                    <HorizontalStackLayout Grid.Column="1" Spacing="8">
+                        <!-- زر إضافة طالب (مربوط بـ AddStudentCommand) -->
+                        <Button Text="+ إضافة طالب" 
+                                Command="{Binding AddStudentCommand}"
+                                BackgroundColor="{StaticResource AccentYellow}" 
+                                TextColor="{StaticResource DarkBackground}"
+                                FontAttributes="Bold" FontSize="11" CornerRadius="14" HeightRequest="38" Padding="12,0" />
+                    </HorizontalStackLayout>
+                </Grid>
+
+                <!-- ب. شريط البحث النصي الطبيعي (مربوط بـ SearchQuery) -->
+                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 14" HeightRequest="40" StrokeThickness="0" Padding="12,0">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Path Grid.Column="0" Data="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" 
+                              Fill="{StaticResource TextSecondary}" WidthRequest="14" HeightRequest="14" Aspect="Uniform" VerticalOptions="Center"/>
+                        <Entry Grid.Column="1" 
+                               Text="{Binding SearchQuery, Mode=TwoWay}"
+                               Placeholder="ابحث عن اسم الطالب، الرقم الأكاديمي، أو رقم الهاتف..." 
+                               FontSize="12" TextColor="{StaticResource TextPrimary}" PlaceholderColor="{StaticResource TextSecondary}" VerticalOptions="Center" BackgroundColor="Transparent"/>
+                    </Grid>
+                </Border>
+
+                <!-- ج. الفلترة الثلاثية الطبيعية (تخصص / سنة / مجموعة) -->
+                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+                    
+                    <!-- فلترة التخصص (مربوطة بـ SelectedSpecialization) -->
+                    <Border Grid.Column="0" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8,2" StrokeThickness="0">
+                        <Picker Title="التخصص" 
+                                SelectedItem="{Binding SelectedSpecialization, Mode=TwoWay}"
+                                TitleColor="{StaticResource TextSecondary}" TextColor="{StaticResource TextPrimary}" FontSize="10" VerticalOptions="Center">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>كل التخصصات</x:String>
+                                    <x:String>علوم الحاسب (CIS)</x:String>
+                                    <x:String>تقنية المعلومات (IT)</x:String>
+                                    <x:String>هندسة البرمجيات (SE)</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+
+                    <!-- فلترة السنة الدراسية (مربوطة بـ SelectedYear) -->
+                    <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8,2" StrokeThickness="0">
+                        <Picker Title="السنة" 
+                                SelectedItem="{Binding SelectedYear, Mode=TwoWay}"
+                                TitleColor="{StaticResource TextSecondary}" TextColor="{StaticResource TextPrimary}" FontSize="10" VerticalOptions="Center">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>كل السنوات</x:String>
+                                    <x:String>السنة الأولى</x:String>
+                                    <x:String>السنة الثانية</x:String>
+                                    <x:String>السنة الثالثة</x:String>
+                                    <x:String>سنة التخرج</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+
+                    <!-- فلترة المجموعات (مربوطة بـ SelectedGroup) -->
+                    <Border Grid.Column="2" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8,2" StrokeThickness="0">
+                        <Picker Title="المجموعة" 
+                                SelectedItem="{Binding SelectedGroup, Mode=TwoWay}"
+                                TitleColor="{StaticResource TextSecondary}" TextColor="{StaticResource TextPrimary}" FontSize="10" VerticalOptions="Center">
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>كل المجموعات</x:String>
+                                    <x:String>مجموعة C#</x:String>
+                                    <x:String>مجموعة قواعد البيانات</x:String>
+                                    <x:String>مجموعة MAUI</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+                    </Border>
+
+                </Grid>
+
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- 2. مساحة نتائج البحث (فارغة ونظيفة حالياً) -->
+        <!-- ========================================== -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="16" VerticalOptions="Center" HorizontalOptions="Center">
+                <Label Text="منطقة عرض نتائج الطلاب فارغة وجاهزة..." 
+                       FontSize="13" 
+                       TextColor="{StaticResource TextSecondary}" 
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentView>

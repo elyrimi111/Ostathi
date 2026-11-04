@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.ExportMasterPage"
+             Title="التصدير الشامل"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. Header -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="التصدير الشامل للتقارير" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="تصدير كشوفات الطلاب والدرجات والسجلات الأكاديمية" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+                
+                <!-- Status Badge -->
+                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0" VerticalOptions="Center">
+                    <Label Text="جاهز للتصدير" FontSize="11" TextColor="{StaticResource AccentLime}" FontAttributes="Bold"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 2. Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Info Banner Card -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="💡 ملاحظة هامة" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                        <Label Text="يمكنك تصدير السجل الشامل للمجموعة والذي يتضمن الحضور، أعمال السنة، درجات الاختبار النصفي والنهائي، والتكاليف بملف واحد منظم." FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Export Options Section -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="خيارات التصدير المتاحة" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+
+                    <!-- Option 1: Master Report (Excel) -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="تصدير السجل الشامل (Excel)" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="ملف Excel يضم كافة درجات وسجلات المجموعة بالكامل" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="تصدير" 
+                                    BackgroundColor="{StaticResource AccentYellow}" 
+                                    TextColor="{StaticResource DarkBackground}" 
+                                    FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="16,0"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Option 2: Attendance Report (PDF) -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="تقرير الحضور والغياب (PDF)" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="تصدير ملخص كشف الحضور للـ 12 محاضرة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="تصدير" 
+                                    BackgroundColor="{StaticResource DarkBackground}" 
+                                    TextColor="{StaticResource TextPrimary}" 
+                                    FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="16,0"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Option 3: Grades & Year Work (Excel) -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="تقرير درجات أعمال السنة والاختبارات" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="تفصيل درجات أعمال السنة، النصفي، والنهائي" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="تصدير" 
+                                    BackgroundColor="{StaticResource DarkBackground}" 
+                                    TextColor="{StaticResource TextPrimary}" 
+                                    FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="16,0"/>
+                        </Grid>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

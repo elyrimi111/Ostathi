@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AddUpdateLecturePage"
+             Title="إدارة المحاضرة"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- 1. الهيدر العلوي -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <VerticalStackLayout Spacing="2">
+                <Label Text="بيانات المحاضرة" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                <Label Text="إضافة أو تعديل تفاصيل ومواعيد المحاضرة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- 2. حقول الإدخال والخيارات -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- اسم مجموعة المحاضرة -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="عنوان أو مجموعة المحاضرة" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
+                        <Entry Text="{Binding LectureTitle}" 
+                               Placeholder="مثال: مجموعة البرمجة المتقدمة (C#)" 
+                               TextColor="{StaticResource TextPrimary}"
+                               PlaceholderColor="{StaticResource TextSecondary}"
+                               BackgroundColor="{StaticResource DarkBackground}"
+                               FontSize="14"
+                               HeightRequest="44"
+                               ClearButtonVisibility="WhileEditing" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- يوم الأسبوع -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="يوم الأسبوع" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
+                        <Picker Title="اختر اليوم" 
+                                SelectedItem="{Binding SelectedDay}"
+                                TextColor="{StaticResource AccentYellow}"
+                                TitleColor="{StaticResource TextSecondary}"
+                                FontSize="14">
+                            <Picker.Items>
+                                <x:String>السبت</x:String>
+                                <x:String>الأحد</x:String>
+                                <x:String>الإثنين</x:String>
+                                <x:String>الثلاثاء</x:String>
+                                <x:String>الأربعاء</x:String>
+                                <x:String>الخميس</x:String>
+                            </Picker.Items>
+                        </Picker>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- أوقات المحاضرة (البداية والنهاية) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="وقت المحاضرة" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <Border Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="وقت البداية" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                <TimePicker Time="{Binding StartTime}" TextColor="{StaticResource TextPrimary}" FontSize="14" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12">
+                            <VerticalStackLayout Spacing="4">
+                                <Label Text="وقت النهاية" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                <TimePicker Time="{Binding EndTime}" TextColor="{StaticResource TextPrimary}" FontSize="14" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!-- القاعة الدراسية -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="القاعة أو المعمل" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
+                        <Entry Text="{Binding HallName}" 
+                               Placeholder="مثال: القاعة (A1) أو معامل الحاسب (Lab 3)" 
+                               TextColor="{StaticResource TextPrimary}"
+                               PlaceholderColor="{StaticResource TextSecondary}"
+                               BackgroundColor="{StaticResource DarkBackground}"
+                               FontSize="14"
+                               HeightRequest="44"
+                               ClearButtonVisibility="WhileEditing" />
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- 3. أزرار الحفظ والإلغاء -->
+        <Border Grid.Row="2" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 24,24,0,0">
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <Button Grid.Column="0" Text="إلغاء" 
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{StaticResource DarkBackground}" 
+                        TextColor="{StaticResource TextPrimary}"
+                        FontAttributes="Bold" CornerRadius="14" HeightRequest="44" />
+                
+                <Button Grid.Column="1" Text="حفظ المحاضرة" 
+                        Command="{Binding SaveLectureCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}" 
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold" CornerRadius="14" HeightRequest="44" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

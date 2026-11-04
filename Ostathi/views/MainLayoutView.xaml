@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.MainLayoutView"
+             Title="لوحة التحكم الرئيسية"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+<Grid RowDefinitions="Auto, *, Auto">
+
+    <!-- ========================================== -->
+    <!-- 1. الهيدر العلوي -->
+    <!-- ========================================== -->
+
+    <Grid Grid.Row="0"
+          ColumnDefinitions="Auto, *, Auto"
+          Padding="16,12,16,12"
+          VerticalOptions="Center"
+          BackgroundColor="{StaticResource DarkBackground}">
+
+        <!-- أقصى اليمين: زر الإعدادات كأيقونة فقط بدون نص وبنفس ستايل زر التحضير -->
+        <Grid Grid.Column="0"
+              VerticalOptions="Center"
+              HorizontalOptions="Start"
+              HeightRequest="40"
+              WidthRequest="40">
+            
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding SettingsCommand}"/>
+            </Grid.GestureRecognizers>
+
+            <Border WidthRequest="36"
+                    HeightRequest="36"
+                    StrokeShape="RoundRectangle 18"
+                    StrokeThickness="1.5"
+                    Stroke="{StaticResource AccentYellow}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+
+                <Label Text="⚙️"
+                       FontSize="16"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </Border>
+        </Grid>
+
+        <!-- المنتصف: اسم التطبيق Ostathi -->
+        <Label Grid.Column="1"
+               Text="Ostathi"
+               FontSize="18"
+               FontAttributes="Bold"
+               TextColor="{StaticResource AccentYellow}"
+               VerticalOptions="Center"
+               HorizontalOptions="Center"/>
+
+        <!-- أقصى اليسار: زر التحضير الديناميكي السريع (+) -->
+        <Grid Grid.Column="2"
+              VerticalOptions="Center"
+              HorizontalOptions="End"
+              HeightRequest="40"
+              WidthRequest="40">
+            
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding OpenDynamicAttendanceCommand}"/>
+            </Grid.GestureRecognizers>
+
+            <Border WidthRequest="36"
+                    HeightRequest="36"
+                    StrokeShape="RoundRectangle 18"
+                    StrokeThickness="1.5"
+                    Stroke="{StaticResource AccentYellow}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center">
+
+                <Label Text="+"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource AccentYellow}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+            </Border>
+        </Grid>
+
+    </Grid>
+
+
+    <!-- ========================================== -->
+    <!-- 2. منطقة المحتوى الديناميكي -->
+    <!-- ========================================== -->
+
+    <ContentView Grid.Row="1"
+                 x:Name="PagesContainer"
+                 Content="{Binding CurrentView}"
+                 BackgroundColor="{StaticResource DarkBackground}"/>
+
+
+    <!-- ========================================== -->
+    <!-- 3. شريط التنقل السفلي (3 أقسام) -->
+    <!-- ========================================== -->
+
+    <Border Grid.Row="2"
+            BackgroundColor="{StaticResource DarkSurface}"
+            StrokeThickness="0"
+            Padding="10,6"
+            HeightRequest="65">
+
+        <Grid ColumnDefinitions="*,*,*"
+              VerticalOptions="Center"
+              HorizontalOptions="Fill">
+
+            <!-- 0. الرئيسية -->
+            <Grid Grid.Column="0"
+                  VerticalOptions="Center"
+                  HorizontalOptions="Center"
+                  HeightRequest="50"
+                  WidthRequest="60">
+
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="0"/>
+                </Grid.GestureRecognizers>
+
+                <Border WidthRequest="55" HeightRequest="36" StrokeShape="RoundRectangle 18" StrokeThickness="0" BackgroundColor="{StaticResource DarkBackground}" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="False">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding SelectedIndex}" Value="0">
+                            <Setter Property="IsVisible" Value="True"/>
+                        </DataTrigger>
+                    </Border.Triggers>
+                </Border>
+
+                <Path Data="M2,11 L12,2 L22,11 M5,9 L5,22 L19,22 L19,9 M9,22 L9,15 L15,15 L15,22"
+                      Stroke="{StaticResource TextPrimary}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round" WidthRequest="25" HeightRequest="25" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </Grid>
+
+            <!-- 1. الطلاب -->
+            <Grid Grid.Column="1"
+                  VerticalOptions="Center"
+                  HorizontalOptions="Center"
+                  HeightRequest="50"
+                  WidthRequest="60">
+
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="1"/>
+                </Grid.GestureRecognizers>
+
+                <Border WidthRequest="55" HeightRequest="36" StrokeShape="RoundRectangle 18" StrokeThickness="0" BackgroundColor="{StaticResource DarkBackground}" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="False">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding SelectedIndex}" Value="1">
+                            <Setter Property="IsVisible" Value="True"/>
+                        </DataTrigger>
+                    </Border.Triggers>
+                </Border>
+
+                <Path Data="M12,12 A4.5,4.5 0 1,0 12,3 A4.5,4.5 0 1,0 12,12 M3,21 C3,16 7,14 12,14 C17,14 21,16 21,21 M18,4 C21,5 21,9 18,11 M20,14 C22,15 23,17 23,20"
+                      Stroke="{StaticResource TextPrimary}" StrokeThickness="1.8" StrokeLineCap="Round" StrokeLineJoin="Round" WidthRequest="25" HeightRequest="25" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </Grid>
+
+            <!-- 2. المجموعات -->
+            <Grid Grid.Column="2"
+                  VerticalOptions="Center"
+                  HorizontalOptions="Center"
+                  HeightRequest="50"
+                  WidthRequest="60">
+
+                <Grid.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectTabCommand}" CommandParameter="2"/>
+                </Grid.GestureRecognizers>
+
+                <Border WidthRequest="55" HeightRequest="36" StrokeShape="RoundRectangle 18" StrokeThickness="0" BackgroundColor="{StaticResource DarkBackground}" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="False">
+                    <Border.Triggers>
+                        <DataTrigger TargetType="Border" Binding="{Binding SelectedIndex}" Value="2">
+                            <Setter Property="IsVisible" Value="True"/>
+                        </DataTrigger>
+                    </Border.Triggers>
+                </Border>
+
+                <Path Data="M3,5 L21,5 L21,19 L3,19 Z M3,9 L21,9 M9,5 L9,19 M15,5 L15,19 M3,14 L21,14"
+                      Stroke="{StaticResource TextPrimary}" StrokeThickness="1.7" StrokeLineCap="Round" StrokeLineJoin="Round" WidthRequest="25" HeightRequest="25" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Grid>
+
+</ContentPage>

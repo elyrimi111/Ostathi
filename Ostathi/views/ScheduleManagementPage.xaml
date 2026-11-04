@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.ScheduleManagementPage"
+             Title="إدارة جدول المحاضرات"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. الهيدر العلوي لشاشة جدول المحاضرات -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="جدول المحاضرات الأسبوعي" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="تنظيم وتحديد أوقات القاعات والمجموعات" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+
+                <!-- زر إضافة محاضرة جديدة -->
+                <Button Grid.Column="1" Text="+ إضافة محاضرة" 
+                        Command="{Binding AddLectureCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}" 
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold" FontSize="12" CornerRadius="14" HeightRequest="40" Padding="14,0" />
+            </Grid>
+        </Border>
+
+        <!-- 2. محتوى المحاضرات والأيام -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- شريط أياّم الأسبوع للفلترة والتنقل السريع -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8">
+                        <Border BackgroundColor="{StaticResource AccentYellow}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="السبت" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource DarkBackground}"/>
+                        </Border>
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الأحد" FontSize="12" TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الإثنين" FontSize="12" TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الثلاثاء" FontSize="12" TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الأربعاء" FontSize="12" TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الخميس" FontSize="12" TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                </ScrollView>
+
+                <!-- بطاقة ملخص محاضرات اليوم المحدد -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="محاضرات اليوم (السبت)" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                            <Label Text="لديك 3 محاضرات مجدولة لهذا اليوم" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                        </VerticalStackLayout>
+                        <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0">
+                            <Label Text="3 حصص" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- قائمة المحاضرات المجدولة -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="قائمة المحاضرات" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+
+                    <!-- كارت المحاضرة الأولى -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <Grid RowDefinitions="Auto, Auto" RowSpacing="12">
+                            <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="مجموعة البرمجة المتقدمة (C#)" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                    <HorizontalStackLayout Spacing="12">
+                                        <Label Text="⏰ 08:00 ص - 10:00 ص" FontSize="11" TextColor="{StaticResource AccentLime}" FontAttributes="Bold" />
+                                        <Label Text="📍 القاعة (A1)" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="تعديل" Command="{Binding EditLectureCommand}" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" FontSize="11" CornerRadius="10" HeightRequest="34" Padding="12,0" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- كارت المحاضرة الثانية -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <Grid RowDefinitions="Auto, Auto" RowSpacing="12">
+                            <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="مجموعة قواعد البيانات" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                    <HorizontalStackLayout Spacing="12">
+                                        <Label Text="⏰ 10:30 ص - 12:30 م" FontSize="11" TextColor="{StaticResource AccentYellow}" FontAttributes="Bold" />
+                                        <Label Text="📍 معامل الحاسب (Lab 3)" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="تعديل" Command="{Binding EditLectureCommand}" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" FontSize="11" CornerRadius="10" HeightRequest="34" Padding="12,0" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <!-- كارت المحاضرة الثالثة -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <Grid RowDefinitions="Auto, Auto" RowSpacing="12">
+                            <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                    <Label Text="مجموعة .NET MAUI" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                    <HorizontalStackLayout Spacing="12">
+                                        <Label Text="⏰ 02:00 م - 04:00 م" FontSize="11" TextColor="{StaticResource AccentYellow}" FontAttributes="Bold" />
+                                        <Label Text="📍 القاعة الرئيسية" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="تعديل" Command="{Binding EditLectureCommand}" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" FontSize="11" CornerRadius="10" HeightRequest="34" Padding="12,0" />
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

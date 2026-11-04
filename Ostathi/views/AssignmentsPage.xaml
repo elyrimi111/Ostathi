@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AssignmentsPage"
+             Title="التكاليف والمشاريع"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. Header -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="إدارة التكاليف والمشاريع" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="متابعة تسليمات الواجبات والمشاريع للدفعة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+                
+                <!-- Add Assignment Button -->
+                <Button Grid.Column="1" Text="+ تكليف جديد" 
+                        BackgroundColor="{StaticResource AccentYellow}" 
+                        TextColor="{StaticResource DarkBackground}" 
+                        FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="12,0"/>
+            </Grid>
+        </Border>
+
+        <!-- 2. Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Overall Assignments Stats -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="4" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                            <Label Text="إجمالي التكاليف" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="28" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" HorizontalOptions="Center"/>
+                            <Label Text="متوسط التسليم" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="7" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentCoral}" HorizontalOptions="Center"/>
+                            <Label Text="متأخرون" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Active Assignments List -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="قائمة التكاليف الحالية" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+
+                    <!-- Assignment Card 1 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="مشروع واجهة .NET MAUI" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="تاريخ التسليم: الخميس القادم (10 درجات)" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                </VerticalStackLayout>
+                                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="8,4" StrokeThickness="0" VerticalOptions="Start">
+                                    <Label Text="نشط" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" />
+                                </Border>
+                            </Grid>
+
+                            <!-- Submission Progress -->
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="تم تسليم 30 من أصل 35 طالب" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                <Label Grid.Column="1" Text="85%" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                            </Grid>
+
+                            <!-- View Details Button -->
+                            <Button Text="عرض وتسليمات الطلاب" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" FontSize="11" CornerRadius="10" HeightRequest="36"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Assignment Card 2 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="12">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="تكليف الخوارزميات والـ Stack" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="تاريخ التسليم: انتهى (5 درجات)" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                </VerticalStackLayout>
+                                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="8,4" StrokeThickness="0" VerticalOptions="Start">
+                                    <Label Text="مغلق" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource TextSecondary}" />
+                                </Border>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="تم تسليم 35 من أصل 35 طالب" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                <Label Grid.Column="1" Text="100%" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" />
+                            </Grid>
+
+                            <Button Text="عرض وتسليمات الطلاب" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" FontSize="11" CornerRadius="10" HeightRequest="36"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

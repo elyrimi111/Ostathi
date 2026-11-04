@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <AssemblyName>Ostathi</AssemblyName>
+    <RootNamespace>Ostathi</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseMaui>true</UseMaui>
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
+  </PropertyGroup>
+  <ItemGroup>
+    <MauiXaml Include="App.xaml" />
+    <MauiXaml Include="AppShell.xaml" />
+    <MauiXaml Include="MainPage.xaml" />
+    <MauiXaml Include="Resources/Styles/Colors.xaml" />
+    <MauiXaml Include="Resources/Styles/Styles.xaml" />
+    <MauiXaml Include="views/MainLayoutView.xaml" />
+    <MauiXaml Include="Resources/Styles/MainThem.xaml" />
+    <Compile Remove="Resources/Styles/MainThem.xaml.cs" />
+    <MauiXaml Include="views/HomePage.xaml" />
+    <MauiXaml Include="views/StudentsPage.xaml" />
+    <MauiXaml Include="views/groupsPage.xaml" />
+    <MauiXaml Include="views/SettingsPage.xaml" />
+    <MauiXaml Include="views/ReportsPage.xaml" />
+    <Compile Remove="views/AddUpdateGroup.cs" />
+    <MauiXaml Include="views/AddUpdateGroup.xaml" />
+    <MauiXaml Include="views/AddStudent.xaml" />
+    <Compile Remove="views/AddStudent.xaml.cs" />
+    <MauiXaml Include="views/AddUpdateStudent.xaml" />
+    <MauiXaml Include="views/AttendancePage.xaml" />
+    <MauiXaml Include="viewModels/HomeViewModel.xaml" />
+    <Compile Remove="viewModels/HomeViewModel.xaml.cs" />
+    <MauiXaml Include="views/CreateHubPage.xaml" />
+    <MauiXaml Include="views/ScheduleManagementPage.xaml" />
+    <MauiXaml Include="views/AssignmentDetailManagementPage.xaml" />
+    <MauiXaml Include="views/AttendanceLogPage.xaml" />
+    <MauiXaml Include="views/YearWorkPage.xaml" />
+    <MauiXaml Include="views/AssignmentsPage.xaml" />
+    <MauiXaml Include="views/NotificationsPage.xaml" />
+    <MauiXaml Include="views/LecturesPage.xaml" />
+    <MauiXaml Include="views/MidtermExamPage.xaml" />
+    <MauiXaml Include="views/FinalExamPage.xaml" />
+    <MauiXaml Include="views/ExportMasterPage.xaml" />
+    <MauiXaml Include="views/ImportRosterPage.xaml" />
+    <MauiXaml Include="views/AddUpdateLecturePage.xaml" />
+    <Compile Remove="views/ScheduleManagementPage.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <MauiImage Include="Resources\Images\*" />
+    <MauiFont Include="Resources\Fonts\*" />
+    <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.90" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.8" />
+  </ItemGroup>
+</Project>

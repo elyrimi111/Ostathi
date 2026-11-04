@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+
+    <!-- الألوان الأساسية للثيم الداكن الحديث -->
+    <Color x:Key="DarkBackground">#18181B</Color>      <!-- خلفية الصفحة العامة ومنطقة المحتوى -->
+    <Color x:Key="DarkSurface">#27272A</Color>         <!-- خلفية الهيدر وشريط التنقل السفلي -->
+    <Color x:Key="DarkInputBackground">#18181B</Color> <!-- خلفية حقول الإدخال والبحث -->
+    <Color x:Key="AccentYellow">#FACC15</Color>        <!-- اللون الأصفر المميز للأزرار والدائرة النشطة -->
+    <Color x:Key="TextPrimary">#FAFAFA</Color>         <!-- النصوص الأساسية الفاتحة -->
+    <Color x:Key="TextSecondary">#A1A1AA</Color>       <!-- النصوص والأيقونات غير المحددة (الرمادية) -->
+
+</ResourceDictionary>

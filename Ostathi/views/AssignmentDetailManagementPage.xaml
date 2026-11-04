@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AssignmentDetailManagementPage"
+             Title="إدارة التكليف"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. الهيدر العلوي لشاشة إدارة التكليف -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="متابعة تسليم التكليف" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="مشروع C# - قواعد البيانات (مجموعة البرمجة المتقدمة)" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+
+                <!-- حالة التكليف -->
+                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0">
+                    <Label Text="قيد المتابعة" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 2. محتوى تفاصيل الطلاب (من سلم ومن لم يسلم) -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- بطاقة إحصائيات التسليم السريعة -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                        
+                        <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="35" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                            <Label Text="إجمالي الطلاب" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="24" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" HorizontalOptions="Center"/>
+                            <Label Text="سلموا التكليف" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="11" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentCoral}" HorizontalOptions="Center"/>
+                            <Label Text="لم يسلموا" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+
+                    </Grid>
+                </Border>
+
+                <!-- قسم: الطلاب الذين سلموا التكليف -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="الطلاب الذين سلموا (24)" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" />
+
+                    <!-- طالب 1 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="أحمد خالد علي" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="تم التسليم في الموعد • مرفق ملف الحل (.zip)" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8,4" StrokeThickness="0">
+                                <Label Text="تم التسليم ✓" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" />
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- طالب 2 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="عبدالله محمد صالح" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="تم التسليم قبل قليل • مرفق رابط المشروع" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8,4" StrokeThickness="0">
+                                <Label Text="تم التسليم ✓" FontSize="10" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- قسم: الطلاب الذين لم يسلموا التكليف -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="الطلاب الذين لم يسلموا (11)" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentCoral}" />
+
+                    <!-- طالب متأخر 1 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="خالد سعيد أحمد" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="لم يتم رفع أي ملف حتى الآن" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="تنبيه" 
+                                    BackgroundColor="{StaticResource DarkBackground}" 
+                                    TextColor="{StaticResource AccentYellow}" 
+                                    FontSize="11" CornerRadius="10" HeightRequest="32" Padding="10,0" />
+                        </Grid>
+                    </Border>
+
+                    <!-- طالب متأخر 2 -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="عمر فاروق" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="لم يتم رفع أي ملف حتى الآن" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="تنبيه" 
+                                    BackgroundColor="{StaticResource DarkBackground}" 
+                                    TextColor="{StaticResource AccentYellow}" 
+                                    FontSize="11" CornerRadius="10" HeightRequest="32" Padding="10,0" />
+                        </Grid>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.ImportRosterPage"
+             Title="استيراد الكشف"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. Header -->
+        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="استيراد كشف الطلاب" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="رفع ملف Excel أو CSV لجلب قائمة الطلاب دفعة واحدة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+                
+                <!-- Status Badge -->
+                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0" VerticalOptions="Center">
+                    <Label Text="جاهز للرفع" FontSize="11" TextColor="{StaticResource AccentYellow}" FontAttributes="Bold"/>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 2. Main Content -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Upload Instructions Card -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="📁 تعليمات الاستيراد" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                        <Label Text="تأكد من أن ملف الـ Excel يحتوي على الأعمدة التالية بالترتيب: (رقم القيد، اسم الطالب، المجموعة) لضمان مطابقة البيانات واستيرادها بنجاح." FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- File Picker Action Section -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="اختيار الملف" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+
+                    <!-- Pick File Card Button -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="24">
+                        <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
+                            <Label Text="📥" FontSize="36" HorizontalOptions="Center"/>
+                            <Label Text="اضغط لاختيار ملف من الجهاز" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                            <Label Text="الملفات المدعومة: .xlsx, .csv" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                            
+                            <Button Text="استعراض الملفات" 
+                                    BackgroundColor="{StaticResource AccentYellow}" 
+                                    TextColor="{StaticResource DarkBackground}" 
+                                    FontAttributes="Bold" FontSize="12" CornerRadius="12" HeightRequest="40" Padding="20,0" Margin="0,8,0,0"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Preview / Action Section -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="إجراءات الحفظ" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                            <Button Grid.Column="0" Text="إلغاء" 
+                                    BackgroundColor="{StaticResource DarkBackground}" 
+                                    TextColor="{StaticResource TextPrimary}" 
+                                    FontAttributes="Bold" FontSize="11" CornerRadius="12" HeightRequest="42"/>
+                            <Button Grid.Column="1" Text="بدء الاستيراد" 
+                                    BackgroundColor="{StaticResource AccentLime}" 
+                                    TextColor="{StaticResource DarkBackground}" 
+                                    FontAttributes="Bold" FontSize="11" CornerRadius="12" HeightRequest="42"/>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>
