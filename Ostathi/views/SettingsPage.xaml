@@ -6,9 +6,12 @@
              BackgroundColor="{StaticResource DarkBackground}"
              FlowDirection="RightToLeft">
 
+    <!-- Main grid layout defining rows for header and scrollable content -->
     <Grid RowDefinitions="Auto, *">
 
-        <!-- 1. هيدر الصفحة -->
+        <!-- ========================================== -->
+        <!-- 1. Page Header Section -->
+        <!-- ========================================== -->
         <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
             <VerticalStackLayout Spacing="2">
                 <Label Text="الإعدادات" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
@@ -16,11 +19,13 @@
             </VerticalStackLayout>
         </Border>
 
-        <!-- 2. محتوى الإعدادات -->
+        <!-- ========================================== -->
+        <!-- 2. Settings Content Scrollable Area -->
+        <!-- ========================================== -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
 
-                <!-- قسم بيانات المحاضر المسؤول -->
+                <!-- Lecturer Information Section -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="بيانات المحاضر المسؤول" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
                     
@@ -28,6 +33,7 @@
                         <VerticalStackLayout Spacing="10">
                             <Label Text="اسم الدكتور / الأستاذ" FontSize="13" TextColor="{StaticResource TextSecondary}" />
                             
+                            <!-- Lecturer Name Entry Input -->
                             <Entry Text="د. محمد فؤاد أحمد" 
                                    Placeholder="أدخل اسم الدكتور هنا..." 
                                    TextColor="{StaticResource TextPrimary}"
@@ -41,14 +47,14 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- قسم الإعدادات الأكاديمية (السنة، الترم، التخصصات، وجدول المحاضرات) -->
+                <!-- Academic Settings Section (Year, Term, Majors, and Schedule) -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="الإعدادات الأكاديمية" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
                     
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
                         <VerticalStackLayout Spacing="16">
                             
-                            <!-- تحديد السنة الدراسية -->
+                            <!-- Academic Year Picker Selection -->
                             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                     <Label Text="السنة الدراسية" FontSize="15" TextColor="{StaticResource TextPrimary}" />
@@ -67,7 +73,7 @@
                                 </Picker>
                             </Grid>
 
-                            <!-- تحديد الترم الدراسي -->
+                            <!-- Academic Semester Picker Selection -->
                             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                     <Label Text="الترم الدراسي" FontSize="15" TextColor="{StaticResource TextPrimary}" />
@@ -86,7 +92,7 @@
                                 </Picker>
                             </Grid>
 
-                            <!-- تحديد التخصصات الأكاديمية -->
+                            <!-- Default Academic Major Picker Selection -->
                             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                     <Label Text="التخصص الأكاديمي الرئيسي" FontSize="15" TextColor="{StaticResource TextPrimary}" />
@@ -106,7 +112,7 @@
                                 </Picker>
                             </Grid>
 
-                            <!-- زر تحديد جدول المحاضرات (مرتبط بالأمر للانتقال لصفحة الجدول) -->
+                            <!-- Schedule Management Navigation Button -->
                             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                     <Label Text="جدول المحاضرات الأسبوعي" FontSize="15" TextColor="{StaticResource TextPrimary}" />
@@ -122,18 +128,34 @@
                                         Padding="14,0" />
                             </Grid>
 
+                            <!-- Majors Management Navigation Button -->
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="إدارة التخصصات الأكاديمية" FontSize="15" TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="إضافة، تعديل، وحذف التخصصات وقوائمها" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="إدارة التخصصات 🎓" 
+                                        Command="{Binding OpenMajorsPageCommand}"
+                                        BackgroundColor="{StaticResource DarkBackground}" 
+                                        TextColor="{StaticResource AccentYellow}"
+                                        FontSize="12"
+                                        CornerRadius="10"
+                                        HeightRequest="38"
+                                        Padding="14,0" />
+                            </Grid>
+
                         </VerticalStackLayout>
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- قسم تفضيلات التطبيق والمظهر -->
+                <!-- App Appearance and Preferences Section -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="المظهر والتفضيلات" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
                     
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
                         <VerticalStackLayout Spacing="16">
                             
-                            <!-- خيار الثيم الداكن -->
+                            <!-- Dark Mode Toggle Switch -->
                             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                     <Label Text="الثيم الداكن (Dark Mode)" FontSize="15" TextColor="{StaticResource TextPrimary}" />
@@ -142,7 +164,7 @@
                                 <Switch Grid.Column="1" IsToggled="True" OnColor="{StaticResource AccentYellow}" />
                             </Grid>
 
-                            <!-- خيار الإشعارات -->
+                            <!-- Notifications Toggle Switch -->
                             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                                     <Label Text="إشعارات التذكير بالحصص" FontSize="15" TextColor="{StaticResource TextPrimary}" />
@@ -155,7 +177,7 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- قسم حول التطبيق -->
+                <!-- About App Section -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="حول النظام" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
                     
@@ -173,7 +195,7 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- زر تسجيل الخروج -->
+                <!-- Logout Action Button -->
                 <Button Text="تسجيل الخروج" 
                         BackgroundColor="{StaticResource AccentCoral}" 
                         TextColor="{StaticResource TextPrimary}"

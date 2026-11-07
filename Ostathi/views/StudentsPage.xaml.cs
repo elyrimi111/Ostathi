@@ -2,12 +2,12 @@ namespace Ostathi;
 
 public partial class StudentsPage : ContentView
 {
-    // استقبال الـ ViewModel عبر الـ Constructor وحقنه تلقائياً
+    // Receive the ViewModel via constructor injection
     public StudentsPage(StudentsViewModel viewModel)
     {
         InitializeComponent();
         
-        // تعيين الـ ViewModel كـ BindingContext للـ Page
+        // Set the ViewModel as the BindingContext for the view
         BindingContext = viewModel;
     }
 }

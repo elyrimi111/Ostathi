@@ -1,4 +1,5 @@
-using Ostathi;
+using System;
+using Microsoft.Maui.Controls;
 
 namespace Ostathi;
 
@@ -17,21 +18,23 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(ScheduleManagementPage), typeof(ScheduleManagementPage)); // Route for lecture schedule management
         Routing.RegisterRoute(nameof(AssignmentDetailManagementPage), typeof(AssignmentDetailManagementPage)); // Route for single assignment and project management
 
-        // Routes for cumulative attendance, academic year work, assignments, notifications, lectures, midterm exam, final exam, export master, and import roster management pages
+        // Routes for cumulative attendance, academic year work, assignments, notifications, and lectures management pages
         Routing.RegisterRoute(nameof(AttendanceLogPage), typeof(AttendanceLogPage));
         Routing.RegisterRoute(nameof(YearWorkPage), typeof(YearWorkPage));
         Routing.RegisterRoute(nameof(AssignmentsPage), typeof(AssignmentsPage));
         Routing.RegisterRoute(nameof(NotificationsPage), typeof(NotificationsPage));
         Routing.RegisterRoute(nameof(LecturesPage), typeof(LecturesPage));
         
-        // تسجيل مسار شاشة إضافة وتعديل المحاضرات
+        // Route for Add/Update Lecture page
         Routing.RegisterRoute(nameof(AddUpdateLecturePage), typeof(AddUpdateLecturePage));
 
+        // Routes for exams and data import/export management pages
         Routing.RegisterRoute(nameof(MidtermExamPage), typeof(MidtermExamPage));
         Routing.RegisterRoute(nameof(FinalExamPage), typeof(FinalExamPage));
         Routing.RegisterRoute(nameof(ExportMasterPage), typeof(ExportMasterPage));
         Routing.RegisterRoute(nameof(ImportRosterPage), typeof(ImportRosterPage));
-        Routing.RegisterRoute(nameof(ScheduleManagementPage), typeof(ScheduleManagementPage));
-
+        
+        // Route for Majors management page
+        Routing.RegisterRoute(nameof(MajorsPage), typeof(MajorsPage));
     }
 }

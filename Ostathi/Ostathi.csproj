@@ -9,6 +9,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseMaui>true</UseMaui>
     <MauiXamlInflator>SourceGen</MauiXamlInflator>
+    <ApplicationId>com.companyname.ostathi</ApplicationId>
+    <ApplicationTitle>Ostathi</ApplicationTitle>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <ApplicationVersion>1</ApplicationVersion>
+    <RuntimeIdentifiers>android-arm64</RuntimeIdentifiers>
   </PropertyGroup>
   <ItemGroup>
     <MauiXaml Include="App.xaml" />
@@ -46,6 +51,11 @@
     <MauiXaml Include="views/ImportRosterPage.xaml" />
     <MauiXaml Include="views/AddUpdateLecturePage.xaml" />
     <Compile Remove="views/ScheduleManagementPage.cs" />
+    <MauiIcon Include="Resources/Apk/icon.jpg" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.14" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.14" />
+    <MauiXaml Include="views/MajorsPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\*" />

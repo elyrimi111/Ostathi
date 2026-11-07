@@ -1,6 +1,8 @@
+using System;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Ostathi;
+using Ostathi.Services;
 
 namespace Ostathi.viewModels
 {
@@ -62,9 +64,11 @@ namespace Ostathi.viewModels
             }
         }
 
-        public MainLayoutViewModel()
+        // Constructor with Dependency Injection for StudentService
+        public MainLayoutViewModel(StudentService studentService)
         {
-            _studentsViewModel = new StudentsViewModel();
+            // Initialize StudentsViewModel with the required StudentService
+            _studentsViewModel = new StudentsViewModel(studentService);
             _studentsView = new StudentsPage(_studentsViewModel);
 
             _homeViewModel = new HomeViewModel();
@@ -78,7 +82,7 @@ namespace Ostathi.viewModels
             HomeCommand = new Command(OnHomeExecuted);
             SettingsCommand = new Command(OnSettingsExecuted);
             NotificationsCommand = new Command(OnNotificationsExecuted);
-            ScheduleCommand = new Command(OnScheduleExecuted);
+            ScheduleCommand = new Command(async () => await OnScheduleExecutedAsync());
             GroupsCommand = new Command(OnGroupsExecuted);
             
             OpenDynamicAttendanceCommand = new Command(OnOpenDynamicAttendanceExecuted);
@@ -132,9 +136,12 @@ namespace Ostathi.viewModels
             CurrentView = _reportsView;
         }
 
-        private void OnScheduleExecuted()
+        private async Task OnScheduleExecutedAsync()
         {
             CurrentView = _studentsView;
+            
+            // Refresh and load students from database whenever the students view is opened
+            await _studentsViewModel.LoadStudentsAsync();
         }
 
         private void OnGroupsExecuted()

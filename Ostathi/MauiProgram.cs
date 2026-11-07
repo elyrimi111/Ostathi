@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Ostathi.viewModels;
 
 namespace Ostathi;
 
@@ -12,14 +13,11 @@ public static class MauiProgram
             .UseMauiApp<App>()
             .ConfigureFonts(fonts =>
             {
-                // The file names are the ones under Resources/Fonts; the second argument is the
-                // alias a FontFamily setter uses. Both are resolved against that folder rather
-                // than against the APK's assets/, which belongs to the IDE (roadmap 20.3.3).
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-        // --- تسجيل الصفحات والـ ViewModels لنظام حقن التبعيات (DI) ---
+        // --- Register pages and ViewModels for Dependency Injection (DI) ---
         builder.Services.AddTransient<SettingsPage>();
         builder.Services.AddTransient<SettingsViewModel>();
 
@@ -31,6 +29,23 @@ public static class MauiProgram
 
         builder.Services.AddTransient<LecturesPage>();
         builder.Services.AddTransient<LecturesViewModel>();
+        
+        // Register database context and application services
+        builder.Services.AddDbContext<AppDbContext>();
+        builder.Services.AddTransient<Ostathi.Services.StudentService>();
+        builder.Services.AddTransient<MajorService>();
+        
+        builder.Services.AddTransient<AddaUpdateStudentsViewModel>();
+        builder.Services.AddTransient<AddUpdateStudent>();
+
+        // Register Majors management page and its ViewModel
+        builder.Services.AddTransient<MajorsPage>();
+        builder.Services.AddTransient<MajorsViewMod>();
+
+        // Register MainLayoutViewModel and MainLayoutView with correct matching names
+        builder.Services.AddTransient<MainLayoutViewModel>();
+        builder.Services.AddTransient<MainLayoutView>();
+
         // -----------------------------------------------------------
 
 #if DEBUG

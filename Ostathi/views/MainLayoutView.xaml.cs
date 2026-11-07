@@ -1,16 +1,16 @@
-using System;
 using Microsoft.Maui.Controls;
-using Ostathi.viewModels; // استخدم حرف v صغير ليتطابق مع اسم مجلدك
+using Ostathi.viewModels;
 
 namespace Ostathi;
 
 public partial class MainLayoutView : ContentPage
 {
-    public MainLayoutView()
+    // Receive MainLayoutViewModel via dependency injection
+    public MainLayoutView(MainLayoutViewModel viewModel)
     {
         InitializeComponent();
         
-        // ربط الصفحة بالـ ViewModel الخاص بها
-        BindingContext = new MainLayoutViewModel();
+        // Bind the page to the injected ViewModel
+        BindingContext = viewModel;
     }
 }

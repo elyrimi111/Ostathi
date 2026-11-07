@@ -9,7 +9,7 @@
     <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- ========================================== -->
-        <!-- 1. الهيدر العلوي للصفحة -->
+        <!-- 1. Page Header Section -->
         <!-- ========================================== -->
         <Border Grid.Row="0" 
                 BackgroundColor="{StaticResource DarkSurface}" 
@@ -26,16 +26,17 @@
         </Border>
 
         <!-- ========================================== -->
-        <!-- 2. نموذج الإدخال (Scrollable Form) -->
+        <!-- 2. Input Form Section (Scrollable Form) -->
         <!-- ========================================== -->
         <ScrollView Grid.Row="1" Padding="20">
             <VerticalStackLayout Spacing="16">
 
-                <!-- اسم الطالب الكامل -->
+                <!-- First Name -->
                 <VerticalStackLayout Spacing="6">
-                    <Label Text="اسم الطالب الكامل" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="الاسم الأول" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
-                        <Entry Placeholder="أدخل اسم الطالب الثلاثي..." 
+                        <Entry Text="{Binding FirstName}"
+                               Placeholder="أدخل الاسم الأول..." 
                                FontSize="13" 
                                TextColor="{StaticResource TextPrimary}" 
                                PlaceholderColor="{StaticResource TextSecondary}" 
@@ -44,11 +45,54 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- الرقم الأكاديمي -->
+                <!-- Second Name -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="الاسم الثاني" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
+                        <Entry Text="{Binding SecondName}"
+                               Placeholder="أدخل الاسم الثاني..." 
+                               FontSize="13" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               PlaceholderColor="{StaticResource TextSecondary}" 
+                               VerticalOptions="Center" 
+                               BackgroundColor="Transparent"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Third Name -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="الاسم الثالث" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
+                        <Entry Text="{Binding ThirdName}"
+                               Placeholder="أدخل الاسم الثالث..." 
+                               FontSize="13" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               PlaceholderColor="{StaticResource TextSecondary}" 
+                               VerticalOptions="Center" 
+                               BackgroundColor="Transparent"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Last Name / Family Name -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="اللقب / العائلة" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
+                        <Entry Text="{Binding LastName}"
+                               Placeholder="أدخل لقب العائلة..." 
+                               FontSize="13" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               PlaceholderColor="{StaticResource TextSecondary}" 
+                               VerticalOptions="Center" 
+                               BackgroundColor="Transparent"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Academic ID -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="الرقم الأكاديمي" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
-                        <Entry Placeholder="مثال: 20261050..." 
+                        <Entry Text="{Binding AcademicId}"
+                               Placeholder="مثال: 20261050..." 
                                Keyboard="Numeric"
                                FontSize="13" 
                                TextColor="{StaticResource TextPrimary}" 
@@ -58,11 +102,12 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- رقم الهاتف -->
+                <!-- Phone Number -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="رقم الهاتف (واتساب)" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
-                        <Entry Placeholder="مثال: 770000000..." 
+                        <Entry Text="{Binding PhoneNumber}"
+                               Placeholder="مثال: 770000000..." 
                                Keyboard="Telephone"
                                FontSize="13" 
                                TextColor="{StaticResource TextPrimary}" 
@@ -72,11 +117,12 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- اختيار التخصص -->
+                <!-- Academic Major Selection -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="التخصص الأكاديمي" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,2">
-                        <Picker Title="اختر التخصص..." 
+                        <Picker SelectedItem="{Binding SelectedMajor}"
+                                Title="اختر التخصص..." 
                                 TitleColor="{StaticResource TextSecondary}" 
                                 TextColor="{StaticResource TextPrimary}" 
                                 FontSize="12" 
@@ -92,11 +138,12 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- اختيار السنة الدراسية -->
+                <!-- Academic Year Selection -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="السنة الدراسية" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,2">
-                        <Picker Title="اختر السنة..." 
+                        <Picker SelectedItem="{Binding SelectedYear}"
+                                Title="اختر السنة..." 
                                 TitleColor="{StaticResource TextSecondary}" 
                                 TextColor="{StaticResource TextPrimary}" 
                                 FontSize="12" 
@@ -113,11 +160,12 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- اختيار المجموعة -->
+                <!-- Study Group Selection -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="المجموعة الدراسية" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,2">
-                        <Picker Title="اختر المجموعة..." 
+                        <Picker SelectedItem="{Binding SelectedGroupText}"
+                                Title="اختر المجموعة..." 
                                 TitleColor="{StaticResource TextSecondary}" 
                                 TextColor="{StaticResource TextPrimary}" 
                                 FontSize="12" 
@@ -137,7 +185,7 @@
         </ScrollView>
 
         <!-- ========================================== -->
-        <!-- 3. شريط الأزرار السفلي (حفظ / إغلاق) -->
+        <!-- 3. Bottom Action Buttons Bar (Save / Cancel) -->
         <!-- ========================================== -->
         <Border Grid.Row="2"
                 BackgroundColor="{StaticResource DarkSurface}"
@@ -145,8 +193,9 @@
                 Padding="16,12">
             
             <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-                <!-- زر إلغاء -->
+                <!-- Cancel Button -->
                 <Button Grid.Column="0"
+                        Command="{Binding CancelCommand}"
                         Text="إلغاء"
                         BackgroundColor="{StaticResource DarkBackground}"
                         TextColor="{StaticResource TextSecondary}"
@@ -155,8 +204,9 @@
                         CornerRadius="14"
                         HeightRequest="45" />
 
-                <!-- زر حفظ البيانات -->
+                <!-- Save Data Button -->
                 <Button Grid.Column="1"
+                        Command="{Binding SaveCommand}"
                         Text="حفظ البيانات"
                         BackgroundColor="{StaticResource AccentYellow}"
                         TextColor="{StaticResource DarkBackground}"
