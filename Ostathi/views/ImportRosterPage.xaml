@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
              x:Class="Ostathi.ImportRosterPage"
              Title="استيراد الكشف"
              BackgroundColor="{StaticResource DarkBackground}"
@@ -8,24 +9,52 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <!-- 1. Header -->
-        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
-            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="استيراد كشف الطلاب" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="رفع ملف Excel أو CSV لجلب قائمة الطلاب دفعة واحدة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                </VerticalStackLayout>
-                
-                <!-- Status Badge -->
-                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0" VerticalOptions="Center">
-                    <Label Text="جاهز للرفع" FontSize="11" TextColor="{StaticResource AccentYellow}" FontAttributes="Bold"/>
-                </Border>
-            </Grid>
-        </Border>
+        <!-- ========================================== -->
+        <!-- 1. Top Header Section -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkBackground}">
 
-        <!-- 2. Main Content -->
+            <!-- Close / Back Button -->
+            <Button Grid.Column="0"
+                    Text="✕"
+                    FontSize="16"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    CornerRadius="18"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"
+                    Command="{Binding ClosePageCommand}"/>
+
+            <!-- Page Title -->
+            <Label Grid.Column="1"
+                   Text="استيراد كشف الطلاب"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="36" BackgroundColor="Transparent"/>
+        </Grid>
+
+
+        <!-- ========================================== -->
+        <!-- 2. Main Content Section -->
+        <!-- ========================================== -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Group Card Integration for Targeted Group Info -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="المجموعة المستهدفة للاستيراد" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                    <local:GroupCard BindingContext="{Binding CurrentGroup}" />
+                </VerticalStackLayout>
 
                 <!-- Upload Instructions Card -->
                 <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
@@ -47,6 +76,7 @@
                             <Label Text="الملفات المدعومة: .xlsx, .csv" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
                             
                             <Button Text="استعراض الملفات" 
+                                    Command="{Binding PickFileCommand}"
                                     BackgroundColor="{StaticResource AccentYellow}" 
                                     TextColor="{StaticResource DarkBackground}" 
                                     FontAttributes="Bold" FontSize="12" CornerRadius="12" HeightRequest="40" Padding="20,0" Margin="0,8,0,0"/>
@@ -61,10 +91,12 @@
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                             <Button Grid.Column="0" Text="إلغاء" 
+                                    Command="{Binding CancelCommand}"
                                     BackgroundColor="{StaticResource DarkBackground}" 
                                     TextColor="{StaticResource TextPrimary}" 
                                     FontAttributes="Bold" FontSize="11" CornerRadius="12" HeightRequest="42"/>
                             <Button Grid.Column="1" Text="بدء الاستيراد" 
+                                    Command="{Binding StartImportCommand}"
                                     BackgroundColor="{StaticResource AccentLime}" 
                                     TextColor="{StaticResource DarkBackground}" 
                                     FontAttributes="Bold" FontSize="11" CornerRadius="12" HeightRequest="42"/>

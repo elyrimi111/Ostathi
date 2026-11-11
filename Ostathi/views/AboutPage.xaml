@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AboutPage"
+             Title="حول النظام"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ========================================== -->
+        <!-- 1. Header Section -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkSurface}">
+
+            <!-- Back Button -->
+            <Button Grid.Column="0"
+                    Text="‹"
+                    FontSize="22"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="Transparent"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    VerticalOptions="Center"
+                    Command="{Binding BackCommand}"/>
+
+            <!-- Page Title -->
+            <Label Grid.Column="1"
+                   Text="حول النظام والمبرمج"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="40" BackgroundColor="Transparent"/>
+        </Grid>
+
+        <!-- ========================================== -->
+        <!-- 2. Content Scrollable Area -->
+        <!-- ========================================== -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="20">
+
+                <!-- App Branding & Identity Card -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                        StrokeShape="RoundRectangle 20" 
+                        StrokeThickness="0" 
+                        Padding="20">
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <Border BackgroundColor="{StaticResource DarkBackground}"
+                                StrokeShape="RoundRectangle 24"
+                                StrokeThickness="0"
+                                WidthRequest="80"
+                                HeightRequest="80"
+                                HorizontalOptions="Center">
+                            <Label Text="🎓" FontSize="36" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+                        
+                        <Label Text="نظام أستاذي (Ostathi)" 
+                               FontSize="20" 
+                               FontAttributes="Bold" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               HorizontalOptions="Center"/>
+                        
+                        <Label Text="الإصدار v1.0.0 (2026)" 
+                               FontSize="12" 
+                               TextColor="{StaticResource AccentYellow}" 
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- About App Card (For Professors & University Lecturers) -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                        StrokeShape="RoundRectangle 16" 
+                        StrokeThickness="0" 
+                        Padding="16">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="عن النظام" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                        <Label Text="نظام أستاذي هو تطبيق احترافي متكامل صمم خصيصاً لمساعدة الأساتذة، الأكاديميين، ودكاترة الجامعات في إدارة الحصص، والمجموعات، وتسجيل حضور وغياب الطلاب بدقة عالية، مع ميزات متكاملة للعمل محلياً وبأعلى كفاءة (Offline-First)." 
+                               FontSize="13" 
+                               TextColor="{StaticResource TextSecondary}" 
+                               LineHeight="1.4"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Developer Card (محمد فؤاد اليريمي) -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                        StrokeShape="RoundRectangle 16" 
+                        StrokeThickness="0" 
+                        Padding="16">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="مبرمج ومطور النظام" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                        
+                        <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                            <!-- Developer Avatar/Icon -->
+                            <Border BackgroundColor="{StaticResource DarkBackground}"
+                                    StrokeShape="RoundRectangle 22"
+                                    StrokeThickness="0"
+                                    WidthRequest="48"
+                                    HeightRequest="48"
+                                    VerticalOptions="Center">
+                                <Label Text="💻" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+
+                            <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                                <Label Text="م. محمد فؤاد اليريمي" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="مهندس البرمجيات والمطور الأول للنظام" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Social Media & Links Card -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                        StrokeShape="RoundRectangle 16" 
+                        StrokeThickness="0" 
+                        Padding="16">
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="تواصل مع المطور" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                        
+                        <!-- LinkedIn Row Button -->
+                        <Button Text="🔗 التواصل عبر لينكد إن (LinkedIn)"
+                                Command="{Binding OpenLinkedInCommand}"
+                                BackgroundColor="{StaticResource DarkBackground}"
+                                TextColor="{StaticResource TextPrimary}"
+                                FontSize="13"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                HeightRequest="42"
+                                HorizontalOptions="Fill"/>
+
+                        <!-- GitHub Row Button (Optional or another platform) -->
+                        <Button Text="🐙 متابعة أعمالي البرمجية (GitHub)"
+                                Command="{Binding OpenGitHubCommand}"
+                                BackgroundColor="{StaticResource DarkBackground}"
+                                TextColor="{StaticResource TextPrimary}"
+                                FontSize="13"
+                                FontAttributes="Bold"
+                                CornerRadius="10"
+                                HeightRequest="42"
+                                HorizontalOptions="Fill"/>
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ========================================== -->
+        <!-- 3. Footer Copyrights -->
+        <!-- ========================================== -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16"
+                HeightRequest="60">
+            <Label Text="جميع الحقوق محفوظة للمبرمج © 2026 - م. محمد فؤاد اليريمي" 
+                   FontSize="11" 
+                   TextColor="{StaticResource TextSecondary}" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"/>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

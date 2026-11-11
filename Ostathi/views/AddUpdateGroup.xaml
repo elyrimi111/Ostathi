@@ -2,14 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Ostathi.AddUpdateGroup"
-             Title="إضافة / تعديل مجموعة"
+             Title="إضافة / تعديل مجموعة والمادة الدراسية"
              FlowDirection="RightToLeft"
              BackgroundColor="{StaticResource DarkBackground}">
 
+    <!-- Main layout grid -->
     <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- ========================================== -->
-        <!-- 1. الهيدر العلوي للصفحة -->
+        <!-- 1. Page Header Section -->
         <!-- ========================================== -->
         <Border Grid.Row="0" 
                 BackgroundColor="{StaticResource DarkSurface}" 
@@ -19,23 +20,24 @@
             
             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                 <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="إدارة المجموعات" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="إضافة مجموعة دراسية جديدة أو تعديل بيانات مجموعة قائمة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="إدارة المجموعات والمواد" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="إضافة مجموعة دراسية جديدة، المادة، والتخصص المرتبط" FontSize="11" TextColor="{StaticResource TextSecondary}" />
                 </VerticalStackLayout>
             </Grid>
         </Border>
 
         <!-- ========================================== -->
-        <!-- 2. نموذج الإدخال (Scrollable Form) -->
+        <!-- 2. Scrollable Input Form Section -->
         <!-- ========================================== -->
         <ScrollView Grid.Row="1" Padding="20">
             <VerticalStackLayout Spacing="16">
 
-                <!-- اسم المجموعة -->
+                <!-- 1. Subject / Course Name Input (اسم المادة) -->
                 <VerticalStackLayout Spacing="6">
-                    <Label Text="اسم المجموعة" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="اسم المادة الدراسية" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
-                        <Entry Placeholder="مثال: مجموعة C# المتقدمة..." 
+                        <Entry Text="{Binding SubjectName}"
+                               Placeholder="مثال: البرمجة كائنية التوجه (OOP)..." 
                                FontSize="13" 
                                TextColor="{StaticResource TextPrimary}" 
                                PlaceholderColor="{StaticResource TextSecondary}" 
@@ -44,11 +46,26 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- وصف المجموعة أو الملاحظات -->
+                <!-- 2. Group Name / Sub-group Name Input (اسم المجموعة أو الفرع: مجموعة أ / ب) -->
                 <VerticalStackLayout Spacing="6">
-                    <Label Text="وصف المجموعة (اختياري)" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="اسم المجموعة (مثل: مجموعة أ أو مجموعة باء)" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
+                        <Entry Text="{Binding GroupName}"
+                               Placeholder="مثال: مجموعة أ..." 
+                               FontSize="13" 
+                               TextColor="{StaticResource TextPrimary}" 
+                               PlaceholderColor="{StaticResource TextSecondary}" 
+                               VerticalOptions="Center" 
+                               BackgroundColor="Transparent"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- 3. Subject / Group Description or Notes (وصف أو ملاحظات المادة) -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="وصف أو ملاحظات المادة والمحاضرات (اختياري)" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="80" StrokeThickness="0" Padding="12,8">
-                        <Editor Placeholder="اكتب نبذة مختصرة عن أوقات المحاضرات أو قاعات التدريس..." 
+                        <Editor Text="{Binding GroupDescription}"
+                                Placeholder="اكتب نبذة عن منهج المادة أو أوقات القاعات الدراسية..." 
                                 FontSize="13" 
                                 TextColor="{StaticResource TextPrimary}" 
                                 PlaceholderColor="{StaticResource TextSecondary}" 
@@ -57,44 +74,32 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- التخصص المرتبط -->
+                <!-- 4. Target Academic Major Picker (التخصص المستهدف) -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="التخصص المستهدف" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,2">
-                        <Picker Title="اختر التخصص..." 
+                        <Picker ItemsSource="{Binding MajorsList}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedMajor}"
+                                Title="اختر التخصص..." 
                                 TitleColor="{StaticResource TextSecondary}" 
                                 TextColor="{StaticResource TextPrimary}" 
                                 FontSize="12" 
-                                VerticalOptions="Center">
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>علوم الحاسب (CIS)</x:String>
-                                    <x:String>تقنية المعلومات (IT)</x:String>
-                                    <x:String>هندسة البرمجيات (SE)</x:String>
-                                </x:Array>
-                            </Picker.ItemsSource>
-                        </Picker>
+                                VerticalOptions="Center"/>
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- السنة الدراسية -->
+                <!-- 5. Academic Year Picker (السنة الدراسية) -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="السنة الدراسية" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,2">
-                        <Picker Title="اختر السنة..." 
+                        <Picker ItemsSource="{Binding AcademicYearsList}"
+                                SelectedItem="{Binding SelectedAcademicYear}"
+                                Title="اختر السنة..." 
                                 TitleColor="{StaticResource TextSecondary}" 
                                 TextColor="{StaticResource TextPrimary}" 
                                 FontSize="12" 
-                                VerticalOptions="Center">
-                            <Picker.ItemsSource>
-                                <x:Array Type="{x:Type x:String}">
-                                    <x:String>السنة الأولى</x:String>
-                                    <x:String>السنة الثانية</x:String>
-                                    <x:String>السنة الثالثة</x:String>
-                                    <x:String>سنة التخرج</x:String>
-                                </x:Array>
-                            </Picker.ItemsSource>
-                        </Picker>
+                                VerticalOptions="Center"/>
                     </Border>
                 </VerticalStackLayout>
 
@@ -102,7 +107,7 @@
         </ScrollView>
 
         <!-- ========================================== -->
-        <!-- 3. شريط الأزرار السفلي (حفظ / إغلاق) -->
+        <!-- 3. Bottom Action Buttons Bar (Cancel / Save) -->
         <!-- ========================================== -->
         <Border Grid.Row="2"
                 BackgroundColor="{StaticResource DarkSurface}"
@@ -110,9 +115,10 @@
                 Padding="16,12">
             
             <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-                <!-- زر إلغاء -->
+                <!-- Cancel Action Button -->
                 <Button Grid.Column="0"
                         Text="إلغاء"
+                        Command="{Binding CancelCommand}"
                         BackgroundColor="{StaticResource DarkBackground}"
                         TextColor="{StaticResource TextSecondary}"
                         FontAttributes="Bold"
@@ -120,9 +126,10 @@
                         CornerRadius="14"
                         HeightRequest="45" />
 
-                <!-- زر حفظ المجموعة -->
+                <!-- Save Action Button -->
                 <Button Grid.Column="1"
-                        Text="حفظ المجموعة"
+                        Text="حفظ المجموعة والمادة"
+                        Command="{Binding SaveGroupCommand}"
                         BackgroundColor="{StaticResource AccentYellow}"
                         TextColor="{StaticResource DarkBackground}"
                         FontAttributes="Bold"

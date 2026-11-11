@@ -1,40 +1,139 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
              x:Class="Ostathi.LecturesPage"
              Title="إدارة المحاضرات"
              BackgroundColor="{StaticResource DarkBackground}"
              FlowDirection="RightToLeft">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- 1. Header -->
-        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
-            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="جدول ومحتوى المحاضرات" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="إدارة جدول المحاضرات الـ 12 والمحتوى العلمي" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                </VerticalStackLayout>
-                
-                <!-- Add Lecture Button -->
-                <Button Grid.Column="1" Text="+ إضافة محاضرة" 
-                        Command="{Binding AddLectureCommand}"
-                        BackgroundColor="{StaticResource AccentYellow}" 
-                        TextColor="{StaticResource DarkBackground}" 
-                        FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="12,0"/>
-            </Grid>
-        </Border>
+        <!-- ========================================== -->
+        <!-- 1. Top Header Section -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkBackground}">
 
-        <!-- 2. Main Content -->
+            <!-- Close / Back Button -->
+            <Button Grid.Column="0"
+                    Text="✕"
+                    FontSize="16"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    CornerRadius="18"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"
+                    Command="{Binding ClosePageCommand}"/>
+
+            <!-- Page Title -->
+            <Label Grid.Column="1"
+                   Text="إدارة المحاضرات"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="36" BackgroundColor="Transparent"/>
+        </Grid>
+
+
+        <!-- ========================================== -->
+        <!-- 2. Main Content Section -->
+        <!-- ========================================== -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Group Card Integration for Targeted Group Info -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="بيانات المجموعة المستهدفة" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                    <local:GroupCard BindingContext="{Binding CurrentGroup}" />
+                </VerticalStackLayout>
+
+                <!-- شريط أيام الأسبوع للفلترة والتنقل السريع -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8">
+                        
+                        <!-- السبت -->
+                        <Border StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding SelectedDay}" Value="السبت">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding SelectedDay}" Value="السبت">
+                                    <Setter Property="BackgroundColor" Value="{StaticResource DarkSurface}" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.Background>
+                                <SolidColorBrush Color="{StaticResource AccentYellow}"/>
+                            </Border.Background>
+                            <Label Text="السبت" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource DarkBackground}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="السبت"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                        <!-- الأحد -->
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الأحد" FontSize="12" TextColor="{StaticResource TextPrimary}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الأحد"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                        <!-- الإثنين -->
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الإثنين" FontSize="12" TextColor="{StaticResource TextPrimary}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الإثنين"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                        <!-- الثلاثاء -->
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الثلاثاء" FontSize="12" TextColor="{StaticResource TextPrimary}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الثلاثاء"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                        <!-- الأربعاء -->
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الأربعاء" FontSize="12" TextColor="{StaticResource TextPrimary}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الأربعاء"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                        <!-- الخميس -->
+                        <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0">
+                            <Label Text="الخميس" FontSize="12" TextColor="{StaticResource TextPrimary}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الخميس"/>
+                                </Label.GestureRecognizers>
+                            </Label>
+                        </Border>
+
+                    </HorizontalStackLayout>
+                </ScrollView>
 
                 <!-- Stats Card -->
                 <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
                             <Label Text="{Binding TotalLectures}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
-                            <Label Text="إجمالي محاضرات الترم" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                            <Label Text="إجمالي المحاضرات" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
                             <Label Text="{Binding CompletedLectures}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" HorizontalOptions="Center"/>
@@ -43,22 +142,37 @@
                     </Grid>
                 </Border>
 
-                <!-- Lectures List -->
+                <!-- Lectures List Section -->
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="خريطة محاضرات الترم" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="{Binding SelectedDay, StringFormat='قائمة محاضرات ({0})'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="+ إضافة محاضرة" 
+                                Command="{Binding AddLectureCommand}"
+                                BackgroundColor="{StaticResource AccentYellow}" 
+                                TextColor="{StaticResource DarkBackground}" 
+                                FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="32" Padding="12,0"/>
+                    </Grid>
 
-                    <!-- BindableLayout لاستعراض القائمة ديناميكياً -->
+                    <!-- BindableLayout to dynamically render lectures list from Database -->
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding LecturesList}" Spacing="12">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate>
                                 <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
                                     <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                        <!-- Lecture Details -->
                                         <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                            <Label Text="{Binding Title}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                                            <Label Text="{Binding Status}" FontSize="11" TextColor="{StaticResource AccentLime}" />
+                                            <!-- Major & Academic Year -->
+                                            <Label Text="{Binding Major}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="{Binding AcademicYear}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                                <Label Text="•" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                                <Label Text="{Binding HallName}" FontSize="11" TextColor="{StaticResource AccentLime}" />
+                                            </HorizontalStackLayout>
                                         </VerticalStackLayout>
+
+                                        <!-- Group Badge -->
                                         <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="10,6" StrokeThickness="0">
-                                            <Label Text="{Binding LectureNumber}" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                                            <Label Text="{Binding Group}" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
                                         </Border>
                                     </Grid>
                                 </Border>

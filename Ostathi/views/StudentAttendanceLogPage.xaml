@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
+             x:Class="Ostathi.StudentAttendanceLogPage"
+             Title="سجل حضور الطالب"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ========================================== -->
+        <!-- 1. Header: Student Info & Lecture Summary Card -->
+        <!-- ========================================== -->
+        <VerticalStackLayout Grid.Row="0" Padding="16,16,16,8" Spacing="8">
+            <Label Text="{Binding StudentFullName, StringFormat='سجل حضور الطالب: {0}'}" 
+                   FontSize="16" 
+                   FontAttributes="Bold" 
+                   TextColor="{StaticResource AccentYellow}" 
+                   HorizontalOptions="Center"/>
+                   
+            <!-- بطاقة المحاضرة الموحدة -->
+            <local:LucterCard />
+        </VerticalStackLayout>
+
+        <!-- ========================================== -->
+        <!-- 2. Main Content: Lectures List -->
+        <!-- ========================================== -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="12">
+                <Label Text="قائمة المحاضرات المسجلة للمجموعة:" 
+                       FontSize="13" 
+                       FontAttributes="Bold" 
+                       TextColor="{StaticResource TextSecondary}" />
+
+                <CollectionView ItemsSource="{Binding LecturesList}">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="{StaticResource DarkSurface}" 
+                                    StrokeShape="RoundRectangle 16" 
+                                    StrokeThickness="0" 
+                                    Padding="16"
+                                    Margin="0,0,0,8">
+                                
+                                <VerticalStackLayout Spacing="10">
+                                    
+                                    <!-- Lecture Details -->
+                                    <Grid ColumnDefinitions="*, Auto">
+                                        <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                            <Label Text="{Binding SubjectName, FallbackValue='المادة الدراسية'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                            <Label Text="{Binding LectureDate, StringFormat='التاريخ: {0:yyyy/MM/dd}'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                                        </VerticalStackLayout>
+
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                            <Label Text="{Binding HallName, StringFormat='القاعة: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                                            <Label Text="-" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                                            <Label Text="{Binding Day}" FontSize="12" TextColor="{StaticResource AccentYellow}" />
+                                        </HorizontalStackLayout>
+                                    </Grid>
+
+                                    <!-- 3 Direct 1-Click Status Buttons -->
+                                    <HorizontalStackLayout Spacing="8" HorizontalOptions="FillAndExpand">
+                                        
+                                        <!-- Present Button -->
+                                        <Button Text="حاضر"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                CornerRadius="10"
+                                                HeightRequest="36"
+                                                HorizontalOptions="FillAndExpand"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:StudentAttendanceLogPageViewModel}}, Path=SetStatusPresentCommand}"
+                                                CommandParameter="{Binding}">
+                                            <Button.Triggers>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Present">
+                                                    <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}" />
+                                                    <Setter Property="TextColor" Value="{StaticResource DarkBackground}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Absent">
+                                                    <Setter Property="BackgroundColor" Value="#1E2A38" />
+                                                    <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Excused">
+                                                    <Setter Property="BackgroundColor" Value="#1E2A38" />
+                                                    <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                                                </DataTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+
+                                        <!-- Absent Button -->
+                                        <Button Text="غائب"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                CornerRadius="10"
+                                                HeightRequest="36"
+                                                HorizontalOptions="FillAndExpand"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:StudentAttendanceLogPageViewModel}}, Path=SetStatusAbsentCommand}"
+                                                CommandParameter="{Binding}">
+                                            <Button.Triggers>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Absent">
+                                                    <Setter Property="BackgroundColor" Value="#FF6B6B" />
+                                                    <Setter Property="TextColor" Value="White" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Present">
+                                                    <Setter Property="BackgroundColor" Value="#1E2A38" />
+                                                    <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Excused">
+                                                    <Setter Property="BackgroundColor" Value="#1E2A38" />
+                                                    <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                                                </DataTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+
+                                        <!-- Excused Button -->
+                                        <Button Text="مستأذن"
+                                                FontSize="12"
+                                                FontAttributes="Bold"
+                                                CornerRadius="10"
+                                                HeightRequest="36"
+                                                HorizontalOptions="FillAndExpand"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:StudentAttendanceLogPageViewModel}}, Path=SetStatusExcusedCommand}"
+                                                CommandParameter="{Binding}">
+                                            <Button.Triggers>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Excused">
+                                                    <Setter Property="BackgroundColor" Value="#FFA500" />
+                                                    <Setter Property="TextColor" Value="{StaticResource DarkBackground}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Present">
+                                                    <Setter Property="BackgroundColor" Value="#1E2A38" />
+                                                    <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Absent">
+                                                    <Setter Property="BackgroundColor" Value="#1E2A38" />
+                                                    <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+                                                </DataTrigger>
+                                            </Button.Triggers>
+                                        </Button>
+
+                                    </HorizontalStackLayout>
+
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ========================================== -->
+        <!-- 3. Bottom Footer Action Bar -->
+        <!-- ========================================== -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12"
+                HeightRequest="75">
+            <Button Text="حفظ التعديلات"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold"
+                    CornerRadius="16"
+                    HeightRequest="48"
+                    Command="{Binding SaveAttendanceCommand}"/>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

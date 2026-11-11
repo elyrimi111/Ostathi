@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.EditStudentGradesPage"
+             Title="تعديل درجات الطالب الشاملة"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- بطاقة إرشادية -->
+            <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" Padding="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="تعديل درجات الطالب (من 100)" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" HorizontalOptions="Center"/>
+                    <Label Text="يرجى إدخال الدرجات بدقة ضمن الحدود المسموحة لكل حقل." FontSize="12" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- حقول إدخال الدرجات -->
+            <VerticalStackLayout Spacing="14">
+
+                <!-- 1. النهائي (من 60) -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="🏆 الاختبار النهائي (الحد الأقصى 60 درجة):" FontSize="13" TextColor="{StaticResource TextPrimary}" FontAttributes="Bold"/>
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" Padding="4">
+                        <Entry Text="{Binding FinalScore, Mode=TwoWay}"
+                               Placeholder="أدخل درجة النهائي..."
+                               Keyboard="Numeric"
+                               FontSize="16"
+                               TextColor="{StaticResource AccentYellow}"
+                               BackgroundColor="Transparent"
+                               HeightRequest="45"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- 2. النصي (من 20) -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="📝 الاختبار النصي (الحد الأقصى 20 درجة):" FontSize="13" TextColor="{StaticResource TextPrimary}" FontAttributes="Bold"/>
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" Padding="4">
+                        <Entry Text="{Binding MidtermScore, Mode=TwoWay}"
+                               Placeholder="أدخل درجة النصي..."
+                               Keyboard="Numeric"
+                               FontSize="16"
+                               TextColor="{StaticResource AccentYellow}"
+                               BackgroundColor="Transparent"
+                               HeightRequest="45"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- 3. الحضور (من 10) -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="📊 الحضور والغياب (الحد الأقصى 10 درجات):" FontSize="13" TextColor="{StaticResource TextPrimary}" FontAttributes="Bold"/>
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" Padding="4">
+                        <Entry Text="{Binding AttendanceScore, Mode=TwoWay}"
+                               Placeholder="أدخل درجة الحضور..."
+                               Keyboard="Numeric"
+                               FontSize="16"
+                               TextColor="Green"
+                               BackgroundColor="Transparent"
+                               HeightRequest="45"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- 4. السعي (من 10) -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="⭐ السعي والأنشطة (الحد الأقصى 10 درجات):" FontSize="13" TextColor="{StaticResource TextPrimary}" FontAttributes="Bold"/>
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" Padding="4">
+                        <Entry Text="{Binding ActivitiesScore, Mode=TwoWay}"
+                               Placeholder="أدخل درجة السعي..."
+                               Keyboard="Numeric"
+                               FontSize="16"
+                               TextColor="{StaticResource TextPrimary}"
+                               BackgroundColor="Transparent"
+                               HeightRequest="45"/>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+
+            <!-- أزرار التحكم -->
+            <VerticalStackLayout Spacing="10" Margin="0,10,0,20">
+                <Button Text="حفظ جميع التعديلات"
+                        BackgroundColor="{StaticResource AccentYellow}"
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold"
+                        CornerRadius="14"
+                        HeightRequest="48"
+                        Command="{Binding SaveAllGradesCommand}"/>
+
+                <Button Text="إلغاء"
+                        BackgroundColor="{StaticResource DarkSurface}"
+                        TextColor="{StaticResource TextPrimary}"
+                        FontAttributes="Bold"
+                        CornerRadius="14"
+                        HeightRequest="48"
+                        Command="{Binding CancelCommand}"/>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

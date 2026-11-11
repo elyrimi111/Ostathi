@@ -3,7 +3,7 @@ using Microsoft.Maui.Controls;
 
 namespace Ostathi
 {
-    public class HomeViewModel : BindableObject
+    public class HomeViewModel : BaseViewModel
     {
         #region Properties (Text & State Data)
 

@@ -1,9 +1,15 @@
+using Microsoft.Maui.Controls;
+
 namespace Ostathi;
 
 public partial class AddUpdateGroup : ContentPage
 {
-    public AddUpdateGroup()
+    // Constructor injecting AddUpdateGroupViewModel via Dependency Injection
+    public AddUpdateGroup(AddUpdateGroupViewModel viewModel)
     {
         InitializeComponent();
+        
+        // ربط الصفحة بالـ ViewModel الخاص بها
+        BindingContext = viewModel;
     }
 }

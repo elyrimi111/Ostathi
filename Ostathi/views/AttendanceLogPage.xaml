@@ -1,105 +1,150 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
              x:Class="Ostathi.AttendanceLogPage"
              Title="سجل الحضور التراكمي"
              BackgroundColor="{StaticResource DarkBackground}"
              FlowDirection="RightToLeft">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- 1. الهيدر العلوي -->
-        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
-            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="سجل الحضور التراكمي (12 محاضرة)" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="متابعة إجمالي حضور وغياب الطلاب طوال الترم" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                </VerticalStackLayout>
-                <!-- إجمالي المحاضرات -->
-                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0">
-                    <Label Text="📚 إجمالي الترم: 12 محاضرة" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
-                </Border>
-            </Grid>
-        </Border>
+        <!-- ========================================== -->
+        <!-- 1. Top Header Section -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkBackground}">
 
-        <!-- 2. المحتوى الرئيسي -->
+            <!-- Close / Back Button -->
+            <Button Grid.Column="0"
+                    Text="✕"
+                    FontSize="16"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    CornerRadius="18"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"
+                    Command="{Binding ClosePageCommand}"/>
+
+            <!-- Page Title -->
+            <Label Grid.Column="1"
+                   Text="سجل الحضور التراكمي"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="36" BackgroundColor="Transparent"/>
+        </Grid>
+
+
+        <!-- ========================================== -->
+        <!-- 2. Main Content Section -->
+        <!-- ========================================== -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
 
-                <!-- بطاقة إحصائيات الدفعة العامة -->
+                <!-- Lecture Card Integration for Targeted Lecture & Group Info -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="بيانات المحاضرة والمجموعة" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                    <!-- تم دمج بطاقة المحاضرة هنا لترتبط تلقائياً ببيانات العرض في الـ ViewModel -->
+                    <local:LucterCard />
+                </VerticalStackLayout>
+
+                <!-- Batch General Statistics Card -->
                 <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
                         <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
-                            <Label Text="35" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                            <Label Text="{Binding TotalStudentsCount, FallbackValue='0'}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
                             <Label Text="إجمالي طلاب الدفعة" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                         <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
-                            <Label Text="12" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" HorizontalOptions="Center"/>
+                            <Label Text="{Binding TotalLectures, FallbackValue='12'}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" HorizontalOptions="Center"/>
                             <Label Text="إجمالي المحاضرات المقررة" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
 
-                <!-- قسم قائمة الطلاب والسجل التراكمي -->
+                <!-- Students Roster and Cumulative Log Section -->
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                        <Label Grid.Column="0" Text="سجل الطلاب التراكمي (تعديل الحضور لـ 12 محاضرة)" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" VerticalOptions="Center" />
-                        <Button Grid.Column="1" Text="حفظ التعديلات" BackgroundColor="{StaticResource AccentYellow}" TextColor="{StaticResource DarkBackground}" FontSize="11" FontAttributes="Bold" CornerRadius="10" HeightRequest="32" Padding="12,0"/>
+                        <Label Grid.Column="0" Text="سجل الطلاب التراكمي" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="حفظ التعديلات" Command="{Binding SaveAttendanceCommand}" BackgroundColor="{StaticResource AccentYellow}" TextColor="{StaticResource DarkBackground}" FontSize="11" FontAttributes="Bold" CornerRadius="10" HeightRequest="32" Padding="12,0"/>
                     </Grid>
 
-                    <!-- طالب 1 -->
-                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
-                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                <Label Text="أحمد خالد علي" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                                <Label Text="حضر 11 من أصل 12 محاضرة (غیاب: 1)" FontSize="11" TextColor="{StaticResource AccentLime}" />
-                            </VerticalStackLayout>
-                            <!-- حقل تعديل عدد المحاضرات التي حضرها الطالب من 12 -->
-                            <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
-                                <Label Text="حضر:" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
-                                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="8,4" StrokeThickness="0">
-                                    <Label Text="11 / 12" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
-                                </Border>
-                            </HorizontalStackLayout>
-                        </Grid>
-                    </Border>
+                    <!-- Dynamic Students List (Using BindableLayout bound to StudentsList and StudentAttendanceItem) -->
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding StudentsList}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                                        StrokeShape="RoundRectangle 16" 
+                                        StrokeThickness="0" 
+                                        Padding="14">
+                                    <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="10" VerticalOptions="Center">
+                                        
+                                        <!-- Student Full Name and ID Info -->
+                                        <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2">
+                                            <!-- Full Name from Student model -->
+                                            <Label Text="{Binding FullName}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                            <Label Text="{Binding PhoneNumber, StringFormat='المعرف الأكاديمي: {0}'}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                        </VerticalStackLayout>
 
-                    <!-- طالب 2 -->
-                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
-                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                <Label Text="خالد سعيد أحمد" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                                <Label Text="حضر 8 من أصل 12 محاضرة (غیاب: 4)" FontSize="11" TextColor="{StaticResource AccentCoral}" />
-                            </VerticalStackLayout>
-                            <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
-                                <Label Text="حضر:" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
-                                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="8,4" StrokeThickness="0">
-                                    <Label Text="8 / 12" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AccentCoral}" />
-                                </Border>
-                            </HorizontalStackLayout>
-                        </Grid>
-                    </Border>
+                                        <!-- Attendance Status Selection (Picker for Present, Absent, Excused) -->
+                                        <HorizontalStackLayout Grid.Row="0" Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                            <Label Text="الحالة:" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                                            <Picker Title="اختر الحالة"
+                                                    SelectedItem="{Binding Status}"
+                                                    TextColor="{StaticResource AccentYellow}"
+                                                    TitleColor="{StaticResource TextSecondary}"
+                                                    FontSize="12"
+                                                    WidthRequest="110">
+                                                <Picker.ItemsSource>
+                                                    <x:Array Type="{x:Type local:AttendanceStatus}">
+                                                        <local:AttendanceStatus>Present</local:AttendanceStatus>
+                                                        <local:AttendanceStatus>Absent</local:AttendanceStatus>
+                                                        <local:AttendanceStatus>Excused</local:AttendanceStatus>
+                                                    </x:Array>
+                                                </Picker.ItemsSource>
+                                            </Picker>
+                                        </HorizontalStackLayout>
 
-                    <!-- طالب 3 -->
-                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="14">
-                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                <Label Text="عبدالله محمد صالح" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                                <Label Text="حضر 12 من أصل 12 محاضرة (غیاب: 0)" FontSize="11" TextColor="{StaticResource AccentLime}" />
-                            </VerticalStackLayout>
-                            <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
-                                <Label Text="حضر:" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
-                                <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 8" Padding="8,4" StrokeThickness="0">
-                                    <Label Text="12 / 12" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" />
+                                    </Grid>
                                 </Border>
-                            </HorizontalStackLayout>
-                        </Grid>
-                    </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
 
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
         </ScrollView>
+
+        <!-- ========================================== -->
+        <!-- 3. Bottom Action Footer Bar -->
+        <!-- ========================================== -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12"
+                HeightRequest="75">
+
+            <Button Text="حفظ واعتماد التعديلات التراكمية"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold"
+                    CornerRadius="16"
+                    HeightRequest="48"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center"
+                    Command="{Binding SaveAttendanceCommand}"/>
+
+        </Border>
 
     </Grid>
 

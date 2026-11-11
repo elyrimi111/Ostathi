@@ -1,32 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
              x:Class="Ostathi.FinalExamPage"
              Title="الاختبار النهائي"
              BackgroundColor="{StaticResource DarkBackground}"
              FlowDirection="RightToLeft">
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- 1. Header -->
-        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
-            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="إدارة الاختبار النهائي" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="رصد ومتابعة درجات الاختبار النهائي للطلاب" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                </VerticalStackLayout>
-                
-                <!-- Action Button -->
-                <Button Grid.Column="1" Text="حفظ التعديلات" 
-                        BackgroundColor="{StaticResource AccentYellow}" 
-                        TextColor="{StaticResource DarkBackground}" 
-                        FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="12,0"/>
-            </Grid>
-        </Border>
+        <!-- ========================================== -->
+        <!-- 1. Top Header Section -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkBackground}">
 
-        <!-- 2. Main Content -->
+            <!-- Close / Back Button -->
+            <Button Grid.Column="0"
+                    Text="✕"
+                    FontSize="16"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    CornerRadius="18"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"
+                    Command="{Binding ClosePageCommand}"/>
+
+            <!-- Page Title -->
+            <Label Grid.Column="1"
+                   Text="إدارة الاختبار النهائي"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="36" BackgroundColor="Transparent"/>
+        </Grid>
+
+
+        <!-- ========================================== -->
+        <!-- 2. Main Content Section -->
+        <!-- ========================================== -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Group Card Integration for Targeted Group Info -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="بيانات المجموعة المستهدفة" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                    <local:GroupCard BindingContext="{Binding CurrentGroup}" />
+                </VerticalStackLayout>
 
                 <!-- Stats Card -->
                 <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
@@ -44,7 +72,14 @@
 
                 <!-- Students Grades List Section -->
                 <VerticalStackLayout Spacing="12">
-                    <Label Text="قائمة درجات الاختبار النهائي" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="قائمة درجات الاختبار النهائي" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" VerticalOptions="Center" />
+                        <Button Grid.Column="1" Text="حفظ التعديلات" 
+                                Command="{Binding SaveExamCommand}"
+                                BackgroundColor="{StaticResource AccentYellow}" 
+                                TextColor="{StaticResource DarkBackground}" 
+                                FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="32" Padding="12,0"/>
+                    </Grid>
 
                     <!-- Student Item 1 -->
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">

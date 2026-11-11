@@ -1,13 +1,13 @@
+
 using Ostathi.ViewModels;
 
 namespace Ostathi;
 
 public partial class groupsPage : ContentView
 {
-    public groupsPage()
+    public groupsPage(GroupsViewModel viewModel)
     {
         InitializeComponent();
-        
-        BindingContext = new GroupsViewModel();
+        BindingContext = viewModel;
     }
 }

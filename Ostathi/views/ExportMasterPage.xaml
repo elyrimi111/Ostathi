@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
              x:Class="Ostathi.ExportMasterPage"
              Title="التصدير الشامل"
              BackgroundColor="{StaticResource DarkBackground}"
@@ -8,24 +9,52 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <!-- 1. Header -->
-        <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
-            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="التصدير الشامل للتقارير" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="تصدير كشوفات الطلاب والدرجات والسجلات الأكاديمية" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                </VerticalStackLayout>
-                
-                <!-- Status Badge -->
-                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0" VerticalOptions="Center">
-                    <Label Text="جاهز للتصدير" FontSize="11" TextColor="{StaticResource AccentLime}" FontAttributes="Bold"/>
-                </Border>
-            </Grid>
-        </Border>
+        <!-- ========================================== -->
+        <!-- 1. Top Header Section -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkBackground}">
 
-        <!-- 2. Main Content -->
+            <!-- Close / Back Button -->
+            <Button Grid.Column="0"
+                    Text="✕"
+                    FontSize="16"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    CornerRadius="18"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"
+                    Command="{Binding ClosePageCommand}"/>
+
+            <!-- Page Title -->
+            <Label Grid.Column="1"
+                   Text="التصدير الشامل للتقارير"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="36" BackgroundColor="Transparent"/>
+        </Grid>
+
+
+        <!-- ========================================== -->
+        <!-- 2. Main Content Section -->
+        <!-- ========================================== -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Group Card Integration for Targeted Group Info -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="المجموعة المستهدفة للتصدير" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                    <local:GroupCard BindingContext="{Binding CurrentGroup}" />
+                </VerticalStackLayout>
 
                 <!-- Info Banner Card -->
                 <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="16">
@@ -47,6 +76,7 @@
                                 <Label Text="ملف Excel يضم كافة درجات وسجلات المجموعة بالكامل" FontSize="11" TextColor="{StaticResource TextSecondary}" />
                             </VerticalStackLayout>
                             <Button Grid.Column="1" Text="تصدير" 
+                                    Command="{Binding ExportMasterExcelCommand}"
                                     BackgroundColor="{StaticResource AccentYellow}" 
                                     TextColor="{StaticResource DarkBackground}" 
                                     FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="16,0"/>
@@ -61,6 +91,7 @@
                                 <Label Text="تصدير ملخص كشف الحضور للـ 12 محاضرة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
                             </VerticalStackLayout>
                             <Button Grid.Column="1" Text="تصدير" 
+                                    Command="{Binding ExportAttendancePdfCommand}"
                                     BackgroundColor="{StaticResource DarkBackground}" 
                                     TextColor="{StaticResource TextPrimary}" 
                                     FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="16,0"/>
@@ -75,6 +106,7 @@
                                 <Label Text="تفصيل درجات أعمال السنة، النصفي، والنهائي" FontSize="11" TextColor="{StaticResource TextSecondary}" />
                             </VerticalStackLayout>
                             <Button Grid.Column="1" Text="تصدير" 
+                                    Command="{Binding ExportGradesExcelCommand}"
                                     BackgroundColor="{StaticResource DarkBackground}" 
                                     TextColor="{StaticResource TextPrimary}" 
                                     FontAttributes="Bold" FontSize="11" CornerRadius="10" HeightRequest="36" Padding="16,0"/>

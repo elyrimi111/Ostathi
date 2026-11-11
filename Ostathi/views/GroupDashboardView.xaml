@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.GroupDashboardView"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- 1. Top Prominent Header Card (Dynamic data based on the selected group) -->
+            <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 22" StrokeThickness="0" Padding="20,18">
+                <Grid RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="12">
+                    
+                    <!-- Top Row: Group & Batch Name + Active Status Badge -->
+                    <Grid Grid.Row="0" ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="{Binding CurrentGroup.Name}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                            <Label Text="{Binding CurrentGroup.MajorName}" FontSize="12" TextColor="{StaticResource AccentYellow}"/>
+                        </VerticalStackLayout>
+                        <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="10,6" StrokeThickness="0" VerticalOptions="Center">
+                            <Label Text="نشطة حالياً" FontSize="11" TextColor="{StaticResource AccentLime}" FontAttributes="Bold"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Divider line or spacing element -->
+                    <BoxView Grid.Row="1" HeightRequest="1" BackgroundColor="{StaticResource DarkBackground}" Opacity="0.5"/>
+
+                    <!-- Middle Row: Stats Grid (Student Count & Completed Lectures) -->
+                    <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="12">
+                        <!-- Student Count Stat -->
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="إجمالي الطلاب" FontSize="11" TextColor="{StaticResource TextSecondary}"/>
+                            <Label Text="{Binding StudentCountText}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                        </VerticalStackLayout>
+                        
+                        <!-- Completed Lectures Stat -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                            <Label Text="المحاضرات المنجزة" FontSize="11" TextColor="{StaticResource TextSecondary}"/>
+                            <Label Text="{Binding CompletedLecturesCountText}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    
+                    <!-- Bottom Row: Quick Action Buttons -->
+                    <Grid Grid.Row="3" ColumnDefinitions="*, *" ColumnSpacing="10" VerticalOptions="End" Margin="0,4,0,0">
+                        <Button Grid.Column="0" Text="📥 استيراد كشف" Command="{Binding ImportCommand}" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" FontSize="11" CornerRadius="12" HeightRequest="42"/>
+                        <Button Grid.Column="1" Text="📊 تصدير الشامل" Command="{Binding ExportCommand}" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource AccentYellow}" FontSize="11" CornerRadius="12" HeightRequest="42"/>
+                    </Grid>
+
+                </Grid>
+            </Border>
+
+            <!-- 2. Bento Grid for Services, Exams, and Actions -->
+            <Grid ColumnDefinitions="*, *, *" ColumnSpacing="12" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="12">
+                
+                <!-- Attendance Log -->
+                <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110">
+                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenAttendanceCommand}"/></Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="📋" FontSize="26" HorizontalOptions="Center"/>
+                        <Label Text="سجل الحضور" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Year Work -->
+                <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110">
+                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenYearWorkCommand}"/></Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="📊" FontSize="26" HorizontalOptions="Center"/>
+                        <Label Text="أعمال السنة" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Assignments -->
+                <Border Grid.Row="0" Grid.Column="2" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110">
+                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenAssignmentsCommand}"/></Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="⏰" FontSize="26" HorizontalOptions="Center"/>
+                        <Label Text="التكاليف" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Notifications -->
+                <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110">
+                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenNotificationsCommand}"/></Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="📢" FontSize="26" HorizontalOptions="Center"/>
+                        <Label Text="الإشعارات" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Lectures -->
+                <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110">
+                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenLecturesCommand}"/></Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="🏛️" FontSize="26" HorizontalOptions="Center"/>
+                        <Label Text="المحاضرات" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Midterm Exam -->
+                <Border Grid.Row="1" Grid.Column="2" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="110">
+                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenMidtermCommand}"/></Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="8" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="📝" FontSize="26" HorizontalOptions="Center"/>
+                        <Label Text="الاختبار النصفي" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Final Exam -->
+                <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="14" MinimumHeightRequest="90">
+                    <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenFinalExamCommand}"/></Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="12" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="🎯" FontSize="24" VerticalOptions="Center"/>
+                        <Label Text="الاختبار النهائي" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- 3. Delete Group Action Card (New Addition) -->
+                <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" BackgroundColor="#2A1515" StrokeShape="RoundRectangle 18" StrokeThickness="1" Stroke="#FF4C4C" Padding="14" MinimumHeightRequest="85">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding DeleteGroupCommand}"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Label Text="🗑️" FontSize="22" VerticalOptions="Center"/>
+                        <Label Text="حذف هذه المجموعة" FontSize="12" FontAttributes="Bold" TextColor="#FF4C4C" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentView>

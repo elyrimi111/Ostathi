@@ -5,14 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Ostathi.Models;
 using Ostathi.Services;
 
 namespace Ostathi
 {
-    public class StudentsViewModel : BindableObject
+    public class StudentsViewModel : BaseViewModel
     {
-        private readonly StudentService? _studentService;
+        private readonly StudentService _studentService;
         private List<Student> _allStudents = new();
 
         #region Fields & Properties
@@ -23,11 +22,9 @@ namespace Ostathi
             get => _searchQuery;
             set
             {
-                if (_searchQuery != value)
+                if (SetProperty(ref _searchQuery, value))
                 {
-                    _searchQuery = value;
-                    OnPropertyChanged();
-                    FilterStudents(); // Trigger filtering when search text changes
+                    FilterStudents();
                 }
             }
         }
@@ -38,10 +35,8 @@ namespace Ostathi
             get => _selectedSpecialization;
             set
             {
-                if (_selectedSpecialization != value)
+                if (SetProperty(ref _selectedSpecialization, value))
                 {
-                    _selectedSpecialization = value;
-                    OnPropertyChanged();
                     FilterStudents();
                 }
             }
@@ -53,10 +48,8 @@ namespace Ostathi
             get => _selectedYear;
             set
             {
-                if (_selectedYear != value)
+                if (SetProperty(ref _selectedYear, value))
                 {
-                    _selectedYear = value;
-                    OnPropertyChanged();
                     FilterStudents();
                 }
             }
@@ -68,26 +61,14 @@ namespace Ostathi
             get => _selectedGroup;
             set
             {
-                if (_selectedGroup != value)
+                if (SetProperty(ref _selectedGroup, value))
                 {
-                    _selectedGroup = value;
-                    OnPropertyChanged();
                     FilterStudents();
                 }
             }
         }
 
-        // Collection of filtered students bound to the UI CollectionView
-        private ObservableCollection<Student> _filteredStudents;
-        public ObservableCollection<Student> FilteredStudents
-        {
-            get => _filteredStudents;
-            set
-            {
-                _filteredStudents = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservableCollection<Student> FilteredStudents { get; set; } = new();
 
         #endregion
 
@@ -98,20 +79,20 @@ namespace Ostathi
         public ICommand LoadStudentsCommand { get; }
         public ICommand EditStudentCommand { get; }
         public ICommand DeleteStudentCommand { get; }
+        public ICommand StudentTappedCommand { get; } // أمر الضغط على الطالب لعرض التفاصيل
 
         #endregion
 
         #region Constructors
 
-        // Default parameterless constructor
-        public StudentsViewModel() : this(null!)
+        // Default constructor fallback for XAML / DI instantiations
+        public StudentsViewModel() : this(new StudentService(new AppDbContext()))
         {
         }
 
-        // Primary constructor used for Dependency Injection
-        public StudentsViewModel(StudentService? studentService)
+        public StudentsViewModel(StudentService studentService)
         {
-            _studentService = studentService;
+            _studentService = studentService ?? new StudentService(new AppDbContext());
 
             // Initialize commands
             ImportSheetCommand = new Command(async () => await OnImportSheetExecuteAsync());
@@ -119,15 +100,10 @@ namespace Ostathi
             LoadStudentsCommand = new Command(async () => await LoadStudentsAsync());
             EditStudentCommand = new Command<Student>(async (student) => await OnEditStudentExecuteAsync(student));
             DeleteStudentCommand = new Command<Student>(async (student) => await OnDeleteStudentExecuteAsync(student));
+            StudentTappedCommand = new Command<Student>(async (student) => await OnStudentTappedExecuteAsync(student));
 
-            // Initialize collection
-            FilteredStudents = new ObservableCollection<Student>();
-
-            // Subscribe to real-time updates via MessengerService
-            MessengerService.StudentAdded += async () =>
-            {
-                await LoadStudentsAsync();
-            };
+            // Subscribe to real-time additions/updates notification
+            MessengerService.StudentAdded += OnStudentAddedNotification;
 
             // Automatically load students from database upon instantiation
             _ = LoadStudentsAsync();
@@ -137,15 +113,25 @@ namespace Ostathi
 
         #region Methods
 
-        // Fetch all students from SQLite database via StudentService
+        private void OnStudentAddedNotification()
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                await LoadStudentsAsync();
+            });
+        }
+
+        // Fetch all students from the database asynchronously
         public async Task LoadStudentsAsync()
         {
-            if (_studentService == null) return;
-
             try
             {
+                IsBusy = true;
+
+                // Load initial real data directly from SQLite via StudentService
                 var studentsFromDb = await _studentService.GetStudentsAsync();
                 _allStudents = studentsFromDb ?? new List<Student>();
+
                 FilterStudents();
             }
             catch (Exception ex)
@@ -154,6 +140,10 @@ namespace Ostathi
                 {
                     await Shell.Current.DisplayAlert("Error", $"Failed to load students: {ex.Message}", "OK");
                 }
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
@@ -167,18 +157,25 @@ namespace Ostathi
 
         private async Task OnAddStudentExecuteAsync()
         {
-            // Navigate to Add/Update student page using modern Shell routing
             if (Shell.Current != null)
             {
                 await Shell.Current.GoToAsync(nameof(AddUpdateStudent));
             }
         }
 
+        // Navigate to StudentDetailsPage when tapping a student card
+        private async Task OnStudentTappedExecuteAsync(Student? student)
+        {
+            if (student == null || Shell.Current == null) return;
+
+            // Go to StudentDetailsPage passing StudentId via query parameters
+            await Shell.Current.GoToAsync($"{nameof(StudentDetailsPage)}?StudentId={student.Id}");
+        }
+
         private async Task OnEditStudentExecuteAsync(Student? student)
         {
             if (student == null || Shell.Current == null) return;
 
-            // Pass the student object to AddUpdateStudent page via navigation parameters
             var navigationParameters = new Dictionary<string, object>
             {
                 { "Student", student }
@@ -189,15 +186,15 @@ namespace Ostathi
 
         private async Task OnDeleteStudentExecuteAsync(Student? student)
         {
-            if (student == null || _studentService == null || Shell.Current == null) return;
+            if (student == null || Shell.Current == null) return;
 
-            string fullName = $"{student.FirstName} {student.LastName}".Trim();
+            string fullName = student.FullName;
 
             bool confirm = await Shell.Current.DisplayAlert(
-                "تأكيد الحذف",
-                $"هل أنت متأكد من رغبتك في حذف الطالب '{fullName}'؟",
-                "نعم",
-                "إلغاء"
+                "Delete Confirmation",
+                $"Are you sure you want to delete the student '{fullName}'?",
+                "Yes",
+                "Cancel"
             );
 
             if (confirm)
@@ -207,27 +204,27 @@ namespace Ostathi
             }
         }
 
-        // Filter the student list based on search query, academic year, and group
+        // Filter student list dynamically by Search Query, Academic Year, and Group
         private void FilterStudents()
         {
             var query = _allStudents.AsEnumerable();
 
-            // 1. Apply search filter (by full name concatenation or Academic ID)
+            // 1. Apply search query filter (matches FullName or AcademicId)
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
                 query = query.Where(s => 
-                    ($"{s.FirstName} {s.SecondName} {s.ThirdName} {s.LastName}".Contains(SearchQuery, StringComparison.OrdinalIgnoreCase)) ||
+                    s.FullName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
                     (!string.IsNullOrEmpty(s.AcademicId) && s.AcademicId.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
-            // 2. Apply Academic Year filter (ignoring default selection)
+            // 2. Apply Academic Year filter
             if (!string.IsNullOrWhiteSpace(SelectedYear) && !SelectedYear.Equals("كل السنوات", StringComparison.OrdinalIgnoreCase))
             {
                 query = query.Where(s => s.AcademicYear.Equals(SelectedYear, StringComparison.OrdinalIgnoreCase));
             }
 
-            // 3. Apply Group filter (ignoring default selection)
+            // 3. Apply Group filter
             if (!string.IsNullOrWhiteSpace(SelectedGroup) && !SelectedGroup.Equals("كل المجموعات", StringComparison.OrdinalIgnoreCase))
             {
                 int targetGroupId = SelectedGroup switch
@@ -244,12 +241,16 @@ namespace Ostathi
                 }
             }
 
-            var finalResults = new ObservableCollection<Student>(query);
+            var resultsList = query.ToList();
 
-            // Update the observable collection for UI binding safely on main thread
+            // Update collection items directly on the UI thread
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                FilteredStudents = finalResults;
+                FilteredStudents.Clear();
+                foreach (var student in resultsList)
+                {
+                    FilteredStudents.Add(student);
+                }
             });
         }
 

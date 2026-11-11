@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
+             x:Class="Ostathi.GroupAttendanceManagementPage"
+             Title="إدارة الحضور والغياب للمجموعة"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ========================================== -->
+        <!-- 1. Top Header Section -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkBackground}">
+
+            <!-- Back / Close Button -->
+            <Button Grid.Column="0"
+                    Text="✕"
+                    FontSize="16"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    CornerRadius="18"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    VerticalOptions="Center"
+                    Command="{Binding ClosePageCommand}"/>
+
+            <!-- Page Title -->
+            <Label Grid.Column="1"
+                   Text="{Binding GroupName, FallbackValue='إدارة حضور المجموعة'}"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="36" BackgroundColor="Transparent"/>
+        </Grid>
+
+        <!-- ========================================== -->
+        <!-- 2. Main Content (Students List & Stats) -->
+        <!-- ========================================== -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- Summary Statistics Card -->
+                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                        StrokeShape="RoundRectangle 20" 
+                        StrokeThickness="0" 
+                        Padding="16">
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="{Binding TotalStudentsCount, FallbackValue='0'}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                            <Label Text="إجمالي الطلاب" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="{Binding PresentCount, FallbackValue='0'}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" HorizontalOptions="Center"/>
+                            <Label Text="حضور" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                            <Label Text="{Binding AbsentCount, FallbackValue='0'}" FontSize="18" FontAttributes="Bold" TextColor="#FF6B6B" HorizontalOptions="Center"/>
+                            <Label Text="غياب" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Students Roster Section -->
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="قائمة طلاب المجموعة (اضغط على الطالب لعرض سجله)" 
+                           FontSize="13" 
+                           FontAttributes="Bold" 
+                           TextColor="{StaticResource TextSecondary}" />
+
+                    <!-- CollectionView for Interactive Student Cards -->
+                    <CollectionView ItemsSource="{Binding StudentsList}" 
+                                    SelectionMode="Single"
+                                    SelectedItem="{Binding SelectedStudent, Mode=TwoWay}">
+                        
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Border BackgroundColor="{StaticResource DarkSurface}" 
+                                        StrokeShape="RoundRectangle 16" 
+                                        StrokeThickness="0" 
+                                        Padding="16"
+                                        Margin="0,0,0,8">
+                                    
+                                    <!-- Gesture to tap and navigate to Student's specific log page -->
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type local:GroupAttendanceManagementPageViewModel}}, Path=StudentTappedCommand}"
+                                                              CommandParameter="{Binding}" />
+                                    </Border.GestureRecognizers>
+
+                                    <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                        
+                                        <!-- Student Info -->
+                                        <VerticalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                                            <Label Text="{Binding FullName}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                            <Label Text="{Binding PhoneNumber, StringFormat='المعرف الأكاديمي: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                                        </VerticalStackLayout>
+
+                                        <!-- Student Attendance Summary Badge (e.g., حضر: 8 / 12) -->
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center" HorizontalOptions="End" Padding="0,0,8,0">
+                                            <HorizontalStackLayout Spacing="4" HorizontalOptions="End">
+                                                <Label Text="حضر:" FontSize="11" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                                                <Label Text="{Binding AttendedLecturesCount, FallbackValue='0'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" VerticalOptions="Center"/>
+                                                <Label Text="/" FontSize="13" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+                                                <Label Text="{Binding TotalLecturesCount, FallbackValue='12'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" VerticalOptions="Center"/>
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding AttendancePercentage, StringFormat='({0:F0}%)', FallbackValue='(0%)'}" FontSize="10" TextColor="{StaticResource TextSecondary}" HorizontalOptions="End"/>
+                                        </VerticalStackLayout>
+
+                                        <!-- Arrow Indicator -->
+                                        <Label Grid.Column="2" 
+                                               Text="➔" 
+                                               FontSize="16" 
+                                               TextColor="{StaticResource AccentYellow}" 
+                                               VerticalOptions="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ========================================== -->
+        <!-- 3. Bottom Action Footer Bar -->
+        <!-- ========================================== -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12"
+                HeightRequest="75">
+
+            <Button Text="حفظ إجمالي السجل للمجموعة"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold"
+                    CornerRadius="16"
+                    HeightRequest="48"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center"
+                    Command="{Binding SaveAllCommand}"/>
+
+        </Border>
+
+    </Grid>
+
+</ContentPage>

@@ -1,16 +1,14 @@
-using Microsoft.Maui.Controls;
-using Ostathi.viewModels;
+using Ostathi.ViewModels;
 
 namespace Ostathi;
 
 public partial class MainLayoutView : ContentPage
 {
-    // Receive MainLayoutViewModel via dependency injection
-    public MainLayoutView(MainLayoutViewModel viewModel)
+    public MainLayoutView()
     {
         InitializeComponent();
         
-        // Bind the page to the injected ViewModel
-        BindingContext = viewModel;
+        // جلب الـ ViewModel من حاوية الخدمات تلقائياً بدون تمريره في الـ Constructor
+        BindingContext = Application.Current?.Handler?.MauiContext?.Services.GetService<MainLayoutViewModel>();
     }
 }

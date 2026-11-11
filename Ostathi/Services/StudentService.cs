@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Ostathi.Models;
 
 namespace Ostathi.Services;
 
@@ -10,19 +9,19 @@ public class StudentService
 {
     private readonly AppDbContext _context;
 
-    // Injecting the DbContext to handle database operations
+    // Injecting the DbContext to handle real database operations
     public StudentService(AppDbContext context)
     {
         _context = context;
     }
 
-    // Fetch all students from the database
+    // Fetch all real students from the database
     public async Task<List<Student>> GetStudentsAsync()
     {
         return await _context.Students.ToListAsync();
     }
 
-    // Fetch students filtered by their group ID
+    // Fetch students filtered by their real group ID
     public async Task<List<Student>> GetStudentsByGroupAsync(int groupId)
     {
         return await _context.Students
@@ -30,26 +29,36 @@ public class StudentService
             .ToListAsync();
     }
 
-    // Save a new student or update an existing one
+    // Real save or update operation for students
     public async Task<int> SaveStudentAsync(Student student)
     {
+        if (student == null) return 0;
+
         if (student.Id == 0)
         {
-            // Add a new student entity
+            // Add a new real student entity to the database
             await _context.Students.AddAsync(student);
         }
         else
         {
-            // Update an existing student entity
+            // Update an existing real student entity
             _context.Students.Update(student);
         }
 
-        return await _context.SaveChangesAsync();
+        // Save changes permanently to SQLite database
+        int result = await _context.SaveChangesAsync();
+
+        // Notify UI components about the addition/update in real-time
+        MessengerService.NotifyStudentAdded();
+
+        return result;
     }
 
-    // Delete a student from the database
+    // Permanently delete a real student from the database
     public async Task<int> DeleteStudentAsync(Student student)
     {
+        if (student == null) return 0;
+
         _context.Students.Remove(student);
         return await _context.SaveChangesAsync();
     }

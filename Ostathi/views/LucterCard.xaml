@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.LucterCard">
+
+    <!-- Card Container matching the unified dark theme design system -->
+    <Border Padding="16"
+            Margin="0,0,0,10"
+            StrokeShape="RoundRectangle 16"
+            BackgroundColor="{StaticResource DarkSurface}"
+            StrokeThickness="0">
+
+        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto" RowSpacing="6">
+
+            <!-- 1. Hall Name -->
+            <HorizontalStackLayout Grid.Row="0" Grid.Column="0" Spacing="6">
+                <Label Text="القاعة:" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{Binding HallName, FallbackValue='قاعة غير محددة'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+            </HorizontalStackLayout>
+
+            <!-- 2. Subject Name -->
+            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="6">
+                <Label Text="المادة:" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{Binding SubjectName, FallbackValue='المادة غير محددة'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+            </HorizontalStackLayout>
+
+            <!-- 3. Major / Specialization Name -->
+            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="6">
+                <Label Text="التخصص:" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{Binding MajorName, FallbackValue='عام'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+            </HorizontalStackLayout>
+
+            <!-- 4. Group Name -->
+            <HorizontalStackLayout Grid.Row="3" Grid.Column="0" Spacing="6">
+                <Label Text="المجموعة:" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{Binding GroupName, FallbackValue='غير محددة'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+            </HorizontalStackLayout>
+
+            <!-- 5. Academic Level (المستوى الدراسي المستخرج عبر المجموعة) -->
+            <HorizontalStackLayout Grid.Row="4" Grid.Column="0" Spacing="6">
+                <Label Text="المستوى:" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{Binding AcademicLevel, FallbackValue='المستوى الثالث'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+            </HorizontalStackLayout>
+
+            <!-- 6. Lecture Date -->
+            <HorizontalStackLayout Grid.Row="5" Grid.Column="0" Spacing="6">
+                <Label Text="التاريخ:" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                <Label Text="{Binding LectureDate, StringFormat='{0:yyyy/MM/dd}', FallbackValue='2026/11/11'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+            </HorizontalStackLayout>
+
+            <!-- 7. Lecture Day Badge -->
+            <Border Grid.Row="0" Grid.RowSpan="6" Grid.Column="1"
+                    Padding="12,6"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center"
+                    StrokeShape="RoundRectangle 10"
+                    BackgroundColor="{StaticResource DarkBackground}">
+                <Label Text="{Binding Day, FallbackValue='السبت'}" 
+                       FontSize="13" 
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource AccentYellow}" />
+            </Border>
+
+        </Grid>
+    </Border>
+
+</ContentView>

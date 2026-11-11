@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AcademicSettingsPage"
+             Title="البيانات الأكاديمية والشخصية"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ========================================== -->
+        <!-- 1. Header Section -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkSurface}">
+
+            <!-- Back Button -->
+            <Button Grid.Column="0"
+                    Text="‹"
+                    FontSize="22"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="Transparent"
+                    WidthRequest="40"
+                    HeightRequest="40"
+                    VerticalOptions="Center"
+                    Command="{Binding BackCommand}"/>
+
+            <!-- Page Title -->
+            <Label Grid.Column="1"
+                   Text="البيانات الأكاديمية والشخصية"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Center"/>
+
+            <!-- Spacer -->
+            <BoxView Grid.Column="2" WidthRequest="40" BackgroundColor="Transparent"/>
+        </Grid>
+
+        <!-- ========================================== -->
+        <!-- 2. Main Form Content Area -->
+        <!-- ========================================== -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="20">
+
+                <!-- Lecturer Info Card -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="معلومات الأستاذ / المحاضر" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextSecondary}" Margin="8,0" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="اسم الدكتور / المحاضر" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                            <Entry Text="{Binding LecturerName}" 
+                                   Placeholder="أدخل اسمك هنا..." 
+                                   TextColor="{StaticResource TextPrimary}"
+                                   PlaceholderColor="{StaticResource TextSecondary}"
+                                   BackgroundColor="{StaticResource DarkBackground}"
+                                   FontSize="14"
+                                   HeightRequest="44"
+                                   ClearButtonVisibility="WhileEditing" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Academic Configuration Card -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="التفاصيل الأكاديمية" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextSecondary}" Margin="8,0" />
+                    
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
+                        <VerticalStackLayout Spacing="16">
+                            
+                            <!-- Academic Year Picker -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="السنة الدراسية" FontSize="14" TextColor="{StaticResource TextPrimary}" />
+                                <Picker Title="اختر العام الدراسي" 
+                                        ItemsSource="{Binding AcademicYears}"
+                                        SelectedItem="{Binding SelectedAcademicYear}"
+                                        TextColor="{StaticResource AccentYellow}"
+                                        TitleColor="{StaticResource TextSecondary}"
+                                        BackgroundColor="{StaticResource DarkBackground}"
+                                        FontSize="14"
+                                        HeightRequest="44"/>
+                            </VerticalStackLayout>
+
+                            <!-- Academic Semester Picker -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="الترم الدراسي" FontSize="14" TextColor="{StaticResource TextPrimary}" />
+                                <Picker Title="اختر الترم" 
+                                        ItemsSource="{Binding Semesters}"
+                                        SelectedItem="{Binding SelectedSemester}"
+                                        TextColor="{StaticResource AccentYellow}"
+                                        TitleColor="{StaticResource TextSecondary}"
+                                        BackgroundColor="{StaticResource DarkBackground}"
+                                        FontSize="14"
+                                        HeightRequest="44"/>
+                            </VerticalStackLayout>
+
+                            <!-- Default Major Picker -->
+                            <VerticalStackLayout Spacing="6">
+                                <Label Text="التخصص الأكاديمي الرئيسي" FontSize="14" TextColor="{StaticResource TextPrimary}" />
+                                <Picker Title="اختر التخصص" 
+                                        ItemsSource="{Binding Majors}"
+                                        SelectedItem="{Binding SelectedMajor}"
+                                        TextColor="{StaticResource AccentYellow}"
+                                        TitleColor="{StaticResource TextSecondary}"
+                                        BackgroundColor="{StaticResource DarkBackground}"
+                                        FontSize="14"
+                                        HeightRequest="44"/>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ========================================== -->
+        <!-- 3. Bottom Action Save Footer Bar -->
+        <!-- ========================================== -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12"
+                HeightRequest="75">
+
+            <Button Text="حفظ التغييرات"
+                    Command="{Binding SaveSettingsCommand}"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold"
+                    CornerRadius="16"
+                    HeightRequest="48"
+                    HorizontalOptions="Fill"
+                    VerticalOptions="Center"/>
+
+        </Border>
+
+    </Grid>
+
+</ContentPage>

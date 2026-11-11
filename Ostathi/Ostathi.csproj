@@ -56,6 +56,24 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.14" />
     <MauiXaml Include="views/MajorsPage.xaml" />
+    <Compile Remove="Services/.GroupService.cs" />
+    <MauiXaml Include="views/GroupDashboardView.xaml" />
+    <MauiXaml Include="views/GroupCard.xaml" />
+    <Compile Remove="viewModels/AttendanceLogPage.cs" />
+    <Compile Remove="Models/AttendanceRecord.cs" />
+    <Compile Remove="Services/AttendanceRecordsServies.cs" />
+    <Compile Remove="Models/StudentsAttendance.cs" />
+    <Compile Remove="Models/LectureAttendance.cs" />
+    <MauiXaml Include="views/AcademicSettingsPage.xaml" />
+    <MauiXaml Include="views/AboutPage.xaml" />
+    <Compile Remove="viewModels/StudentAttendanceItem.cs" />
+    <MauiXaml Include="views/LectureAttendancePage.xaml" />
+    <Compile Remove="views/LectureAttendancePage.xaml.cs" />
+    <MauiXaml Include="views/LucterCard.xaml" />
+    <MauiXaml Include="views/GroupAttendanceManagementPage.xaml" />
+    <MauiXaml Include="views/StudentAttendanceLogPage.xaml" />
+    <MauiXaml Include="views/StudentDetailsPage.xaml" />
+    <MauiXaml Include="views/EditStudentGradesPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\*" />

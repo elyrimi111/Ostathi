@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using Ostathi.Services;
+using Ostathi.ViewModels;
 
-namespace Ostathi.viewModels
+namespace Ostathi.ViewModels
 {
     public class MainLayoutViewModel : BindableObject
     {
@@ -41,7 +42,10 @@ namespace Ostathi.viewModels
         private readonly StudentsViewModel _studentsViewModel;
         private readonly View _studentsView;
         private readonly SettingsViewModel _settingsViewModel;
-        private readonly View _groupsView = new groupsPage();
+        
+        // تعريف متغيرات العرض للمجموعات والتقارير
+        private readonly GroupsViewModel _groupsViewModel;
+        private readonly View _groupsView;
         private readonly View _reportsView = new ReportsPage();
 
         public ICommand SelectTabCommand { get; }
@@ -64,10 +68,14 @@ namespace Ostathi.viewModels
             }
         }
 
-        // Constructor with Dependency Injection for StudentService
-        public MainLayoutViewModel(StudentService studentService)
+        // Constructor with Dependency Injection including GroupsViewModel & GroupService & AppDbContext
+        public MainLayoutViewModel(
+            StudentService studentService, 
+            GroupsViewModel groupsViewModel,
+            GroupService groupService,
+            AppDbContext dbContext)
         {
-            // Initialize StudentsViewModel with the required StudentService
+            // Initialize StudentsViewModel
             _studentsViewModel = new StudentsViewModel(studentService);
             _studentsView = new StudentsPage(_studentsViewModel);
 
@@ -76,6 +84,10 @@ namespace Ostathi.viewModels
 
             _settingsViewModel = new SettingsViewModel();
 
+            // حقن وإنشاء شاشة المجموعات مع الـ ViewModel الخاص بها بالطريقة الصحيحة
+            _groupsViewModel = groupsViewModel;
+            _groupsView = new groupsPage(_groupsViewModel);
+
             _currentView = _homeView;
 
             SelectTabCommand = new Command<string>(OnSelectTabExecuted);
@@ -83,7 +95,7 @@ namespace Ostathi.viewModels
             SettingsCommand = new Command(OnSettingsExecuted);
             NotificationsCommand = new Command(OnNotificationsExecuted);
             ScheduleCommand = new Command(async () => await OnScheduleExecutedAsync());
-            GroupsCommand = new Command(OnGroupsExecuted);
+            GroupsCommand = new Command(async () => await OnGroupsExecutedAsync());
             
             OpenDynamicAttendanceCommand = new Command(OnOpenDynamicAttendanceExecuted);
             OpenScheduleManagementCommand = new Command(OnOpenScheduleManagementExecuted);
@@ -144,9 +156,15 @@ namespace Ostathi.viewModels
             await _studentsViewModel.LoadStudentsAsync();
         }
 
-        private void OnGroupsExecuted()
+        private async Task OnGroupsExecutedAsync()
         {
             CurrentView = _groupsView;
+            
+            // تحديث جلب المجموعات من قاعدة البيانات عند فتح الشاشة لتظهر مباشرة
+            if (_groupsViewModel != null)
+            {
+                await _groupsViewModel.LoadGroupsAsync();
+            }
         }
     }
 }
