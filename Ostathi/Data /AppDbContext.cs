@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
@@ -136,23 +137,51 @@ public class AppDbContext : DbContext
 
             // 6. Seed Fresh Students Data
             Students.AddRange(
-                // مجموعة أ (GroupId = 1)
+                // Group A (GroupId = 1)
                 new Student { FirstName = "أحمد", SecondName = "محمد", ThirdName = "علي", LastName = "الكبسي", AcademicId = "20260101", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
                 new Student { FirstName = "خالد", SecondName = "إبراهيم", ThirdName = "حسن", LastName = "المريسي", AcademicId = "20260102", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
                 new Student { FirstName = "سارة", SecondName = "عبدالله", ThirdName = "ناصر", LastName = "العنسي", AcademicId = "20260103", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
                 new Student { FirstName = "فاطمة", SecondName = "علي", ThirdName = "محمد", LastName = "العماد", AcademicId = "20260104", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
                 new Student { FirstName = "محمد", SecondName = "قاسم", ThirdName = "أحمد", LastName = "المؤيد", AcademicId = "20260105", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
 
-                // مجموعة ب (GroupId = 2)
+                // Group B (GroupId = 2)
                 new Student { FirstName = "عبدالرحمن", SecondName = "صالح", ThirdName = "مهدي", LastName = "الخطيب", AcademicId = "20260201", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
                 new Student { FirstName = "يوسف", SecondName = "أمين", ThirdName = "عبدالكريم", LastName = "الرميمة", AcademicId = "20260202", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
                 new Student { FirstName = "مريم", SecondName = "حسن", ThirdName = "قاسم", LastName = "الشرعي", AcademicId = "20260203", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
                 new Student { FirstName = "بلال", SecondName = "فؤاد", ThirdName = "محمد", LastName = "الشامي", AcademicId = "20260204", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
 
-                // مجموعة ج (GroupId = 3)
+                // Group C (GroupId = 3)
                 new Student { FirstName = "عمر", SecondName = "فاروق", ThirdName = "جميل", LastName = "القفري", AcademicId = "20260301", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" },
                 new Student { FirstName = "زياد", SecondName = "طارق", ThirdName = "عبدالرحمن", LastName = "الزيادي", AcademicId = "20260302", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" },
                 new Student { FirstName = "منى", SecondName = "عبدالكريم", ThirdName = "حسن", LastName = "الحداء", AcademicId = "20260303", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" }
+            );
+            SaveChanges();
+
+            // 7. Seed Sample Lectures and Attendance Records for testing attendance matrix
+            var sampleLectures = new List<Lecture>
+            {
+                new Lecture { Id = 1, GroupId = 1, SubjectName = "برمجة الحاسوب C#", HallName = "قاعة 1", Day = "السبت", LectureDate = DateTime.Now.AddDays(-1) },
+                new Lecture { Id = 2, GroupId = 1, SubjectName = "برمجة الحاسوب C#", HallName = "قاعة 1", Day = "الإثنين", LectureDate = DateTime.Now.AddDays(-3) },
+                new Lecture { Id = 3, GroupId = 1, SubjectName = "قواعد البيانات SQLite", HallName = "مختبر الحاسوب", Day = "الأحد", LectureDate = DateTime.Now.AddDays(-2) }
+            };
+            Lectures.AddRange(sampleLectures);
+            SaveChanges();
+
+            // Seed sample attendance data linking students to lectures with status
+            Attendances.AddRange(
+                // Lecture 1 (C# Programming - Group 1): Students 1, 2, 3 present
+                new Attendance { LectureId = 1, StudentId = 1, Status = AttendanceStatus.Present },
+                new Attendance { LectureId = 1, StudentId = 2, Status = AttendanceStatus.Present },
+                new Attendance { LectureId = 1, StudentId = 3, Status = AttendanceStatus.Absent },
+                
+                // Lecture 2 (C# Programming - Group 1): Students 1, 3, 4 present
+                new Attendance { LectureId = 2, StudentId = 1, Status = AttendanceStatus.Present },
+                new Attendance { LectureId = 2, StudentId = 3, Status = AttendanceStatus.Present },
+                new Attendance { LectureId = 2, StudentId = 4, Status = AttendanceStatus.Present },
+
+                // Lecture 3 (SQLite Database - Group 1): Students 2, 5 present
+                new Attendance { LectureId = 3, StudentId = 2, Status = AttendanceStatus.Present },
+                new Attendance { LectureId = 3, StudentId = 5, Status = AttendanceStatus.Present }
             );
             SaveChanges();
         }

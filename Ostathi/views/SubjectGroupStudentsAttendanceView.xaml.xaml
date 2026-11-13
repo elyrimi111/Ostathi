@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.SubjectGroupStudentsAttendanceView"
+             Title="سجل حضور طلاب المادة"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *" Padding="16" RowSpacing="12">
+
+        <!-- ========================================== -->
+        <!-- 1. Header: Group & Subject Information -->
+        <!-- ========================================== -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 14"
+                Padding="14,12">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{Binding GroupName}"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}"/>
+                <Label Text="{Binding SubjectName, StringFormat='المقرر الدراسي: {0}'}"
+                       FontSize="13"
+                       TextColor="{StaticResource AccentYellow}"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- 2. Conducted Lectures Progress Card -->
+        <!-- ========================================== -->
+        <Border Grid.Row="1"
+                BackgroundColor="{StaticResource DarkSurface}"
+                Stroke="{StaticResource AccentYellow}"
+                StrokeThickness="1"
+                StrokeShape="RoundRectangle 14"
+                Padding="14,12">
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="3">
+                    <Label Text="إجمالي المحاضرات المنجزة في المادة"
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondary}"/>
+                    <Label Text="{Binding ConductedLecturesSummary}"
+                           FontSize="15"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}"/>
+                </VerticalStackLayout>
+
+                <!-- Conducted Lectures Badge -->
+                <Border Grid.Column="1"
+                        BackgroundColor="{StaticResource DarkInputBackground}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 10"
+                        Padding="12,8"
+                        VerticalOptions="Center">
+                    <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                        <Label Text="{Binding ConductedLecturesCount}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource AccentYellow}"/>
+                        <Label Text="/ 12"
+                               FontSize="13"
+                               TextColor="{StaticResource TextSecondary}"
+                               VerticalOptions="End"
+                               Margin="0,0,0,2"/>
+                    </HorizontalStackLayout>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- 3. Students List Section Header -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, Auto" Margin="4,4,4,0">
+            <Label Grid.Column="0"
+                   Text="قائمة طلاب المجموعة (اضغط على الطالب لعرض سجله):"
+                   FontSize="13"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextSecondary}"/>
+            <Label Grid.Column="1"
+                   Text="الحضور من 12"
+                   FontSize="12"
+                   TextColor="{StaticResource TextSecondary}"/>
+        </Grid>
+
+        <!-- ========================================== -->
+        <!-- 4. Students Attendance List (CollectionView) -->
+        <!-- ========================================== -->
+        <CollectionView Grid.Row="3"
+                        ItemsSource="{Binding StudentsAttendanceList}"
+                        SelectionMode="Single"
+                        SelectedItem="{Binding SelectedStudent}"
+                        SelectionChangedCommand="{Binding StudentSelectedCommand}"
+                        SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="24">
+                    <Label Text="لا يوجد طلاب مسجلون في هذه المجموعة"
+                           FontSize="13"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="14,12">
+                        <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, Auto" RowSpacing="8">
+
+                            <!-- Student Name & Academic ID -->
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding StudentName}"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}"/>
+                                <Label Text="{Binding AcademicNumber}"
+                                       FontSize="11"
+                                       TextColor="{StaticResource TextSecondary}"/>
+                            </VerticalStackLayout>
+
+                            <!-- Attendance Counter Badge -->
+                            <Border Grid.Row="0" Grid.Column="1"
+                                    BackgroundColor="{StaticResource DarkInputBackground}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    Padding="10,5"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding AttendanceRatioText}"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource AccentLime}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsWarning}" Value="True">
+                                            <Setter Property="TextColor" Value="{StaticResource AccentCoral}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
+
+                            <!-- Visual Attendance Progress Bar -->
+                            <ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                         Progress="{Binding ProgressValue}"
+                                         ProgressColor="{StaticResource AccentLime}"
+                                         BackgroundColor="{StaticResource DarkInputBackground}"
+                                         HeightRequest="6">
+                                <ProgressBar.Triggers>
+                                    <DataTrigger TargetType="ProgressBar" Binding="{Binding IsWarning}" Value="True">
+                                        <Setter Property="ProgressColor" Value="{StaticResource AccentCoral}"/>
+                                    </DataTrigger>
+                                </ProgressBar.Triggers>
+                            </ProgressBar>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>

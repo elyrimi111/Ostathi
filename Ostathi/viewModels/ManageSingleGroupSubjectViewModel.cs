@@ -8,11 +8,11 @@ using Ostathi.Services;
 
 namespace Ostathi
 {
-    // استقبال كائن مادة المجموعة المستهدف تلقائياً عبر تنقل الـ Shell
+    // Automatically receive the target GroupSubject object via Shell navigation
     [QueryProperty(nameof(CurrentGroupSubject), "GroupSubject")]
     public partial class ManageSingleGroupSubjectViewModel : ObservableObject
     {
-        // خاصية كائن مادة المجموعة المعين
+        // Target GroupSubject property
         [ObservableProperty]
         private GroupSubject? _currentGroupSubject;
 
@@ -32,11 +32,13 @@ namespace Ostathi
 
         public ManageSingleGroupSubjectViewModel()
         {
-            // تهيئة الأوامر والانتقالات مع تمرير المعرفات اللازمة للشاشات
+            // Initialize commands and navigation routes
             SaveChangesCommand = new AsyncRelayCommand(SaveChangesAsync);
             ExportCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(ExportMasterPage)));
             
-            OpenAttendanceCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(AttendancePage)));
+            // Open SubjectGroupStudentsAttendanceView with GroupId and SubjectId parameters
+            OpenAttendanceCommand = new AsyncRelayCommand(OpenSubjectGroupAttendanceAsync);
+
             OpenYearWorkCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(YearWorkPage)));
             OpenAssignmentsCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(AssignmentsPage)));
             OpenNotificationsCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(NotificationsPage)));
@@ -45,14 +47,33 @@ namespace Ostathi
             OpenFinalExamCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(FinalExamPage)));
         }
 
-        // دفظ التعديلات
+        // Navigate to SubjectGroupStudentsAttendanceView passing GroupId and SubjectId
+        private async Task OpenSubjectGroupAttendanceAsync()
+        {
+            if (CurrentGroupSubject == null)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlert("تنبيه", "الرجاء اختيار مادة المجموعة أولاً", "موافق");
+                }
+                return;
+            }
+
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync(
+                    $"{nameof(SubjectGroupStudentsAttendanceView)}?GroupId={CurrentGroupSubject.GroupId}&SubjectId={CurrentGroupSubject.SubjectId}");
+            }
+        }
+
+        // Save changes
         private async Task SaveChangesAsync()
         {
             if (CurrentGroupSubject == null) return;
             await Shell.Current.DisplayAlert("نجاح", "تم حفظ التعديلات بنجاح", "موافق");
         }
 
-        // دالة مساعدة للانتقال إلى الصفحات الفرعية مع تمرير معرّف مادة المجموعة أو المجموعة إن أمكن
+        // Helper method to navigate to subpages passing GroupSubjectId and GroupId
         protected virtual async Task GoToAsync(string pageName)
         {
             if (CurrentGroupSubject == null)
@@ -66,7 +87,6 @@ namespace Ostathi
 
             if (Shell.Current != null)
             {
-                // يمكنك تمرير GroupSubjectId أو GroupId بحسب متطلبات الشاشات الفرعية لديك
                 await Shell.Current.GoToAsync($"{pageName}?GroupSubjectId={CurrentGroupSubject.Id}&GroupId={CurrentGroupSubject.GroupId}");
             }
         }

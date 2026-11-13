@@ -47,7 +47,8 @@
                                     <!-- Lecture Details -->
                                     <Grid ColumnDefinitions="*, Auto">
                                         <VerticalStackLayout Grid.Column="0" Spacing="3">
-                                            <Label Text="{Binding SubjectName, FallbackValue='المادة الدراسية'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                            <!-- تم التعديل هنا ليعرض CardTitle (مثل: محاضرة ١) بدلاً من SubjectName -->
+                                            <Label Text="{Binding CardTitle, FallbackValue='محاضرة'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
                                             <Label Text="{Binding LectureDate, StringFormat='التاريخ: {0:yyyy/MM/dd}'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
                                         </VerticalStackLayout>
 

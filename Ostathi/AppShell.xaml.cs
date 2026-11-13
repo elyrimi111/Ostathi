@@ -60,6 +60,7 @@ public partial class AppShell : Shell
         // Route for Manage Single Group Subject (NEW)
         Routing.RegisterRoute(nameof(ManageSingleGroupSubjectView), typeof(ManageSingleGroupSubjectView));
 
-  
+        // Route for Subject Group Students Attendance Matrix (NEW)
+        Routing.RegisterRoute(nameof(SubjectGroupStudentsAttendanceView), typeof(SubjectGroupStudentsAttendanceView));
     }
 }

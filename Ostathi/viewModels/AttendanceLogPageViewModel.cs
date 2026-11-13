@@ -26,7 +26,7 @@ public class AttendanceLogPageViewModel : BaseViewModel
                 OnPropertyChanged();
                 if (_groupId > 0)
                 {
-                    _ = LoadGroupAndLectureDataAsync();
+                    _ = LoadGroupAndLecturesDataAsync();
                 }
             }
         }
@@ -47,64 +47,61 @@ public class AttendanceLogPageViewModel : BaseViewModel
         set => SetProperty(ref _subjectName, value);
     }
 
-    private string _majorName = string.Empty; // Major identifier or name based on MajorId
+    private string _majorName = string.Empty;
     public string MajorName
     {
         get => _majorName;
         set => SetProperty(ref _majorName, value);
     }
 
-    private string _groupName = string.Empty; // Group Name from Group model
+    private string _groupName = string.Empty;
     public string GroupName
     {
         get => _groupName;
         set => SetProperty(ref _groupName, value);
     }
 
-    private string _academicLevel = string.Empty; // Academic Year level mapped to Level/Year display
+    private string _academicLevel = string.Empty;
     public string AcademicLevel
     {
         get => _academicLevel;
         set => SetProperty(ref _academicLevel, value);
     }
 
-    private string _day = "السبت";
-    public string Day
+    private int _totalLecturesCount;
+    public int TotalLecturesCount
     {
-        get => _day;
-        set => SetProperty(ref _day, value);
+        get => _totalLecturesCount;
+        set { _totalLecturesCount = value; OnPropertyChanged(); }
     }
 
-    private DateTime _lectureDate = DateTime.Now;
-    public DateTime LectureDate
-    {
-        get => _lectureDate;
-        set => SetProperty(ref _lectureDate, value);
-    }
-
-    private int _totalStudentsCount;
-    public int TotalStudentsCount
-    {
-        get => _totalStudentsCount;
-        set { _totalStudentsCount = value; OnPropertyChanged(); }
-    }
-
-    public ObservableCollection<StudentAttendanceItem> StudentsList { get; }
+    // Collection of the 12 lectures with 3 status states
+    public ObservableCollection<GroupLectureAttendanceItem> LecturesList { get; }
 
     public ICommand SaveAttendanceCommand { get; }
     public ICommand ClosePageCommand { get; }
 
+    // Direct 1-click status selection commands for each lecture item
+    public ICommand SetStatusPresentCommand { get; }
+    public ICommand SetStatusAbsentCommand { get; }
+    public ICommand SetStatusExcusedCommand { get; }
+
     public AttendanceLogPageViewModel()
     {
         _dbContext = new AppDbContext();
-        StudentsList = new ObservableCollection<StudentAttendanceItem>();
+        LecturesList = new ObservableCollection<GroupLectureAttendanceItem>();
 
         SaveAttendanceCommand = new Command(async () => await OnSaveAttendanceExecuted());
         ClosePageCommand = new Command(async () => await OnClosePageExecuted());
+
+        // Initialize status commands
+        SetStatusPresentCommand = new Command<GroupLectureAttendanceItem>(item => { if (item != null) item.Status = AttendanceStatus.Present; });
+        SetStatusAbsentCommand = new Command<GroupLectureAttendanceItem>(item => { if (item != null) item.Status = AttendanceStatus.Absent; });
+        SetStatusExcusedCommand = new Command<GroupLectureAttendanceItem>(item => { if (item != null) item.Status = AttendanceStatus.Excused; });
     }
 
-    // Fetch names and details dynamically using IDs from the database based on the Group model structure
-    private async Task LoadGroupAndLectureDataAsync()
+    // Fetch Group details and generate or load the 12 lectures
+    private async Task LoadGroupAndLecturesDataAsync()
     {
         if (GroupId <= 0) return;
 
@@ -112,16 +109,14 @@ public class AttendanceLogPageViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            // 1. Fetch Group details (Name, SubjectName, AcademicYear, MajorId) using GroupId
+            // 1. Fetch Group details
             var group = await _dbContext.Groups.FirstOrDefaultAsync(g => g.Id == GroupId);
             if (group != null)
             {
-                GroupName = group.Name; // جلب اسم المجموعة الحقيقي
-                SubjectName = group.SubjectName; // جلب اسم المادة من المجموعة
-                AcademicLevel = group.AcademicYear ?? "المستوى غير محدد"; // جلب المستوى أو السنة الدراسية
-                
-                // يمكنك جلب اسم التخصص باستخدام MajorId إذا كان لديك جدول Majors، أو عرضه كقيمة افتراضية
-                MajorName = $"تخصص #{group.MajorId}"; 
+                GroupName = group.Name;
+                SubjectName = !string.IsNullOrEmpty(group.SubjectName) ? group.SubjectName : "برمجة تطبيقات";
+                AcademicLevel = group.AcademicYear ?? "المستوى الأول";
+                MajorName = $"تخصص #{group.MajorId}";
             }
             else
             {
@@ -131,44 +126,36 @@ public class AttendanceLogPageViewModel : BaseViewModel
                 MajorName = "عام";
             }
 
-            // 2. Fetch Lecture details linked to this GroupId (if specific lecture overrides exist)
-            var lecture = await _dbContext.Lectures.FirstOrDefaultAsync(l => l.GroupId == GroupId);
-            if (lecture != null)
-            {
-                HallName = lecture.HallName;
-                if (!string.IsNullOrEmpty(lecture.SubjectName))
-                    SubjectName = lecture.SubjectName; // الاعتماد على المادة الخاصة بالمحاضرة إن وجدت
-                Day = lecture.Day;
-                LectureDate = lecture.LectureDate;
-            }
-            else
-            {
-                HallName = "قاعة غير محددة";
-                Day = "السبت";
-            }
-
-            // 3. Fetch students belonging strictly to this GroupId
-            var studentsFromDb = await _dbContext.Students
-                .Where(s => s.GroupId == GroupId)
+            // 2. Fetch existing lectures linked to this GroupId from database
+            var lecturesFromDb = await _dbContext.Lectures
+                .Where(l => l.GroupId == GroupId)
+                .OrderBy(l => l.LectureDate)
                 .ToListAsync();
 
-            StudentsList.Clear();
-            foreach (var student in studentsFromDb)
+            LecturesList.Clear();
+
+            // 3. Ensure exactly 12 lectures are displayed (either from DB or generated as placeholders)
+            for (int i = 1; i <= 12; i++)
             {
-                StudentsList.Add(new StudentAttendanceItem
+                var dbLecture = lecturesFromDb.ElementAtOrDefault(i - 1);
+                int lectureIdToUse = dbLecture?.Id ?? (2000 + i); // Fallback ID if not yet saved in DB
+
+                LecturesList.Add(new GroupLectureAttendanceItem
                 {
-                    StudentId = student.Id,
-                    FullName = student.FullName,
-                    PhoneNumber = student.AcademicId ?? string.Empty,
-                    Status = AttendanceStatus.Present
+                    LectureId = lectureIdToUse,
+                    LectureTitle = $"{SubjectName} - المحاضرة {i}",
+                    HallName = !string.IsNullOrEmpty(dbLecture?.HallName) ? dbLecture.HallName : "قاعة 1",
+                    Day = !string.IsNullOrEmpty(dbLecture?.Day) ? dbLecture.Day : "السبت",
+                    LectureDate = dbLecture?.LectureDate ?? DateTime.Now.AddDays((i - 1) * 7),
+                    Status = AttendanceStatus.Present // الحالة الافتراضية
                 });
             }
 
-            TotalStudentsCount = StudentsList.Count;
+            TotalLecturesCount = LecturesList.Count;
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", $"Failed to load data: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlert("خطأ", $"فشل تحميل البيانات: {ex.Message}", "موافق");
         }
         finally
         {
@@ -180,17 +167,55 @@ public class AttendanceLogPageViewModel : BaseViewModel
     {
         try
         {
-            await Shell.Current.DisplayAlert("Success", "Attendance records saved successfully.", "OK");
+            foreach (var item in LecturesList)
+            {
+                // Ensure lecture exists in DB
+                var lectureInDb = await _dbContext.Lectures.FirstOrDefaultAsync(l => l.Id == item.LectureId);
+                if (lectureInDb == null)
+                {
+                    var newLecture = new Lecture
+                    {
+                        GroupId = GroupId,
+                        SubjectName = SubjectName,
+                        HallName = item.HallName,
+                        Day = item.Day,
+                        LectureDate = item.LectureDate
+                    };
+                    await _dbContext.Lectures.AddAsync(newLecture);
+                    await _dbContext.SaveChangesAsync();
+                    item.LectureId = newLecture.Id;
+                }
+            }
+
+            await _dbContext.SaveChangesAsync();
+            await Shell.Current.DisplayAlert("نجاح", "تم حفظ سجل المحاضرات بنجاح.", "موافق");
             await Shell.Current.GoToAsync("..");
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", $"Failed to save records: {ex.Message}", "OK");
+            await Shell.Current.DisplayAlert("خطأ", $"فشل الحفظ: {ex.Message}", "موافق");
         }
     }
 
     private async Task OnClosePageExecuted()
     {
         await Shell.Current.GoToAsync("..");
+    }
+}
+
+// Inner view model item representing each of the 12 lectures with 3 statuses support
+public class GroupLectureAttendanceItem : BaseViewModel
+{
+    public int LectureId { get; set; }
+    public string LectureTitle { get; set; } = string.Empty;
+    public string HallName { get; set; } = string.Empty;
+    public string Day { get; set; } = string.Empty;
+    public DateTime LectureDate { get; set; }
+
+    private AttendanceStatus _status = AttendanceStatus.Present;
+    public AttendanceStatus Status
+    {
+        get => _status;
+        set => SetProperty(ref _status, value);
     }
 }
