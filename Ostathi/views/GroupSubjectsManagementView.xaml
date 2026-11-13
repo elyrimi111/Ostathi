@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8" ?><ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+xmlns:local="clr-namespace:Ostathi"
+x:Class="Ostathi.GroupSubjectsManagementView"
+x:Name="RootView"
+BackgroundColor="{StaticResource DarkBackground}"
+FlowDirection="RightToLeft">
+
+<ScrollView>
+
+    <VerticalStackLayout Padding="16"
+                         Spacing="14">
+
+        <!-- Header -->
+        <VerticalStackLayout Spacing="4">
+
+            <Label Text="إدارة مواد المجموعات والدفعات"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextPrimary}"/>
+
+            <Label Text="عرض شامل ومصفوفة متكاملة لجميع المواد والمجموعات الأكاديمية"
+                   Style="{StaticResource CardAccentSubtitleStyle}"
+                   FontSize="12"/>
+
+        </VerticalStackLayout>
+
+
+        <!-- Filters -->
+        <Border Style="{StaticResource UnifiedHorizontalCardStyle}"
+                Padding="10">
+
+            <Grid RowDefinitions="Auto,Auto"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="8"
+                  RowSpacing="8">
+
+                <Picker Grid.Row="0"
+                        Grid.Column="0"
+                        ItemsSource="{Binding LevelsList}"
+                        SelectedItem="{Binding SelectedLevel}"
+                        Title="المستوى"
+                        TextColor="{StaticResource TextPrimary}"
+                        TitleColor="{StaticResource TextSecondary}"
+                        FontSize="11"/>
+
+                <Picker Grid.Row="0"
+                        Grid.Column="1"
+                        ItemsSource="{Binding SubjectsList}"
+                        SelectedItem="{Binding SelectedSubject}"
+                        ItemDisplayBinding="{Binding Name}"
+                        Title="المادة"
+                        TextColor="{StaticResource TextPrimary}"
+                        TitleColor="{StaticResource TextSecondary}"
+                        FontSize="11"/>
+
+                <Picker Grid.Row="1"
+                        Grid.Column="0"
+                        ItemsSource="{Binding MajorsList}"
+                        SelectedItem="{Binding SelectedMajor}"
+                        ItemDisplayBinding="{Binding Name}"
+                        Title="التخصص"
+                        TextColor="{StaticResource TextPrimary}"
+                        TitleColor="{StaticResource TextSecondary}"
+                        FontSize="11"/>
+
+                <Button Grid.Row="1"
+                        Grid.Column="1"
+                        Text="إلغاء الفلتر"
+                        Command="{Binding ClearFiltersCommand}"
+                        BackgroundColor="{StaticResource DarkInputBackground}"
+                        TextColor="{StaticResource TextSecondary}"
+                        FontSize="12"
+                        HeightRequest="38"
+                        CornerRadius="8"
+                        VerticalOptions="Center"/>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- Section Title -->
+        <Label Text="مصفوفة ارتباط المجموعات بالمقررات الدراسية:"
+               Style="{StaticResource CardSecondaryTextStyle}"
+               FontSize="12"/>
+
+
+        <!-- Loading Indicator -->
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource TextPrimary}"
+                           HorizontalOptions="Center"/>
+
+
+        <!-- Empty State -->
+        <VerticalStackLayout IsVisible="{Binding IsEmpty}"
+                             HorizontalOptions="Center"
+                             Spacing="8"
+                             Padding="20">
+
+            <Label Text="لا توجد مجموعات أو مواد مطابقة للفلاتر"
+                   TextColor="{StaticResource TextSecondary}"
+                   FontSize="13"
+                   HorizontalTextAlignment="Center"/>
+
+        </VerticalStackLayout>
+
+
+        <!-- Groups Collection -->
+        <CollectionView ItemsSource="{Binding FilteredGroupSubjects}"
+                        SelectionMode="None"
+                        IsVisible="{Binding IsNotBusy}">
+
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical"
+                                   ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+
+                <DataTemplate>
+
+                    <local:GroupSubjectCardView>
+
+                        <local:GroupSubjectCardView.GestureRecognizers>
+
+                            <TapGestureRecognizer
+                                Command="{Binding Source={x:Reference RootView},
+                                Path=BindingContext.OpenManageSubjectCommand}"
+                                CommandParameter="{Binding .}"/>
+
+                        </local:GroupSubjectCardView.GestureRecognizers>
+
+                    </local:GroupSubjectCardView>
+
+                </DataTemplate>
+
+            </CollectionView.ItemTemplate>
+
+        </CollectionView>
+
+    </VerticalStackLayout>
+
+</ScrollView>
+
+</ContentView>

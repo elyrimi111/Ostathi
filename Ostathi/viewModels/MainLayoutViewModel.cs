@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Controls;
 using Ostathi.Services;
 using Ostathi.ViewModels;
@@ -43,9 +44,10 @@ namespace Ostathi.ViewModels
         private readonly View _studentsView;
         private readonly SettingsViewModel _settingsViewModel;
         
-        // تعريف متغيرات العرض للمجموعات والتقارير
-        private readonly GroupsViewModel _groupsViewModel;
-        private readonly View _groupsView;
+        // Fields for Dependency Injection and Views
+        private readonly IServiceProvider _serviceProvider;
+        private readonly GroupSubjectsManagementView _groupSubjectsManagementView;
+        private readonly GroupSubjectsManagementViewModel _groupSubjectsManagementViewModel;
         private readonly View _reportsView = new ReportsPage();
 
         public ICommand SelectTabCommand { get; }
@@ -68,28 +70,34 @@ namespace Ostathi.ViewModels
             }
         }
 
-        // Constructor with Dependency Injection including GroupsViewModel & GroupService & AppDbContext
+        // Constructor with Dependency Injection
         public MainLayoutViewModel(
             StudentService studentService, 
-            GroupsViewModel groupsViewModel,
-            GroupService groupService,
-            AppDbContext dbContext)
+            IServiceProvider serviceProvider,
+            GroupSubjectsManagementView groupSubjectsManagementView,
+            GroupSubjectsManagementViewModel groupSubjectsManagementViewModel)
         {
-            // Initialize StudentsViewModel
+            _serviceProvider = serviceProvider;
+
+            // Initialize Students ViewModel and its View
             _studentsViewModel = new StudentsViewModel(studentService);
             _studentsView = new StudentsPage(_studentsViewModel);
 
+            // Initialize Home ViewModel and its View
             _homeViewModel = new HomeViewModel();
             _homeView = new HomePage(_homeViewModel);
 
+            // Initialize Settings ViewModel
             _settingsViewModel = new SettingsViewModel();
 
-            // حقن وإنشاء شاشة المجموعات مع الـ ViewModel الخاص بها بالطريقة الصحيحة
-            _groupsViewModel = groupsViewModel;
-            _groupsView = new groupsPage(_groupsViewModel);
+            // Assign injected Group Subjects Management components
+            _groupSubjectsManagementView = groupSubjectsManagementView;
+            _groupSubjectsManagementViewModel = groupSubjectsManagementViewModel;
 
+            // Set default active view to Home
             _currentView = _homeView;
 
+            // Initialize Commands
             SelectTabCommand = new Command<string>(OnSelectTabExecuted);
             HomeCommand = new Command(OnHomeExecuted);
             SettingsCommand = new Command(OnSettingsExecuted);
@@ -101,6 +109,7 @@ namespace Ostathi.ViewModels
             OpenScheduleManagementCommand = new Command(OnOpenScheduleManagementExecuted);
         }
 
+        // Handle bottom navigation tab selection
         private void OnSelectTabExecuted(string indexStr)
         {
             if (int.TryParse(indexStr, out int index))
@@ -122,32 +131,38 @@ namespace Ostathi.ViewModels
             }
         }
 
+        // Switch view to Home
         private void OnHomeExecuted()
         {
             CurrentView = _homeView;
         }
 
+        // Navigate to Settings page
         private async void OnSettingsExecuted()
         {
             var settingsPage = new SettingsPage(_settingsViewModel);
             await Shell.Current.Navigation.PushAsync(settingsPage);
         }
 
+        // Navigate to Dynamic Attendance / Hub creation page
         private async void OnOpenDynamicAttendanceExecuted()
         {
             await Shell.Current.GoToAsync(nameof(CreateHubPage));
         }
 
+        // Navigate to Schedule Management page
         private async void OnOpenScheduleManagementExecuted()
         {
             await Shell.Current.GoToAsync(nameof(ScheduleManagementPage));
         }
 
+        // Switch view to Reports / Notifications
         private void OnNotificationsExecuted()
         {
             CurrentView = _reportsView;
         }
 
+        // Switch view to Students and refresh data
         private async Task OnScheduleExecutedAsync()
         {
             CurrentView = _studentsView;
@@ -156,14 +171,15 @@ namespace Ostathi.ViewModels
             await _studentsViewModel.LoadStudentsAsync();
         }
 
+        // Switch view to Group Subjects Management screen and refresh matrix data
         private async Task OnGroupsExecutedAsync()
         {
-            CurrentView = _groupsView;
+            CurrentView = _groupSubjectsManagementView;
             
-            // تحديث جلب المجموعات من قاعدة البيانات عند فتح الشاشة لتظهر مباشرة
-            if (_groupsViewModel != null)
+            // Reload matrix data and filter options whenever the view is opened
+            if (_groupSubjectsManagementViewModel != null)
             {
-                await _groupsViewModel.LoadGroupsAsync();
+                await _groupSubjectsManagementViewModel.LoadInitialDataAsync();
             }
         }
     }

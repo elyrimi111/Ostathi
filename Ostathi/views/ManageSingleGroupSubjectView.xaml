@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.ManageSingleGroupSubjectView"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft"
+             Title="إدارة مادة المجموعة">
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto" Padding="16" RowSpacing="16">
+
+        <!-- 1. العنوان العلوي (يوضح اسم المجموعة والمادة) -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="إدارة مادة المجموعة" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+            <Label Text="تفاصيل وإدارة المقرر الدراسي لهذه المجموعة الأكاديمية" Style="{StaticResource CardAccentSubtitleStyle}" FontSize="12"/>
+        </VerticalStackLayout>
+
+        <!-- 2. بطاقة معلومات سريعة -->
+        <Border Grid.Row="1" Style="{StaticResource UnifiedHorizontalCardStyle}" Padding="14">
+            <VerticalStackLayout Spacing="6">
+                <Label Text="{Binding CurrentGroupSubject.Group.Name, StringFormat='المجموعة: {0}'}" Style="{StaticResource CardTitleStyle}" FontSize="14" FontAttributes="Bold"/>
+                <Label Text="{Binding CurrentGroupSubject.Subject.Name, StringFormat='المادة: {0}'}" Style="{StaticResource CardSecondaryTextStyle}" FontSize="12" TextColor="{StaticResource AccentYellow}"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- 3. محتوى الشاشة أو القائمة الخاصة بالتفاصيل -->
+        <CollectionView Grid.Row="2" 
+                        ItemsSource="{Binding DetailsList}"
+                        SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Style="{StaticResource UnifiedHorizontalCardStyle}" Padding="12">
+                        <Label Text="{Binding Title}" Style="{StaticResource CardTitleStyle}" FontSize="13"/>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- 4. زر حفظ أو رجوع في الأسفل -->
+        <Button Grid.Row="3"
+                Text="حفظ التعديلات"
+                Command="{Binding SaveChangesCommand}"
+                BackgroundColor="{StaticResource AccentYellow}"
+                TextColor="{StaticResource DarkBackground}"
+                FontAttributes="Bold"
+                CornerRadius="16"
+                HeightRequest="48"/>
+
+    </Grid>
+
+</ContentPage>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.GroupSubjectCardView"
+             FlowDirection="RightToLeft">
+
+    <Border Style="{StaticResource UnifiedHorizontalCardStyle}" Padding="12">
+        
+        <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12" 
+              VerticalOptions="Center" 
+              BackgroundColor="Transparent">
+
+            <!-- Group icon or badge -->
+            <Border Grid.Column="0" 
+                    WidthRequest="40" HeightRequest="40" 
+                    StrokeShape="RoundRectangle 8" 
+                    BackgroundColor="{StaticResource DarkInputBackground}"
+                    StrokeThickness="0">
+                <Label Text="📁" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </Border>
+
+            <!-- Group and subject details -->
+            <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                <Label Text="{Binding Group.Name}" Style="{StaticResource CardTitleStyle}" FontSize="14" FontAttributes="Bold"/>
+                <Label Text="{Binding Subject.Name, StringFormat='المادة: {0}'}" Style="{StaticResource CardSecondaryTextStyle}" FontSize="12" TextColor="{StaticResource AccentYellow}"/>
+            </VerticalStackLayout>
+
+        </Grid>
+    </Border>
+
+</ContentView>

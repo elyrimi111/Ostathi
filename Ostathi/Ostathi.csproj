@@ -74,6 +74,11 @@
     <MauiXaml Include="views/StudentAttendanceLogPage.xaml" />
     <MauiXaml Include="views/StudentDetailsPage.xaml" />
     <MauiXaml Include="views/EditStudentGradesPage.xaml" />
+    <MauiXaml Include="views/GroupSubjectsManagementView.xaml" />
+    <Compile Remove="viewModels/GroupsViewModel.cs" />
+    <Compile Remove="views/groupsPage.xaml.cs" />
+    <MauiXaml Include="views/ManageSingleGroupSubjectView.xaml" />
+    <MauiXaml Include="views/GroupSubjectCardView.xaml" />
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\*" />

@@ -36,7 +36,8 @@ public static class MauiProgram
         builder.Services.AddTransient<StudentService>();
         builder.Services.AddTransient<MajorService>();
         builder.Services.AddTransient<GroupService>();
-        
+        builder.Services.AddTransient<GroupSubjectService>(); // تم إضافة خدمة ربط المواد بالمجموعات
+
         builder.Services.AddTransient<AddaUpdateStudentsViewModel>();
         builder.Services.AddTransient<AddUpdateStudent>();
 
@@ -48,9 +49,10 @@ public static class MauiProgram
         builder.Services.AddTransient<MajorsPage>();
         builder.Services.AddTransient<MajorsViewMod>();
 
-        // --- تسجيل شاشة المجموعات والـ ViewModel الخاص بها ---
-        builder.Services.AddTransient<GroupsViewModel>();
-        builder.Services.AddTransient<groupsPage>();
+
+        // --- تسجيل شاشة إدارة مواد المجموعات والـ ViewModel الخاص بها (NEW) ---
+        builder.Services.AddTransient<GroupSubjectsManagementViewModel>();
+        builder.Services.AddTransient<GroupSubjectsManagementView>();
 
         // Register MainLayoutViewModel and MainLayoutView with correct matching names
         builder.Services.AddTransient<MainLayoutViewModel>();
@@ -86,7 +88,10 @@ public static class MauiProgram
 
         // --- Register Edit Student Grades Feature (NEW) ---
         builder.Services.AddTransient<EditStudentGradesPageViewModel>();
-        builder.Services.AddTransient<EditStudentGradesPage>();
+        builder.Services.AddTransient<EditStudentGradesPage>();        // --- تسجيل شاشة إدارة مادة المجموعة والـ ViewModel الخاص بها (NEW) ---
+      
+        builder.Services.AddTransient<ManageSingleGroupSubjectViewModel>();
+        builder.Services.AddTransient<ManageSingleGroupSubjectView>();
 
         // -----------------------------------------------------------
 

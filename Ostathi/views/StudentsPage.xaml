@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
              x:Class="Ostathi.StudentsPage"
              BackgroundColor="{StaticResource DarkBackground}"
              FlowDirection="RightToLeft">
@@ -8,29 +9,12 @@
     <Grid RowDefinitions="Auto, *">
 
         <!-- ========================================== -->
-        <!-- 1. الهيدر العلوي: البحث، الفلترة الثلاثية، وزر الاستيراد -->
+        <!-- 1. شريط البحث والفلترة الثلاثية (بدون الهيدر العلوي) -->
         <!-- ========================================== -->
         <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="16,14" StrokeShape="RoundRectangle 0,0,24,24">
             <VerticalStackLayout Spacing="12">
                 
-                <!-- أ. العنوان وأزرار العمليات الرئيسية (استيراد كشف طلاب + إضافة طالب) -->
-                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                    <VerticalStackLayout Grid.Column="0" Spacing="2">
-                        <Label Text="إدارة الطلاب والشؤون الأكاديمية" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                        <Label Text="البحث عن الطلاب وتصفيتهم حسب التخصص والسنة والمجموعة" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                    </VerticalStackLayout>
-
-                    <HorizontalStackLayout Grid.Column="1" Spacing="8">
-                        <!-- زر إضافة طالب (مربوط بـ AddStudentCommand) -->
-                        <Button Text="+ إضافة طالب" 
-                                Command="{Binding AddStudentCommand}"
-                                BackgroundColor="{StaticResource AccentYellow}" 
-                                TextColor="{StaticResource DarkBackground}"
-                                FontAttributes="Bold" FontSize="11" CornerRadius="14" HeightRequest="38" Padding="12,0" />
-                    </HorizontalStackLayout>
-                </Grid>
-
-                <!-- ب. شريط البحث النصي الطبيعي (مربوط بـ SearchQuery) -->
+                <!-- أ. شريط البحث النصي الطبيعي (مربوط بـ SearchQuery) -->
                 <Border BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 14" HeightRequest="40" StrokeThickness="0" Padding="12,0">
                     <Grid ColumnDefinitions="Auto, *">
                         <Path Grid.Column="0" Data="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" 
@@ -42,7 +26,7 @@
                     </Grid>
                 </Border>
 
-                <!-- ج. الفلترة الثلاثية الطبيعية (تخصص / سنة / مجموعة) -->
+                <!-- ب. الفلترة الثلاثية الطبيعية (تخصص / سنة / مجموعة) -->
                 <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
                     
                     <!-- فلترة التخصص (مربوطة بـ SelectedSpecialization) -->
@@ -113,6 +97,13 @@
                             StrokeShape="RoundRectangle 14"
                             Padding="14,12"
                             Margin="0,0,0,10">
+                        
+                        <!-- إضافة خاصية النقر لتوجيه المستخدم إلى تفاصيل الطالب وتمرير الكائن كباراميتر -->
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:StudentsViewModel}}, Path=StudentTappedCommand}"
+                                CommandParameter="{Binding}" />
+                        </Border.GestureRecognizers>
                         
                         <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                             <VerticalStackLayout Grid.Column="0" Spacing="3">

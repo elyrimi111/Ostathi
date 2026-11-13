@@ -33,6 +33,9 @@ public partial class AppShell : Shell
         // Route for Add/Update Group page
         Routing.RegisterRoute(nameof(AddUpdateGroup), typeof(AddUpdateGroup));
 
+        // Route for Group Subjects Management (NEW)
+        Routing.RegisterRoute(nameof(GroupSubjectsManagementView), typeof(GroupSubjectsManagementView));
+
         // Routes for exams and data import/export management pages
         Routing.RegisterRoute(nameof(MidtermExamPage), typeof(MidtermExamPage));
         Routing.RegisterRoute(nameof(FinalExamPage), typeof(FinalExamPage));
@@ -51,7 +54,12 @@ public partial class AppShell : Shell
         // Route for Student Details page
         Routing.RegisterRoute(nameof(StudentDetailsPage), typeof(StudentDetailsPage));
 
-        // Route for Edit Student Grades page (NEW)
+        // Route for Edit Student Grades page
         Routing.RegisterRoute(nameof(EditStudentGradesPage), typeof(EditStudentGradesPage));
+        
+        // Route for Manage Single Group Subject (NEW)
+        Routing.RegisterRoute(nameof(ManageSingleGroupSubjectView), typeof(ManageSingleGroupSubjectView));
+
+  
     }
 }

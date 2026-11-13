@@ -209,6 +209,16 @@
         </Setter>
     </Style>
 
+    <!-- Unified Dropdown Container Style with Dark Surface Background -->
+    <Style TargetType="Border" x:Key="UnifiedDropdownContainerStyle">
+        <Setter Property="BackgroundColor" Value="{StaticResource DarkSurface}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="#2A3748" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="HeightRequest" Value="42" />
+    </Style>
+
     <Style TargetType="ProgressBar">
         <Setter Property="ProgressColor" Value="{StaticResource AccentYellow}" />
         <Setter Property="VisualStateManager.VisualStateGroups">
@@ -355,6 +365,43 @@
                 </VisualStateGroup>
             </VisualStateGroupList>
         </Setter>
+    </Style>
+
+    <!-- Unified Horizontal Card Style -->
+    <Style TargetType="Border" x:Key="UnifiedHorizontalCardStyle">
+        <Setter Property="BackgroundColor" Value="{StaticResource DarkSurface}" />
+        <Setter Property="StrokeThickness" Value="0" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 14" />
+        <Setter Property="Padding" Value="16,12" />
+    </Style>
+
+    <!-- Card Main Title Style -->
+    <Style TargetType="Label" x:Key="CardTitleStyle">
+        <Setter Property="TextColor" Value="{StaticResource TextPrimary}" />
+        <Setter Property="FontAttributes" Value="Bold" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
+
+    <!-- Card Accent Subtitle Style -->
+    <Style TargetType="Label" x:Key="CardAccentSubtitleStyle">
+        <Setter Property="TextColor" Value="{StaticResource AccentYellow}" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <!-- Card Secondary Text Style -->
+    <Style TargetType="Label" x:Key="CardSecondaryTextStyle">
+        <Setter Property="TextColor" Value="{StaticResource TextSecondary}" />
+        <Setter Property="FontSize" Value="11" />
+    </Style>
+    
+    <!-- Unified Search Bar Container Style with Search Icon Layout (Single Definition) -->
+    <Style TargetType="Border" x:Key="UnifiedSearchContainerStyle">
+        <Setter Property="BackgroundColor" Value="{StaticResource DarkSurface}" />
+        <Setter Property="StrokeThickness" Value="1" />
+        <Setter Property="Stroke" Value="#2A3748" />
+        <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="HeightRequest" Value="46" />
     </Style>
 
 </ResourceDictionary>
