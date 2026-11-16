@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
@@ -10,9 +11,10 @@ namespace Ostathi;
 [QueryProperty(nameof(GroupId), nameof(GroupId))]
 [QueryProperty(nameof(SubjectName), nameof(SubjectName))]
 [QueryProperty(nameof(AssignmentId), nameof(AssignmentId))]
-public class AddUpdateAssignmentViewModel : BaseViewModel
+public class AddUpdateAssignmentViewModel : BaseViewModel, IQueryAttributable
 {
-    private readonly AssignmentService _assignmentService;
+    // Service 
+    private readonly AssignmentService _assignmentService = new AssignmentService(new AppDbContext());
 
     private int _groupId;
     public int GroupId
@@ -32,7 +34,14 @@ public class AddUpdateAssignmentViewModel : BaseViewModel
     public int AssignmentId
     {
         get => _assignmentId;
-        set => SetProperty(ref _assignmentId, value);
+        set
+        {
+            SetProperty(ref _assignmentId, value);
+            if (_assignmentId > 0)
+            {
+                _ = LoadAssignmentAsync(_assignmentId);
+            }
+        }
     }
 
     private string _title = string.Empty;
@@ -60,10 +69,55 @@ public class AddUpdateAssignmentViewModel : BaseViewModel
 
     public ICommand SaveCommand { get; }
 
-    public AddUpdateAssignmentViewModel(AssignmentService assignmentService)
+    public AddUpdateAssignmentViewModel()
     {
-        _assignmentService = assignmentService;
         SaveCommand = new Command(async () => await SaveAssignmentAsync());
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("GroupId", out var groupObj) && int.TryParse(groupObj?.ToString(), out var groupId))
+        {
+            GroupId = groupId;
+        }
+
+        if (query.TryGetValue("SubjectName", out var subjectObj) && subjectObj is string subject)
+        {
+            SubjectName = subject;
+        }
+
+        if (query.TryGetValue("AssignmentId", out var assignmentObj) && int.TryParse(assignmentObj?.ToString(), out var assignmentId))
+        {
+            AssignmentId = assignmentId;
+        }
+    }
+
+    private async Task LoadAssignmentAsync(int id)
+    {
+        try
+        {
+            IsBusy = true;
+            _currentAssignment = await _assignmentService.GetAssignmentAsync(id);
+            if (_currentAssignment != null)
+            {
+                Title = _currentAssignment.Title;
+                Description = _currentAssignment.Description ?? string.Empty;
+                DueDate = _currentAssignment.DueDate;
+                GroupId = _currentAssignment.GroupId;
+                SubjectName = _currentAssignment.SubjectName ?? string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("خطأ", $"فشل في تحميل بيانات التكليف: {ex.Message}", "موافق");
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     private async Task SaveAssignmentAsync()

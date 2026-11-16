@@ -87,6 +87,7 @@
     <Compile Remove="views/AddUpdateAssignmentPage.cs" />
     <MauiXaml Include="views/AddUpdateAssignmentPage.xaml" />
     <MauiXaml Include="views/AssignmentDetailsPage.xaml" />
+    <Compile Remove="views/AssignmentDetailsPage.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\*" />

@@ -51,4 +51,11 @@ public class AssignmentService
         _context.Assignments.Remove(assignment);
         return await _context.SaveChangesAsync();
     }
+    
+    // جلب تكليف محدد بواسطة الـ ID
+public async Task<Assignment?> GetAssignmentAsync(int id)
+{
+    return await _context.Assignments.FindAsync(id);
+}
+
 }
