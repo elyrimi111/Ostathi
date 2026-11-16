@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
+             xmlns:viewmodels="clr-namespace:Ostathi.ViewModels"
+             x:Class="Ostathi.SubjectGroupLecturesPage"
+             Title="إدارة محاضرات المادة"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, Auto, *" Padding="16" RowSpacing="14">
+
+        <!-- ========================================== -->
+        <!-- 1. Header Information (Group & Subject)    -->
+        <!-- ========================================== -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 14"
+                Padding="16,12">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{Binding GroupName}"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}"/>
+                <Label Text="{Binding SubjectName, StringFormat='المقرر: {0}'}"
+                       FontSize="13"
+                       TextColor="{StaticResource AccentYellow}"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- 2. Section Title                           -->
+        <!-- ========================================== -->
+        <Grid Grid.Row="1" VerticalOptions="Center">
+            <Label Text="قائمة المحاضرات الـ 12 المسجلة:"
+                   FontSize="14"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource TextSecondary}"
+                   VerticalOptions="Center"/>
+        </Grid>
+
+        <!-- ========================================== -->
+        <!-- 3. Lectures List (CollectionView)          -->
+        <!-- ========================================== -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding LecturesList}"
+                        SelectedItem="{Binding SelectedLecture}"
+                        SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="30">
+                    <Label Text="لا توجد محاضرات مسجلة لهذه المادة في هذه المجموعة حتى الآن"
+                           FontSize="13"
+                           TextColor="{StaticResource TextSecondary}"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 14"
+                            Padding="14">
+                        <Grid ColumnDefinitions="*" RowDefinitions="Auto, Auto" RowSpacing="6">
+                            
+                            <!-- Lecture Hall Name / Title -->
+                            <Label Grid.Row="0" Grid.Column="0"
+                                   Text="{Binding HallName, StringFormat='قاعة: {0}'}"
+                                   FontSize="15"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimary}"/>
+
+                            <!-- Day & Date -->
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="8">
+                                <Label Text="{Binding Day}" FontSize="12" TextColor="{StaticResource AccentYellow}"/>
+                                <Label Text="•" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                                <Label Text="{Binding LectureDate, StringFormat='{0:yyyy/MM/dd}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            </HorizontalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>

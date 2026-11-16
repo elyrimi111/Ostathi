@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Ostathi.ViewModels"
+             x:Class="Ostathi.LectureDetailsPage"
+             Title="تفاصيل وتعديل المحاضرة"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- معلومات عامة (اسم المقرر للقراءة فقط) -->
+            <Border BackgroundColor="{StaticResource DarkSurface}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 14"
+                    Padding="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="المقرر الدراسي:" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    <Label Text="{Binding SubjectName}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- حقول التعديل والعرض -->
+            <VerticalStackLayout Spacing="16">
+
+                <!-- اسم أو رقم القاعة -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="اسم أو رقم القاعة" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                    <Entry Text="{Binding HallName}"
+                           Placeholder="أدخل اسم القاعة"
+                           BackgroundColor="{StaticResource DarkSurface}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}"
+                           HeightRequest="48"/>
+                </VerticalStackLayout>
+
+                <!-- يوم المحاضرة -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="اليوم" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                    <Picker Title="اختر اليوم"
+                            ItemsSource="{Binding DaysList}"
+                            SelectedItem="{Binding Day}"
+                            BackgroundColor="{StaticResource DarkSurface}"
+                            TextColor="{StaticResource TextPrimary}"
+                            TitleColor="{StaticResource TextSecondary}"
+                            HeightRequest="48"/>
+                </VerticalStackLayout>
+
+                <!-- تاريخ المحاضرة -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="تاريخ المحاضرة" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                    <DatePicker Date="{Binding LectureDate}"
+                                BackgroundColor="{StaticResource DarkSurface}"
+                                TextColor="{StaticResource TextPrimary}"
+                                HeightRequest="48"/>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+
+            <!-- زر حفظ التعديلات -->
+            <Button Text="حفظ التعديلات"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold"
+                    FontSize="15"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    Margin="0,20,0,0"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

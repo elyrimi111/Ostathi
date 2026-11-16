@@ -65,5 +65,8 @@ public partial class AppShell : Shell
 
         // Route for Subject Group Lectures Management (NEW)
         Routing.RegisterRoute(nameof(SubjectGroupLecturesPage), typeof(SubjectGroupLecturesPage));
+        
+        Routing.RegisterRoute(nameof(LectureDetailsPage), typeof(LectureDetailsPage));
+
     }
 }

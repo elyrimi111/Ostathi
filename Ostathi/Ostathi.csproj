@@ -82,6 +82,7 @@
     <MauiXaml Include="views/SubjectGroupStudentsAttendanceView.xaml.xaml" />
     <Compile Remove="views/SubjectGroupStudentsAttendanceViewModel.cs" />
     <MauiXaml Include="views/SubjectGroupLecturesPage.xaml" />
+    <MauiXaml Include="views/LectureDetailsPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\*" />
