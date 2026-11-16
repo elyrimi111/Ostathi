@@ -93,6 +93,10 @@ public static class MauiProgram
         
         builder.Services.AddTransient<AddUpdateAssignmentPage>();
         builder.Services.AddTransient<AddUpdateAssignmentViewModel>();
+        
+        builder.Services.AddTransient<AssignmentDetailManagementPage>();
+        builder.Services.AddTransient<AssignmentDetailManagementViewModel>();
+
 
 #if DEBUG
         builder.Logging.AddDebug();

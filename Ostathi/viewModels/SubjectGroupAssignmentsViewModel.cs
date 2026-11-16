@@ -60,6 +60,7 @@ public class SubjectGroupAssignmentsViewModel : BaseViewModel
 
     public ICommand AddAssignmentCommand { get; }
     public ICommand DeleteAssignmentCommand { get; }
+    public ICommand OpenAssignmentDetailsCommand { get; } // أمر فتح تفاصيل التكليف
 
     // مُنشئ افتراضي بدون معاملات (بدون حقن تبعيات)
     public SubjectGroupAssignmentsViewModel()
@@ -70,6 +71,9 @@ public class SubjectGroupAssignmentsViewModel : BaseViewModel
 
         AddAssignmentCommand = new Command(async () => await NavigateToAddAssignmentAsync());
         DeleteAssignmentCommand = new Command<Assignment>(async (a) => await DeleteAssignmentAsync(a));
+        
+        // تعريف الأوامر
+        OpenAssignmentDetailsCommand = new Command<Assignment>(async (assignment) => await OpenAssignmentDetailsAsync(assignment));
     }
 
     // دالة مساعدة لضمان تحميل البيانات فقط عندما يتوفر المعرفان معا
@@ -146,5 +150,14 @@ public class SubjectGroupAssignmentsViewModel : BaseViewModel
             await _assignmentService.DeleteAssignmentAsync(assignment);
             AssignmentsList.Remove(assignment);
         }
+    }
+
+    // دالة فتح شاشة تفاصيل التكليف
+    private async Task OpenAssignmentDetailsAsync(Assignment assignment)
+    {
+        if (assignment == null || Shell.Current == null) return;
+
+        // الانتقال لشاشة تفاصيل التكليف مع تمرير معرف التكليف
+        await Shell.Current.GoToAsync($"AssignmentDetailManagementPage?AssignmentId={assignment.Id}");
     }
 }

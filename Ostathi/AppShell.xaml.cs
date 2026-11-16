@@ -71,8 +71,9 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(SubjectGroupAssignmentsPage), typeof(SubjectGroupAssignmentsPage));
         
         Routing.RegisterRoute(nameof(AddUpdateAssignmentPage), typeof(AddUpdateAssignmentPage));
-   
-   
+      
+        Routing.RegisterRoute(nameof(AssignmentDetailsPage), typeof(AssignmentDetailsPage));
+
     }
 
     

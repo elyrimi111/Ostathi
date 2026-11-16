@@ -2,8 +2,9 @@ namespace Ostathi;
 
 public partial class AssignmentDetailManagementPage : ContentPage
 {
-    public AssignmentDetailManagementPage()
+    public AssignmentDetailManagementPage(AssignmentDetailManagementViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
     }
 }

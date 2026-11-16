@@ -48,6 +48,13 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" StrokeShape="RoundRectangle 14" Padding="14">
+                        
+                        <!-- إضافة حدث النقر لفتح تفاصيل التكليف -->
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SubjectGroupAssignmentsViewModel}}, Path=OpenAssignmentDetailsCommand}"
+                                                    CommandParameter="{Binding}" />
+                        </Border.GestureRecognizers>
+
                         <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" RowSpacing="6">
                             
                             <!-- عنوان التكليف -->
