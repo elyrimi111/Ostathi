@@ -95,6 +95,30 @@ namespace Ostathi.ViewModels
 
         public ObservableCollection<StudentAttendanceSummary> StudentsAttendanceList { get; } = new();
 
+        // خاصية SelectedStudent لكي تتوافق مع SelectedItem في CollectionView
+        private StudentAttendanceSummary? _selectedStudent;
+        public StudentAttendanceSummary? SelectedStudent
+        {
+            get => _selectedStudent;
+            set
+            {
+                if (_selectedStudent != value)
+                {
+                    _selectedStudent = value;
+                    OnPropertyChanged();
+
+                    if (_selectedStudent != null)
+                    {
+                        // تنفيذ أمر الانتقال تلقائياً عند التحديد
+                        _ = OnStudentSelectedAsync(_selectedStudent);
+                        
+                        // إعادة تعيين القيمة لكي يتمكن المستخدم من الضغط على نفس الطالب مرة أخرى لاحقاً
+                        SelectedStudent = null;
+                    }
+                }
+            }
+        }
+
         public ICommand RefreshCommand { get; }
         public ICommand StudentSelectedCommand { get; }
 

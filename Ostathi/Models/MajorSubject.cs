@@ -14,8 +14,10 @@ namespace Ostathi
         public int SubjectId { get; set; }
 
         // Additional plan details
-        public int? Level { get; set; }          // Academic level (e.g., 1, 2, 3, 4)
-        public int? Semester { get; set; }       // Semester (1 or 2)
-        public bool IsMandatory { get; set; } = true; // Indicates if the subject is mandatory
+        public int? Level { get; set; }       
+        
+        public int? Semester { get; set; }       
+        
+        public bool IsMandatory { get; set; } = true; 
     }
 }

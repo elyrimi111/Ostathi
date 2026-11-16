@@ -98,10 +98,10 @@ public class AppDbContext : DbContext
 
             // 2. Seed Groups
             Groups.AddRange(
-                new Group { Id = 1, Name = "مجموعة أ (هندسة برمجيات)", MajorId = 1 },
-                new Group { Id = 2, Name = "مجموعة ب (هندسة برمجيات)", MajorId = 1 },
-                new Group { Id = 3, Name = "مجموعة ج (علوم حاسوب)", MajorId = 2 },
-                new Group { Id = 4, Name = "مجموعة د (نظم معلومات حاسوبية)", MajorId = 3 }
+                new Group { Id = 1, Name = "مجموعة أ (هندسة برمجيات)", MajorId = 1, AcademicYear = "المستوى الأول" },
+                new Group { Id = 2, Name = "مجموعة ب (هندسة برمجيات)", MajorId = 1, AcademicYear = "المستوى الثاني" },
+                new Group { Id = 3, Name = "مجموعة ج (علوم حاسوب)", MajorId = 2, AcademicYear = "المستوى الثالث" },
+                new Group { Id = 4, Name = "مجموعة د (نظم معلومات حاسوبية)", MajorId = 3, AcademicYear = "المستوى الرابع" }
             );
             SaveChanges();
 
@@ -138,50 +138,49 @@ public class AppDbContext : DbContext
             // 6. Seed Fresh Students Data
             Students.AddRange(
                 // Group A (GroupId = 1)
-                new Student { FirstName = "أحمد", SecondName = "محمد", ThirdName = "علي", LastName = "الكبسي", AcademicId = "20260101", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
-                new Student { FirstName = "خالد", SecondName = "إبراهيم", ThirdName = "حسن", LastName = "المريسي", AcademicId = "20260102", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
-                new Student { FirstName = "سارة", SecondName = "عبدالله", ThirdName = "ناصر", LastName = "العنسي", AcademicId = "20260103", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
-                new Student { FirstName = "فاطمة", SecondName = "علي", ThirdName = "محمد", LastName = "العماد", AcademicId = "20260104", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
-                new Student { FirstName = "محمد", SecondName = "قاسم", ThirdName = "أحمد", LastName = "المؤيد", AcademicId = "20260105", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
+                new Student { Id = 1, FirstName = "أحمد", SecondName = "محمد", ThirdName = "علي", LastName = "الكبسي", AcademicId = "20260101", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
+                new Student { Id = 2, FirstName = "خالد", SecondName = "إبراهيم", ThirdName = "حسن", LastName = "المريسي", AcademicId = "20260102", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
+                new Student { Id = 3, FirstName = "سارة", SecondName = "عبدالله", ThirdName = "ناصر", LastName = "العنسي", AcademicId = "20260103", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
+                new Student { Id = 4, FirstName = "فاطمة", SecondName = "علي", ThirdName = "محمد", LastName = "العماد", AcademicId = "20260104", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
+                new Student { Id = 5, FirstName = "محمد", SecondName = "قاسم", ThirdName = "أحمد", LastName = "المؤيد", AcademicId = "20260105", GroupId = 1, MajorId = 1, AcademicYear = "الأولى" },
 
                 // Group B (GroupId = 2)
-                new Student { FirstName = "عبدالرحمن", SecondName = "صالح", ThirdName = "مهدي", LastName = "الخطيب", AcademicId = "20260201", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
-                new Student { FirstName = "يوسف", SecondName = "أمين", ThirdName = "عبدالكريم", LastName = "الرميمة", AcademicId = "20260202", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
-                new Student { FirstName = "مريم", SecondName = "حسن", ThirdName = "قاسم", LastName = "الشرعي", AcademicId = "20260203", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
-                new Student { FirstName = "بلال", SecondName = "فؤاد", ThirdName = "محمد", LastName = "الشامي", AcademicId = "20260204", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
+                new Student { Id = 6, FirstName = "عبدالرحمن", SecondName = "صالح", ThirdName = "مهدي", LastName = "الخطيب", AcademicId = "20260201", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
+                new Student { Id = 7, FirstName = "يوسف", SecondName = "أمين", ThirdName = "عبدالكريم", LastName = "الرميمة", AcademicId = "20260202", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
+                new Student { Id = 8, FirstName = "مريم", SecondName = "حسن", ThirdName = "قاسم", LastName = "الشرعي", AcademicId = "20260203", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
+                new Student { Id = 9, FirstName = "بلال", SecondName = "فؤاد", ThirdName = "محمد", LastName = "الشامي", AcademicId = "20260204", GroupId = 2, MajorId = 1, AcademicYear = "الثانية" },
 
                 // Group C (GroupId = 3)
-                new Student { FirstName = "عمر", SecondName = "فاروق", ThirdName = "جميل", LastName = "القفري", AcademicId = "20260301", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" },
-                new Student { FirstName = "زياد", SecondName = "طارق", ThirdName = "عبدالرحمن", LastName = "الزيادي", AcademicId = "20260302", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" },
-                new Student { FirstName = "منى", SecondName = "عبدالكريم", ThirdName = "حسن", LastName = "الحداء", AcademicId = "20260303", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" }
+                new Student { Id = 10, FirstName = "عمر", SecondName = "فاروق", ThirdName = "جميل", LastName = "القفري", AcademicId = "20260301", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" },
+                new Student { Id = 11, FirstName = "زياد", SecondName = "طارق", ThirdName = "عبدالرحمن", LastName = "الزيادي", AcademicId = "20260302", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" },
+                new Student { Id = 12, FirstName = "منى", SecondName = "عبدالكريم", ThirdName = "حسن", LastName = "الحداء", AcademicId = "20260303", GroupId = 3, MajorId = 2, AcademicYear = "الثالثة" }
             );
             SaveChanges();
 
             // 7. Seed Sample Lectures and Attendance Records for testing attendance matrix
+            // هذه المحاضرات مرتبطة بالمجموعة الأولى (GroupId = 1) ومادة "برمجة الحاسوب C#" (مطابقة تماماً للـ SubjectId = 1)
             var sampleLectures = new List<Lecture>
             {
-                new Lecture { Id = 1, GroupId = 1, SubjectName = "برمجة الحاسوب C#", HallName = "قاعة 1", Day = "السبت", LectureDate = DateTime.Now.AddDays(-1) },
-                new Lecture { Id = 2, GroupId = 1, SubjectName = "برمجة الحاسوب C#", HallName = "قاعة 1", Day = "الإثنين", LectureDate = DateTime.Now.AddDays(-3) },
-                new Lecture { Id = 3, GroupId = 1, SubjectName = "قواعد البيانات SQLite", HallName = "مختبر الحاسوب", Day = "الأحد", LectureDate = DateTime.Now.AddDays(-2) }
+                new Lecture { Id = 1, GroupId = 1, SubjectName = "برمجة الحاسوب C#", HallName = "قاعة 1", Day = "السبت", LectureDate = DateTime.Now.AddDays(-7) },
+                new Lecture { Id = 2, GroupId = 1, SubjectName = "برمجة الحاسوب C#", HallName = "قاعة 1", Day = "الإثنين", LectureDate = DateTime.Now.AddDays(-5) },
+                new Lecture { Id = 3, GroupId = 1, SubjectName = "برمجة الحاسوب C#", HallName = "قاعة 2", Day = "الأربعاء", LectureDate = DateTime.Now.AddDays(-2) }
             };
             Lectures.AddRange(sampleLectures);
             SaveChanges();
 
             // Seed sample attendance data linking students to lectures with status
             Attendances.AddRange(
-                // Lecture 1 (C# Programming - Group 1): Students 1, 2, 3 present
-                new Attendance { LectureId = 1, StudentId = 1, Status = AttendanceStatus.Present },
-                new Attendance { LectureId = 1, StudentId = 2, Status = AttendanceStatus.Present },
-                new Attendance { LectureId = 1, StudentId = 3, Status = AttendanceStatus.Absent },
+                // Lecture 1 (C# Programming - Group 1): للطالب الأول (StudentId = 1) حضور، وللثاني غياب، وللثالث بعذر
+                new Attendance { Id = 1, LectureId = 1, StudentId = 1, Status = AttendanceStatus.Present, Date = DateTime.Now.AddDays(-7) },
+                new Attendance { Id = 2, LectureId = 1, StudentId = 2, Status = AttendanceStatus.Absent, Date = DateTime.Now.AddDays(-7) },
+                new Attendance { Id = 3, LectureId = 1, StudentId = 3, Status = AttendanceStatus.Excused, Date = DateTime.Now.AddDays(-7) },
                 
-                // Lecture 2 (C# Programming - Group 1): Students 1, 3, 4 present
-                new Attendance { LectureId = 2, StudentId = 1, Status = AttendanceStatus.Present },
-                new Attendance { LectureId = 2, StudentId = 3, Status = AttendanceStatus.Present },
-                new Attendance { LectureId = 2, StudentId = 4, Status = AttendanceStatus.Present },
+                // Lecture 2 (C# Programming - Group 1)
+                new Attendance { Id = 4, LectureId = 2, StudentId = 1, Status = AttendanceStatus.Present, Date = DateTime.Now.AddDays(-5) },
+                new Attendance { Id = 5, LectureId = 2, StudentId = 2, Status = AttendanceStatus.Present, Date = DateTime.Now.AddDays(-5) },
 
-                // Lecture 3 (SQLite Database - Group 1): Students 2, 5 present
-                new Attendance { LectureId = 3, StudentId = 2, Status = AttendanceStatus.Present },
-                new Attendance { LectureId = 3, StudentId = 5, Status = AttendanceStatus.Present }
+                // Lecture 3 (C# Programming - Group 1)
+                new Attendance { Id = 6, LectureId = 3, StudentId = 1, Status = AttendanceStatus.Excused, Date = DateTime.Now.AddDays(-2) }
             );
             SaveChanges();
         }

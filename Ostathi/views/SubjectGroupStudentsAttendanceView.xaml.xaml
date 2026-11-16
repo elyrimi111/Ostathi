@@ -90,9 +90,7 @@
         <CollectionView Grid.Row="3"
                         ItemsSource="{Binding StudentsAttendanceList}"
                         SelectionMode="Single"
-                        SelectedItem="{Binding SelectedStudent}"
-                        SelectionChangedCommand="{Binding StudentSelectedCommand}"
-                        SelectionChangedCommandParameter="{Binding Source={RelativeSource Self}, Path=SelectedItem}">
+                        SelectedItem="{Binding SelectedStudent}">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
             </CollectionView.ItemsLayout>

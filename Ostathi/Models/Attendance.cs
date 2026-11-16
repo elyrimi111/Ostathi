@@ -19,6 +19,8 @@ public class Attendance
 
     public TimeSpan Time { get; set; }
 
-    // إضافة خاصية الحالة هنا
     public AttendanceStatus Status { get; set; } = AttendanceStatus.Present;
+
+    public int GroupSubjectId { get; set; }
+
 }
