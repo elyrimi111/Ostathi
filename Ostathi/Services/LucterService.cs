@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Ostathi.Services;
@@ -51,6 +53,39 @@ public class LucterService
         }
 
         return await _context.SaveChangesAsync();
+    }
+    
+    // Automatically generate default lectures up to a total of 12 for a specific group and subject
+    public async Task GenerateDefaultLecturesAsync(int groupId, string subjectName, string defaultHall = "قاعة 1", string defaultDay = "السبت")
+    {
+        // Fetch existing lectures count for this group and subject
+        var existingLectures = await _context.Lectures
+            .Where(l => l.GroupId == groupId && l.SubjectName == subjectName)
+            .ToListAsync();
+
+        int totalNeeded = 12;
+        int currentCount = existingLectures.Count;
+
+        // If we already have 12 or more, do nothing
+        if (currentCount >= totalNeeded) return;
+
+        var startDate = DateTime.Now;
+        // Generate the remaining lectures to reach 12
+        for (int i = currentCount + 1; i <= totalNeeded; i++)
+        {
+            var lecture = new Lecture
+            {
+                GroupId = groupId,
+                SubjectName = subjectName,
+                HallName = defaultHall,
+                Day = defaultDay,
+                LectureDate = startDate.AddDays((i - 1) * 7), // Weekly interval
+            };
+            _context.Lectures.Add(lecture);
+        }
+
+        await _context.SaveChangesAsync();
+        MessengerService.NotifyLectureAdded();
     }
 
     // Main save method that directs to either add or update based on ID

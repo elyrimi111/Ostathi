@@ -37,6 +37,7 @@ public static class MauiProgram
         builder.Services.AddTransient<MajorService>();
         builder.Services.AddTransient<GroupService>();
         builder.Services.AddTransient<GroupSubjectService>();
+        builder.Services.AddTransient<LucterService>();
 
         builder.Services.AddTransient<AddaUpdateStudentsViewModel>();
         builder.Services.AddTransient<AddUpdateStudent>();
@@ -61,8 +62,6 @@ public static class MauiProgram
         builder.Services.AddTransient<GroupAttendanceManagementPageViewModel>();
         builder.Services.AddTransient<GroupAttendanceManagementPage>();
         
-        builder.Services.AddTransient<LucterService>();
-        
         builder.Services.AddTransient<AcademicSettingsPage>();
         builder.Services.AddTransient<AcademicSettingsPageViewModel>();
 
@@ -79,10 +78,12 @@ public static class MauiProgram
 
         builder.Services.AddTransient<ManageSingleGroupSubjectViewModel>();
         builder.Services.AddTransient<ManageSingleGroupSubjectView>();
-
-        // تسجيل شاشة كشف حضور طلاب المادة والمجموعة الجديدة
+        
         builder.Services.AddTransient<SubjectGroupStudentsAttendanceViewModel>();
         builder.Services.AddTransient<SubjectGroupStudentsAttendanceView>();
+
+        builder.Services.AddTransient<SubjectGroupLecturesViewModel>();
+        builder.Services.AddTransient<SubjectGroupLecturesPage>();
 
 #if DEBUG
         builder.Logging.AddDebug();

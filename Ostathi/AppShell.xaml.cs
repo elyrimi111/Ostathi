@@ -62,5 +62,8 @@ public partial class AppShell : Shell
 
         // Route for Subject Group Students Attendance Matrix (NEW)
         Routing.RegisterRoute(nameof(SubjectGroupStudentsAttendanceView), typeof(SubjectGroupStudentsAttendanceView));
+
+        // Route for Subject Group Lectures Management (NEW)
+        Routing.RegisterRoute(nameof(SubjectGroupLecturesPage), typeof(SubjectGroupLecturesPage));
     }
 }

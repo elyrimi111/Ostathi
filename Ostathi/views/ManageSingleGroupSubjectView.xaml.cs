@@ -1,3 +1,6 @@
+using Microsoft.Maui.Controls;
+using Ostathi.ViewModels;
+
 namespace Ostathi;
 
 public partial class ManageSingleGroupSubjectView : ContentPage

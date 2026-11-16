@@ -6,7 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Controls;
 using Ostathi.Services;
 
-namespace Ostathi
+namespace Ostathi.ViewModels
 {
     // Automatically receive the target GroupSubject object via Shell navigation
     [QueryProperty(nameof(CurrentGroupSubject), "GroupSubject")]
@@ -39,10 +39,12 @@ namespace Ostathi
             // Open SubjectGroupStudentsAttendanceView with GroupId and SubjectId parameters
             OpenAttendanceCommand = new AsyncRelayCommand(OpenSubjectGroupAttendanceAsync);
 
+            // Open SubjectGroupLecturesPage with GroupId and SubjectId parameters
+            OpenLecturesCommand = new AsyncRelayCommand(OpenSubjectGroupLecturesAsync);
+
             OpenYearWorkCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(YearWorkPage)));
             OpenAssignmentsCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(AssignmentsPage)));
             OpenNotificationsCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(NotificationsPage)));
-            OpenLecturesCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(LecturesPage)));
             OpenMidtermCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(MidtermExamPage)));
             OpenFinalExamCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(FinalExamPage)));
         }
@@ -63,6 +65,25 @@ namespace Ostathi
             {
                 await Shell.Current.GoToAsync(
                     $"{nameof(SubjectGroupStudentsAttendanceView)}?GroupId={CurrentGroupSubject.GroupId}&SubjectId={CurrentGroupSubject.SubjectId}");
+            }
+        }
+
+        // Navigate to SubjectGroupLecturesPage passing GroupId and SubjectId
+        private async Task OpenSubjectGroupLecturesAsync()
+        {
+            if (CurrentGroupSubject == null)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlert("تنبيه", "الرجاء اختيار مادة المجموعة أولاً", "موافق");
+                }
+                return;
+            }
+
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync(
+                    $"{nameof(SubjectGroupLecturesPage)}?GroupId={CurrentGroupSubject.GroupId}&SubjectId={CurrentGroupSubject.SubjectId}");
             }
         }
 
