@@ -16,6 +16,9 @@ public class AppDbContext : DbContext
     public DbSet<MajorSubject> MajorSubjects => Set<MajorSubject>();
     public DbSet<Lecture> Lectures => Set<Lecture>();
     public DbSet<Attendance> Attendances => Set<Attendance>();
+    
+    // إضافة جدول التكاليف والواجبات هنا
+    public DbSet<Assignment> Assignments => Set<Assignment>();
 
     private readonly string _dbPath;
 
@@ -158,7 +161,6 @@ public class AppDbContext : DbContext
             SaveChanges();
 
             // 7. Seed Sample Lectures and Attendance Records for testing attendance matrix
-            // هذه المحاضرات مرتبطة بالمجموعة الأولى (GroupId = 1) ومادة "برمجة الحاسوب C#" (مطابقة تماماً للـ SubjectId = 1)
             var sampleLectures = new List<Lecture>
             {
                 new Lecture { Id = 1, GroupId = 1, SubjectName = "برمجة الحاسوب C#", HallName = "قاعة 1", Day = "السبت", LectureDate = DateTime.Now.AddDays(-7) },
@@ -170,17 +172,21 @@ public class AppDbContext : DbContext
 
             // Seed sample attendance data linking students to lectures with status
             Attendances.AddRange(
-                // Lecture 1 (C# Programming - Group 1): للطالب الأول (StudentId = 1) حضور، وللثاني غياب، وللثالث بعذر
                 new Attendance { Id = 1, LectureId = 1, StudentId = 1, Status = AttendanceStatus.Present, Date = DateTime.Now.AddDays(-7) },
                 new Attendance { Id = 2, LectureId = 1, StudentId = 2, Status = AttendanceStatus.Absent, Date = DateTime.Now.AddDays(-7) },
                 new Attendance { Id = 3, LectureId = 1, StudentId = 3, Status = AttendanceStatus.Excused, Date = DateTime.Now.AddDays(-7) },
                 
-                // Lecture 2 (C# Programming - Group 1)
                 new Attendance { Id = 4, LectureId = 2, StudentId = 1, Status = AttendanceStatus.Present, Date = DateTime.Now.AddDays(-5) },
                 new Attendance { Id = 5, LectureId = 2, StudentId = 2, Status = AttendanceStatus.Present, Date = DateTime.Now.AddDays(-5) },
 
-                // Lecture 3 (C# Programming - Group 1)
                 new Attendance { Id = 6, LectureId = 3, StudentId = 1, Status = AttendanceStatus.Excused, Date = DateTime.Now.AddDays(-2) }
+            );
+            SaveChanges();
+
+            // 8. (اختياري) إضافة تكاليف تجريبية أولية للاختبار
+            Assignments.AddRange(
+                new Assignment { Id = 1, GroupId = 1, SubjectName = "برمجة الحاسوب C#", Title = "تطبيق شاشة تسجيل الدخول", Description = "تصميم واجهة تسجيل دخول باستخدام MAUI", DueDate = DateTime.Now.AddDays(5) },
+                new Assignment { Id = 2, GroupId = 1, SubjectName = "برمجة الحاسوب C#", Title = "مشروع إدارة الطلاب", Description = "ربط التطبيق بقاعدة بيانات SQLite وإجراء عمليات CRUD", DueDate = DateTime.Now.AddDays(12) }
             );
             SaveChanges();
         }

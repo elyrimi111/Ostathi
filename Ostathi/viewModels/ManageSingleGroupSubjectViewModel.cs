@@ -42,8 +42,10 @@ namespace Ostathi.ViewModels
             // Open SubjectGroupLecturesPage with GroupId and SubjectId parameters
             OpenLecturesCommand = new AsyncRelayCommand(OpenSubjectGroupLecturesAsync);
 
+            // Open SubjectGroupAssignmentsPage with GroupId and SubjectId parameters
+            OpenAssignmentsCommand = new AsyncRelayCommand(OpenSubjectGroupAssignmentsAsync);
+
             OpenYearWorkCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(YearWorkPage)));
-            OpenAssignmentsCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(AssignmentsPage)));
             OpenNotificationsCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(NotificationsPage)));
             OpenMidtermCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(MidtermExamPage)));
             OpenFinalExamCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(FinalExamPage)));
@@ -84,6 +86,25 @@ namespace Ostathi.ViewModels
             {
                 await Shell.Current.GoToAsync(
                     $"{nameof(SubjectGroupLecturesPage)}?GroupId={CurrentGroupSubject.GroupId}&SubjectId={CurrentGroupSubject.SubjectId}");
+            }
+        }
+
+        // Navigate to SubjectGroupAssignmentsPage passing GroupId and SubjectId
+        private async Task OpenSubjectGroupAssignmentsAsync()
+        {
+            if (CurrentGroupSubject == null)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlert("تنبيه", "الرجاء اختيار مادة المجموعة أولاً", "موافق");
+                }
+                return;
+            }
+
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync(
+                    $"{nameof(SubjectGroupAssignmentsPage)}?GroupId={CurrentGroupSubject.GroupId}&SubjectId={CurrentGroupSubject.SubjectId}");
             }
         }
 

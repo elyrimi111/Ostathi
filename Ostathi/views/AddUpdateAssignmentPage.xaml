@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
+             x:Class="Ostathi.AddUpdateAssignmentPage"
+             Title="إضافة / تعديل تكليف"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- معلومات المقرر الدراسي -->
+            <Border BackgroundColor="{StaticResource DarkSurface}"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 14"
+                    Padding="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="المقرر الدراسي:" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                    <Label Text="{Binding SubjectName}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- حقول الإدخال -->
+            <VerticalStackLayout Spacing="16">
+
+                <!-- عنوان التكليف -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="عنوان التكليف" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                    <Entry Text="{Binding Title}"
+                           Placeholder="أدخل عنوان التكليف أو الواجب"
+                           BackgroundColor="{StaticResource DarkSurface}"
+                           TextColor="{StaticResource TextPrimary}"
+                           PlaceholderColor="{StaticResource TextSecondary}"
+                           HeightRequest="48"/>
+                </VerticalStackLayout>
+
+                <!-- تفاصيل / وصف التكليف -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="الوصف / التفاصيل" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                    <Editor Text="{Binding Description}"
+                            Placeholder="أدخل تفاصيل التكليف والمطلوب من الطلاب"
+                            BackgroundColor="{StaticResource DarkSurface}"
+                            TextColor="{StaticResource TextPrimary}"
+                            PlaceholderColor="{StaticResource TextSecondary}"
+                            HeightRequest="120"/>
+                </VerticalStackLayout>
+
+                <!-- تاريخ التسليم -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="تاريخ التسليم (Due Date)" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                    <DatePicker Date="{Binding DueDate}"
+                                BackgroundColor="{StaticResource DarkSurface}"
+                                TextColor="{StaticResource TextPrimary}"
+                                HeightRequest="48"/>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+
+            <!-- زر حفظ التكليف -->
+            <Button Text="حفظ التكليف"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold"
+                    FontSize="15"
+                    CornerRadius="12"
+                    HeightRequest="50"
+                    Margin="0,20,0,0"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

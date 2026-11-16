@@ -87,6 +87,12 @@ public static class MauiProgram
 
         builder.Services.AddTransient<LectureDetailsPage>();
         builder.Services.AddTransient<LectureDetailsViewModel>();
+        
+        builder.Services.AddTransient<SubjectGroupAssignmentsPage>();
+        builder.Services.AddTransient<SubjectGroupAssignmentsViewModel>();
+        
+        builder.Services.AddTransient<AddUpdateAssignmentPage>();
+        builder.Services.AddTransient<AddUpdateAssignmentViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

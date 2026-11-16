@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Ostathi.ViewModels"
+             x:Class="Ostathi.SubjectGroupAssignmentsPage"
+             Title="تكاليف وواجبات المادة"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, Auto, *" Padding="16" RowSpacing="14">
+
+        <!-- معلومات المجموعة والمادة -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                StrokeShape="RoundRectangle 14"
+                Padding="16,12">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{Binding GroupName}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                <Label Text="{Binding SubjectName, StringFormat='المقرر: {0}'}" FontSize="13" TextColor="{StaticResource AccentYellow}"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- شريط العنوان وزر الإضافة -->
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" VerticalOptions="Center">
+            <Label Grid.Column="0" Text="قائمة التكاليف والواجبات:" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
+            <Button Grid.Column="1"
+                    Text="+ إضافة تكليف جديد"
+                    Command="{Binding AddAssignmentCommand}"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold" FontSize="12" CornerRadius="10" HeightRequest="36" Padding="14,0"/>
+        </Grid>
+
+        <!-- قائمة التكاليف -->
+        <CollectionView Grid.Row="2" ItemsSource="{Binding AssignmentsList}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Padding="30">
+                    <Label Text="لا توجد تكاليف أو واجبات مسجلة لهذه المادة حتى الآن"
+                           FontSize="13" TextColor="{StaticResource TextSecondary}" HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" StrokeShape="RoundRectangle 14" Padding="14">
+                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" RowSpacing="6">
+                            
+                            <!-- عنوان التكليف -->
+                            <Label Grid.Row="0" Grid.Column="0" Text="{Binding Title}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+
+                            <!-- الوصف -->
+                            <Label Grid.Row="1" Grid.Column="0" Text="{Binding Description}" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+
+                            <!-- تاريخ التسليم -->
+                            <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="6" Margin="0,4,0,0">
+                                <Label Text="موعد التسليم:" FontSize="11" TextColor="{StaticResource AccentYellow}"/>
+                                <Label Text="{Binding DueDate, StringFormat='{0:yyyy/MM/dd}'}" FontSize="11" TextColor="{StaticResource TextSecondary}"/>
+                            </HorizontalStackLayout>
+
+                            <!-- زر الحذف -->
+                            <Button Grid.Row="0" Grid.RowSpan="3" Grid.Column="1"
+                                    Text="حذف"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:SubjectGroupAssignmentsViewModel}}, Path=DeleteAssignmentCommand}"
+                                    CommandParameter="{Binding}"
+                                    BackgroundColor="Transparent" TextColor="{StaticResource AccentCoral}" FontSize="12" VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>
