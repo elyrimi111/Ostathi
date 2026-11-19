@@ -53,7 +53,7 @@
                    VerticalOptions="Center"
                    HorizontalOptions="Center"/>
 
-            <!-- Left side: Quick Dynamic Attendance / Add Button (+) -->
+            <!-- Left side: Quick Additions / Add Button (+) -->
             <Grid Grid.Column="2"
                   VerticalOptions="Center"
                   HorizontalOptions="End"
@@ -61,7 +61,7 @@
                   WidthRequest="40">
                 
                 <Grid.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding OpenDynamicAttendanceCommand}"/>
+                    <TapGestureRecognizer Command="{Binding OpenQuickAdditionsCommand}"/>
                 </Grid.GestureRecognizers>
 
                 <Border WidthRequest="36"

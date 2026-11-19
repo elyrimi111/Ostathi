@@ -30,7 +30,7 @@ public static class MauiProgram
 
         builder.Services.AddTransient<LecturesPage>();
         builder.Services.AddTransient<LecturesViewModel>();
-        
+
         // Register database context and application services
         builder.Services.AddDbContext<AppDbContext>();
         builder.Services.AddTransient<StudentService>();
@@ -38,6 +38,7 @@ public static class MauiProgram
         builder.Services.AddTransient<GroupService>();
         builder.Services.AddTransient<GroupSubjectService>();
         builder.Services.AddTransient<LucterService>();
+        builder.Services.AddTransient<ExportService>();
 
         builder.Services.AddTransient<AddaUpdateStudentsViewModel>();
         builder.Services.AddTransient<AddUpdateStudent>();
@@ -56,12 +57,15 @@ public static class MauiProgram
         builder.Services.AddTransient<GroupDashboardViewModel>();
         builder.Services.AddTransient<GroupDashboardView>();
 
+        builder.Services.AddTransient<CreateHubPage>();
+        builder.Services.AddTransient<CreateHubViewModel>();
+
         builder.Services.AddTransient<AttendanceLogPageViewModel>();
         builder.Services.AddTransient<AttendanceLogPage>();
 
         builder.Services.AddTransient<GroupAttendanceManagementPageViewModel>();
         builder.Services.AddTransient<GroupAttendanceManagementPage>();
-        
+
         builder.Services.AddTransient<AcademicSettingsPage>();
         builder.Services.AddTransient<AcademicSettingsPageViewModel>();
 
@@ -69,7 +73,7 @@ public static class MauiProgram
 
         builder.Services.AddTransient<StudentAttendanceLogPageViewModel>();
         builder.Services.AddTransient<StudentAttendanceLogPage>();
-        
+
         builder.Services.AddTransient<StudentDetailsPageViewModel>();
         builder.Services.AddTransient<StudentDetailsPage>();
 
@@ -78,7 +82,7 @@ public static class MauiProgram
 
         builder.Services.AddTransient<ManageSingleGroupSubjectViewModel>();
         builder.Services.AddTransient<ManageSingleGroupSubjectView>();
-        
+
         builder.Services.AddTransient<SubjectGroupStudentsAttendanceViewModel>();
         builder.Services.AddTransient<SubjectGroupStudentsAttendanceView>();
 
@@ -87,37 +91,35 @@ public static class MauiProgram
 
         builder.Services.AddTransient<LectureDetailsPage>();
         builder.Services.AddTransient<LectureDetailsViewModel>();
-        
+
         builder.Services.AddTransient<SubjectGroupAssignmentsPage>();
         builder.Services.AddTransient<SubjectGroupAssignmentsViewModel>();
-        
+
         builder.Services.AddTransient<AddUpdateAssignmentPage>();
         builder.Services.AddTransient<AddUpdateAssignmentViewModel>();
-        
+
         builder.Services.AddTransient<AssignmentDetailManagementPage>();
         builder.Services.AddTransient<AssignmentDetailManagementViewModel>();
 
         // Register Notifications Page and ViewModel
         builder.Services.AddTransient<NotificationsPage>();
         builder.Services.AddTransient<NotificationsViewModel>();
-        
+
         // Register Subject Group Grades Services, ViewModels and Pages
         builder.Services.AddTransient<SubjectGroupStudentGradeService>();
-        
-        // ViewModel الخاص بنظرة عامة على درجات الطلاب (تم إضافته لمنع الخطأ)
+
+        // ViewModel الخاص بنظرة عامة على درجات الطلاب
         builder.Services.AddTransient<SubjectGroupGradesOverviewViewModel>();
         builder.Services.AddTransient<SubjectGroupGradesOverviewPage>();
 
         builder.Services.AddTransient<SubjectGroupStudentGradeViewModel>();
         builder.Services.AddTransient<SubjectGroupStudentGradeDetailsPage>();
-        
+
         builder.Services.AddTransient<StudentCommunicationPage>();
         builder.Services.AddTransient<StudentCommunicationViewModel>();
-        
+
         builder.Services.AddTransient<ExportMasterPage>();
-builder.Services.AddTransient<ExportMasterViewModel>();
-
-
+        builder.Services.AddTransient<ExportMasterViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

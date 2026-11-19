@@ -56,7 +56,7 @@ namespace Ostathi.ViewModels
         public ICommand NotificationsCommand { get; }
         public ICommand ScheduleCommand { get; }
         public ICommand GroupsCommand { get; }
-        public ICommand OpenDynamicAttendanceCommand { get; }
+        public ICommand OpenQuickAdditionsCommand { get; }
         public ICommand OpenScheduleManagementCommand { get; }
 
         private bool _isSidebarVisible;
@@ -105,7 +105,7 @@ namespace Ostathi.ViewModels
             ScheduleCommand = new Command(async () => await OnScheduleExecutedAsync());
             GroupsCommand = new Command(async () => await OnGroupsExecutedAsync());
             
-            OpenDynamicAttendanceCommand = new Command(OnOpenDynamicAttendanceExecuted);
+            OpenQuickAdditionsCommand = new Command(OnOpenQuickAdditionsExecuted);
             OpenScheduleManagementCommand = new Command(OnOpenScheduleManagementExecuted);
         }
 
@@ -144,8 +144,8 @@ namespace Ostathi.ViewModels
             await Shell.Current.Navigation.PushAsync(settingsPage);
         }
 
-        // Navigate to Dynamic Attendance / Hub creation page
-        private async void OnOpenDynamicAttendanceExecuted()
+        // Navigate to Quick Additions / Hub creation page
+        private async void OnOpenQuickAdditionsExecuted()
         {
             await Shell.Current.GoToAsync(nameof(CreateHubPage));
         }
