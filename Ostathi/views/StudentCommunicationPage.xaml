@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.StudentCommunicationPage"
+             Title="التواصل مع الطلاب والمندوب"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- بطاقة معلومات والتواصل مع مندوب المجموعة -->
+            <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="18">
+                <VerticalStackLayout Spacing="14">
+                    <Label Text="مندوب المجموعة" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                    
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="{Binding RepresentativeName, TargetNullValue='لم يتم تعيين مندوب لهذه المجموعة'}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                        <Label Text="{Binding RepresentativePhone, TargetNullValue='لا يوجد رقم هاتف مسجل'}" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                    </VerticalStackLayout>
+
+                    <!-- أزرار الاتصال والواتساب للمندوب -->
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,4,0,0">
+                        <Button Grid.Column="0" 
+                                Text="📞 اتصال هاتفي" 
+                                Command="{Binding CallRepresentativeCommand}"
+                                BackgroundColor="{StaticResource DarkBackground}"
+                                TextColor="{StaticResource TextPrimary}"
+                                CornerRadius="12"
+                                HeightRequest="46"/>
+
+                        <Button Grid.Column="1" 
+                                Text="💬 رسالة واتساب" 
+                                Command="{Binding OpenWhatsAppRepresentativeCommand}"
+                                BackgroundColor="#25D366"
+                                TextColor="White"
+                                FontAttributes="Bold"
+                                CornerRadius="12"
+                                HeightRequest="46"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- بطاقة إرسال تعميم / رسالة جماعية عبر الواتساب -->
+            <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="18">
+                <VerticalStackLayout Spacing="16">
+                    <Label Text="إرسال تعميم عام لطلاب المجموعة" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="عنوان الرسالة / التنبيه" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        <Entry Text="{Binding MessageTitle}" 
+                               Placeholder="مثال: تأجيل محاضرة / موعد اختبار" 
+                               BackgroundColor="{StaticResource DarkBackground}" 
+                               TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="نص الرسالة والتفاصيل" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        <Editor Text="{Binding MessageBody}" 
+                                Placeholder="اكتب تفاصيل الإعلان هنا..." 
+                                HeightRequest="120" 
+                                BackgroundColor="{StaticResource DarkBackground}" 
+                                TextColor="{StaticResource TextPrimary}" />
+                    </VerticalStackLayout>
+
+                    <Button Text="📤 إرسال عبر واتساب للمجموعة" 
+                            Command="{Binding BroadcastMessageCommand}"
+                            BackgroundColor="{StaticResource AccentYellow}"
+                            TextColor="{StaticResource DarkBackground}"
+                            FontAttributes="Bold"
+                            CornerRadius="14"
+                            HeightRequest="48"/>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

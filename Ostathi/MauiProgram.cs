@@ -97,6 +97,27 @@ public static class MauiProgram
         builder.Services.AddTransient<AssignmentDetailManagementPage>();
         builder.Services.AddTransient<AssignmentDetailManagementViewModel>();
 
+        // Register Notifications Page and ViewModel
+        builder.Services.AddTransient<NotificationsPage>();
+        builder.Services.AddTransient<NotificationsViewModel>();
+        
+        // Register Subject Group Grades Services, ViewModels and Pages
+        builder.Services.AddTransient<SubjectGroupStudentGradeService>();
+        
+        // ViewModel الخاص بنظرة عامة على درجات الطلاب (تم إضافته لمنع الخطأ)
+        builder.Services.AddTransient<SubjectGroupGradesOverviewViewModel>();
+        builder.Services.AddTransient<SubjectGroupGradesOverviewPage>();
+
+        builder.Services.AddTransient<SubjectGroupStudentGradeViewModel>();
+        builder.Services.AddTransient<SubjectGroupStudentGradeDetailsPage>();
+        
+        builder.Services.AddTransient<StudentCommunicationPage>();
+        builder.Services.AddTransient<StudentCommunicationViewModel>();
+        
+        builder.Services.AddTransient<ExportMasterPage>();
+builder.Services.AddTransient<ExportMasterViewModel>();
+
+
 
 #if DEBUG
         builder.Logging.AddDebug();

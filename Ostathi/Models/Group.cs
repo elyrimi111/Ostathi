@@ -25,5 +25,6 @@ public class Group
     // Foreign key for the related Major entity
     public int MajorId { get; set; }
 
-    
+    // Foreign key for the Group Representative (Student Id) - Nullable in case no representative is assigned yet
+    public int? RepresentativeStudentId { get; set; }
 }

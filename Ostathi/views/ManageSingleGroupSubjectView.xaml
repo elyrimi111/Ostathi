@@ -6,7 +6,7 @@
              FlowDirection="RightToLeft"
              Title="إدارة مادة المجموعة">
 
-    <!-- Grid رئيسي يملأ الشاشة بالكامل بدون ScrollView لضمان ملء الفراغ السفلي -->
+    <!-- Grid رئيسي يملأ الشاشة بالكامل -->
     <Grid Padding="16" RowDefinitions="Auto, Auto, Auto, *" RowSpacing="12">
 
         <!-- 1. رأس الصفحة (Header) -->
@@ -40,26 +40,14 @@
         <!-- 3. عنوان فرعي للخدمات -->
         <Label Grid.Row="2" Text="الخدمات والعمليات السريعة" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" Margin="2,4,2,0"/>
 
-        <!-- 4. شبكة المربعات السفلية لتملأ باقي المساحة حتى أسفل الشاشة تماماً -->
+        <!-- 4. شبكة المربعات السفلية (5 عناصر موزعة بذكاء على 3 صفوف) -->
         <Grid Grid.Row="3" 
               ColumnDefinitions="*, *" ColumnSpacing="12" 
               RowDefinitions="*, *, *" RowSpacing="10" 
               VerticalOptions="Fill" HorizontalOptions="Fill">
             
-            <!-- أعمال السنة -->
-            <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
-                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenYearWorkCommand}"/></Border.GestureRecognizers>
-                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
-                    <Label Grid.Column="0" Text="📊" FontSize="24" VerticalOptions="Center"/>
-                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                        <Label Text="أعمال السنة" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                        <Label Text="درجات وقياسات الأداء" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}"/>
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
-
             <!-- سجل الحضور -->
-            <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
+            <Border Grid.Row="0" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenAttendanceCommand}"/></Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
                     <Label Grid.Column="0" Text="📋" FontSize="24" VerticalOptions="Center"/>
@@ -70,20 +58,8 @@
                 </Grid>
             </Border>
 
-            <!-- الإشعارات -->
-            <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
-                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenNotificationsCommand}"/></Border.GestureRecognizers>
-                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
-                    <Label Grid.Column="0" Text="📢" FontSize="24" VerticalOptions="Center"/>
-                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                        <Label Text="الإشعارات" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                        <Label Text="تنبيهات وتوجيهات" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}"/>
-                    </VerticalStackLayout>
-                </Grid>
-            </Border>
-
             <!-- التكاليف -->
-            <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
+            <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenAssignmentsCommand}"/></Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
                     <Label Grid.Column="0" Text="⏰" FontSize="24" VerticalOptions="Center"/>
@@ -94,26 +70,38 @@
                 </Grid>
             </Border>
 
-            <!-- الدرجات -->
-            <Border Grid.Row="2" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
-                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenGradesCommand}"/></Border.GestureRecognizers>
+            <!-- التواصل مع الطلاب والمندوب (البطاقة المحدثة بدلاً من الإشعارات) -->
+            <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
+                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenStudentCommunicationCommand}"/></Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
-                    <Label Grid.Column="0" Text="🎓" FontSize="24" VerticalOptions="Center"/>
+                    <Label Grid.Column="0" Text="💬" FontSize="24" VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                        <Label Text="الدرجات" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                        <Label Text="النتائج والتقييم النهائي" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}"/>
+                        <Label Text="التواصل والـمندوب" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="اتصال، واتساب وتعاميم" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}"/>
                     </VerticalStackLayout>
                 </Grid>
             </Border>
 
             <!-- المحاضرات -->
-            <Border Grid.Row="2" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
+            <Border Grid.Row="1" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenLecturesCommand}"/></Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
                     <Label Grid.Column="0" Text="🏛️" FontSize="24" VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                         <Label Text="المحاضرات" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
                         <Label Text="محتوى وجداول الدروس" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- الدرجات (تمتد على العمودين في الصف الأخير لتكون بارزة ومتناسقة) -->
+            <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
+                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenGradesCommand}"/></Border.GestureRecognizers>
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Grid.Column="0" Text="🎓" FontSize="24" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                        <Label Text="الدرجات" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalTextAlignment="Center"/>
+                        <Label Text="النتائج والتقييم النهائي" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}" HorizontalTextAlignment="Center"/>
                     </VerticalStackLayout>
                 </Grid>
             </Border>

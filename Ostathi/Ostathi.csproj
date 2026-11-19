@@ -88,6 +88,15 @@
     <MauiXaml Include="views/AddUpdateAssignmentPage.xaml" />
     <MauiXaml Include="views/AssignmentDetailsPage.xaml" />
     <Compile Remove="views/AssignmentDetailsPage.xaml.cs" />
+    <MauiXaml Include="views/GradesPage.xaml" />
+    <Compile Remove="Models/StudentGrade.cs" />
+    <Compile Remove="Models/SubjectGroupStudentGradeService.cs" />
+    <Compile Remove="views/GradesPage.xaml.cs" />
+    <Compile Remove="viewModels/GradesViewModel.cs" />
+    <Compile Remove="Services/StudentGradeService.cs" />
+    <MauiXaml Include="views/SubjectGroupGradesOverviewPage.xaml" />
+    <MauiXaml Include="views/SubjectGroupStudentGradeDetailsPage.xaml" />
+    <MauiXaml Include="views/StudentCommunicationPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\*" />

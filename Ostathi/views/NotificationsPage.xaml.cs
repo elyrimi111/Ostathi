@@ -2,8 +2,9 @@ namespace Ostathi;
 
 public partial class NotificationsPage : ContentPage
 {
-    public NotificationsPage()
+    public NotificationsPage(NotificationsViewModel viewModel)
     {
         InitializeComponent();
+        BindingContext = viewModel;
     }
 }

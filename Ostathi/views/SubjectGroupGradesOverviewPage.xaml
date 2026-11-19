@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Ostathi.ViewModels"
+             x:Class="Ostathi.SubjectGroupGradesOverviewPage"
+             Title="درجات طلاب المجموعة"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <Grid RowDefinitions="Auto, *" Padding="20" RowSpacing="16">
+        
+        <!-- Header description -->
+        <VerticalStackLayout Grid.Row="0" Spacing="4">
+            <Label Text="درجات طلاب المجموعة" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+            <Label Text="اضغط على بطاقة أي طالب لعرض وتعديل تفاصيل درجاته" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+        </VerticalStackLayout>
+
+        <!-- Students Grades Collection -->
+        <CollectionView Grid.Row="1" 
+                        ItemsSource="{Binding StudentGradesList}"
+                        SelectedItem="{Binding SelectedStudentGrade}"
+                        SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Margin="0,8" Padding="18" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0">
+                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
+                            
+                            <!-- Student Info -->
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="0" Spacing="3" VerticalOptions="Center">
+                                <Label Text="{Binding StudentFullName}" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="{Binding AcademicId, StringFormat='الرقم الجامعي: {0}'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                            </VerticalStackLayout>
+
+                            <!-- Total Badge -->
+                            <Border Grid.Row="0" Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 12" Padding="12,6" StrokeThickness="0" VerticalOptions="Center" HorizontalOptions="End">
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label Text="المجموع:" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextSecondary}" />
+                                    <Label Text="{Binding Total, StringFormat='{0:F1}'}" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                                </HorizontalStackLayout>
+                            </Border>
+
+                            <BoxView Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="1" BackgroundColor="{StaticResource DarkBackground}" Opacity="0.6"/>
+
+                            <!-- Grades Breakdown Details -->
+                            <Grid Grid.Row="2" Grid.ColumnSpan="2" ColumnDefinitions="*, *, *, *" ColumnSpacing="6">
+                                
+                                <Border Grid.Column="0" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8" StrokeThickness="0">
+                                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                        <Label Text="حضور" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding Attendance, StringFormat='{0:F1}'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border Grid.Column="1" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8" StrokeThickness="0">
+                                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                        <Label Text="تكاليف" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding Assignments, StringFormat='{0:F1}'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border Grid.Column="2" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8" StrokeThickness="0">
+                                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                        <Label Text="نصفي" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding Midterm, StringFormat='{0:F1}'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                                <Border Grid.Column="3" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 10" Padding="8" StrokeThickness="0">
+                                    <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                                        <Label Text="نهائي" FontSize="11" TextColor="{StaticResource TextSecondary}" HorizontalOptions="Center"/>
+                                        <Label Text="{Binding Final, StringFormat='{0:F1}'}" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Border>
+
+                            </Grid>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>

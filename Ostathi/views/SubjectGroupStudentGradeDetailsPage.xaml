@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.SubjectGroupStudentGradeDetailsPage"
+             Title="تفاصيل وتعديل درجات الطالب"
+             BackgroundColor="{StaticResource DarkBackground}"
+             FlowDirection="RightToLeft">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Student Info Card -->
+            <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="18">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{Binding StudentFullName}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="{Binding AcademicId, StringFormat='الرقم الجامعي: {0}'}" FontSize="13" TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Total Score Preview Card -->
+            <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="16">
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <Label Grid.Column="0" Text="المجموع الكلي للدرجات:" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" VerticalOptions="Center"/>
+                    <Label Grid.Column="1" Text="{Binding Total, StringFormat='{0:F1}'}" FontSize="20" FontAttributes="Bold" TextColor="{StaticResource AccentLime}" VerticalOptions="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Grade Inputs Card -->
+            <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="20">
+                <VerticalStackLayout Spacing="16">
+
+                    <!-- Attendance -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="درجة الحضور والغياب" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                        <Entry Text="{Binding Attendance}" Keyboard="Numeric" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" Placeholder="0" />
+                    </VerticalStackLayout>
+
+                    <!-- Assignments -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="درجة التكاليف والواجبات" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                        <Entry Text="{Binding Assignments}" Keyboard="Numeric" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" Placeholder="0" />
+                    </VerticalStackLayout>
+
+                    <!-- Midterm -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="درجة الاختبار النصفي" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                        <Entry Text="{Binding Midterm}" Keyboard="Numeric" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" Placeholder="0" />
+                    </VerticalStackLayout>
+
+                    <!-- Final -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="درجة الاختبار النهائي" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                        <Entry Text="{Binding Final}" Keyboard="Numeric" BackgroundColor="{StaticResource DarkBackground}" TextColor="{StaticResource TextPrimary}" Placeholder="0" />
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Action Buttons -->
+            <HorizontalStackLayout Spacing="12" HorizontalOptions="Center" Margin="0,10,0,0">
+                <Button Text="حفظ التعديلات" 
+                        Command="{Binding SaveCommand}" 
+                        BackgroundColor="{StaticResource AccentYellow}" 
+                        TextColor="{StaticResource DarkBackground}" 
+                        FontAttributes="Bold" 
+                        CornerRadius="14" 
+                        HeightRequest="48" 
+                        WidthRequest="160"/>
+
+                <Button Text="حذف السجل" 
+                        Command="{Binding DeleteCommand}" 
+                        BackgroundColor="#D32F2F" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        CornerRadius="14" 
+                        HeightRequest="48" 
+                        WidthRequest="130"/>
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
