@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
-using Ostathi.Models;
 using Ostathi.Services;
 
 namespace Ostathi
@@ -17,7 +17,6 @@ namespace Ostathi
         private readonly AppDbContext _dbContext;
         private readonly LucterService _lecturesService;
 
-        // Group ID passed via Shell navigation
         private int _groupId;
         public int GroupId
         {
@@ -33,7 +32,6 @@ namespace Ostathi
             }
         }
 
-        // Current group details model for the GroupCard
         private Group? _currentGroup;
         public Group? CurrentGroup
         {
@@ -41,7 +39,6 @@ namespace Ostathi
             set => SetProperty(ref _currentGroup, value);
         }
 
-        // Currently selected day for filtering (Default: السبت)
         private string _selectedDay = "السبت";
         public string SelectedDay
         {
@@ -57,7 +54,6 @@ namespace Ostathi
             }
         }
 
-        // Total lectures count for stats
         private int _totalLectures;
         public int TotalLectures
         {
@@ -65,7 +61,6 @@ namespace Ostathi
             set => SetProperty(ref _totalLectures, value);
         }
 
-        // Completed lectures count for stats
         private int _completedLectures;
         public int CompletedLectures
         {
@@ -73,13 +68,11 @@ namespace Ostathi
             set => SetProperty(ref _completedLectures, value);
         }
 
-        // Full list of lectures fetched from DB for this group
         private List<Lecture> _allGroupLectures = new();
+        private HashSet<int> _takenLectureIds = new();
 
-        // Filtered collection of lectures displayed in the UI based on SelectedDay
         public ObservableCollection<Lecture> LecturesList { get; } = new();
 
-        // UI Commands
         public ICommand ClosePageCommand { get; }
         public ICommand SelectDayCommand { get; }
         public ICommand AddLectureCommand { get; }
@@ -90,9 +83,14 @@ namespace Ostathi
             _dbContext = dbContext;
             _lecturesService = lecturesService;
 
-            // Initialize commands
             ClosePageCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
-            SelectDayCommand = new Command<string>(day => SelectedDay = day);
+            SelectDayCommand = new Command<string>(day =>
+            {
+                if (!string.IsNullOrWhiteSpace(day))
+                {
+                    SelectedDay = day;
+                }
+            });
             AddLectureCommand = new Command(async () => await NavigateToAddLectureAsync());
             RefreshCommand = new Command(async () => await LoadPageDataAsync());
         }
@@ -106,19 +104,41 @@ namespace Ostathi
             {
                 if (GroupId <= 0) return;
 
-                // 1. Fetch Group Details (Without .Include since Major is referenced by MajorId)
+                // 1. Fetch Group Details (Foreign key MajorId only)
                 CurrentGroup = await _dbContext.Groups
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(g => g.Id == GroupId);
 
-                // 2. Fetch all lectures associated with this Group
+                // 2. Get all GroupSubject IDs belonging to this Group
+                var groupSubjectIds = await _dbContext.GroupSubjects
+                    .AsNoTracking()
+                    .Where(gs => gs.GroupId == GroupId)
+                    .Select(gs => gs.Id)
+                    .ToListAsync();
+
+                // 3. Fetch all non-cancelled lectures associated with those GroupSubjects
                 var allLectures = await _lecturesService.GetAllLecturesAsync();
-                _allGroupLectures = allLectures.Where(l => l.GroupId == GroupId).ToList();
+                _allGroupLectures = allLectures
+                    .Where(l => !l.IsCancelled &&
+                                l.GroupSubjectId.HasValue &&
+                                groupSubjectIds.Contains(l.GroupSubjectId.Value))
+                    .OrderBy(l => l.StartTime)
+                    .ToList();
 
-                // 3. Update Statistics (Consider lectures with past or current dates as completed)
+                // 4. Fetch taken lectures from GroupSubjectLucters
+                var takenIds = await _dbContext.GroupSubjectLucters
+                    .AsNoTracking()
+                    .Where(x => groupSubjectIds.Contains(x.GroupSubjectId) && x.IsTaken)
+                    .Select(x => x.LectureId)
+                    .ToListAsync();
+
+                _takenLectureIds = takenIds.ToHashSet();
+
+                // 5. Update Statistics
                 TotalLectures = _allGroupLectures.Count;
-                CompletedLectures = _allGroupLectures.Count(l => l.LectureDate <= DateTime.Now);
+                CompletedLectures = _allGroupLectures.Count(l => _takenLectureIds.Contains(l.Id));
 
-                // 4. Apply filter for the initially selected day
+                // 6. Apply filter for the initially selected day
                 FilterLecturesByDay();
             }
             catch (Exception ex)
@@ -135,14 +155,15 @@ namespace Ostathi
         /// </summary>
         private void FilterLecturesByDay()
         {
+            var targetWeekDay = ScheduleManagementViewModel.ParseArabicDayName(SelectedDay);
+
+            var filtered = targetWeekDay.HasValue
+                ? _allGroupLectures.Where(l => l.DayOfWeek == targetWeekDay.Value).ToList()
+                : new List<Lecture>();
+
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 LecturesList.Clear();
-
-                var filtered = _allGroupLectures
-                    .Where(l => string.Equals(l.Day, SelectedDay, StringComparison.OrdinalIgnoreCase))
-                    .ToList();
-
                 foreach (var lecture in filtered)
                 {
                     LecturesList.Add(lecture);

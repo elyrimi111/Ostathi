@@ -15,13 +15,25 @@ public class GroupSubjectService
         _dbContext = new AppDbContext();
     }
 
+    public async Task<GroupSubject?> GetByIdAsync(int groupSubjectId)
+    {
+        try
+        {
+            return await _dbContext.GroupSubjects
+                .FirstOrDefaultAsync(gs => gs.Id == groupSubjectId);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     // Get all subjects assigned to a specific group
     public async Task<List<GroupSubject>> GetSubjectsForGroupAsync(int groupId)
     {
         try
         {
             return await _dbContext.GroupSubjects
-                .Include(gs => gs.Subject)
                 .Where(gs => gs.GroupId == groupId)
                 .ToListAsync();
         }
@@ -36,12 +48,11 @@ public class GroupSubjectService
     {
         try
         {
-            // Check if the relation already exists
             var existing = await _dbContext.GroupSubjects
                 .FirstOrDefaultAsync(gs => gs.GroupId == groupId && gs.SubjectId == subjectId);
 
             if (existing != null)
-                return false; // Already assigned
+                return false;
 
             var groupSubject = new GroupSubject
             {
@@ -50,6 +61,37 @@ public class GroupSubjectService
             };
 
             _dbContext.GroupSubjects.Add(groupSubject);
+            await _dbContext.SaveChangesAsync();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    // Update an existing GroupSubject record
+    public async Task<bool> UpdateGroupSubjectAsync(int groupSubjectId, int newGroupId, int newSubjectId)
+    {
+        try
+        {
+            var existingRecord = await _dbContext.GroupSubjects
+                .FirstOrDefaultAsync(gs => gs.Id == groupSubjectId);
+
+            if (existingRecord == null)
+                return false;
+
+            var duplicate = await _dbContext.GroupSubjects
+                .FirstOrDefaultAsync(gs => gs.Id != groupSubjectId &&
+                                           gs.GroupId == newGroupId &&
+                                           gs.SubjectId == newSubjectId);
+
+            if (duplicate != null)
+                return false;
+
+            existingRecord.GroupId = newGroupId;
+            existingRecord.SubjectId = newSubjectId;
+
             await _dbContext.SaveChangesAsync();
             return true;
         }

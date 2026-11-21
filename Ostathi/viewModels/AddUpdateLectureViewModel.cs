@@ -1,14 +1,19 @@
 using System;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Controls;
+using Ostathi.Services;
 
 namespace Ostathi;
 
 [QueryProperty(nameof(LectureId), "LectureId")]
+[QueryProperty(nameof(GroupSubjectId), "GroupSubjectId")]
+[QueryProperty(nameof(GroupId), "GroupId")]
 public class AddUpdateLectureViewModel : BindableObject
 {
     private readonly LucterService _lucterService;
+    private readonly AppDbContext _dbContext;
 
     private int _lectureId;
     public int LectureId
@@ -17,9 +22,24 @@ public class AddUpdateLectureViewModel : BindableObject
         set
         {
             _lectureId = value;
+            OnPropertyChanged(nameof(LectureId));
             if (_lectureId > 0)
             {
                 _ = LoadLectureDataAsync(_lectureId);
+            }
+        }
+    }
+
+    private int _groupSubjectId;
+    public int GroupSubjectId
+    {
+        get => _groupSubjectId;
+        set
+        {
+            if (_groupSubjectId != value)
+            {
+                _groupSubjectId = value;
+                OnPropertyChanged(nameof(GroupSubjectId));
             }
         }
     }
@@ -34,6 +54,10 @@ public class AddUpdateLectureViewModel : BindableObject
             {
                 _groupId = value;
                 OnPropertyChanged(nameof(GroupId));
+                if (_groupId > 0 && GroupSubjectId <= 0)
+                {
+                    _ = ResolveGroupSubjectFromGroupAsync(_groupId);
+                }
             }
         }
     }
@@ -66,71 +90,161 @@ public class AddUpdateLectureViewModel : BindableObject
         }
     }
 
+    private DateTime _lectureDate = DateTime.Today;
+    public DateTime LectureDate
+    {
+        get => _lectureDate;
+        set
+        {
+            if (_lectureDate != value)
+            {
+                _lectureDate = value;
+                OnPropertyChanged(nameof(LectureDate));
+            }
+        }
+    }
+
+    private TimeSpan _startTime = new(8, 0, 0);
+    public TimeSpan StartTime
+    {
+        get => _startTime;
+        set
+        {
+            if (_startTime != value)
+            {
+                _startTime = value;
+                OnPropertyChanged(nameof(StartTime));
+            }
+        }
+    }
+
+    private TimeSpan _endTime = new(9, 30, 0);
+    public TimeSpan EndTime
+    {
+        get => _endTime;
+        set
+        {
+            if (_endTime != value)
+            {
+                _endTime = value;
+                OnPropertyChanged(nameof(EndTime));
+            }
+        }
+    }
+
+    private bool _isCancelled;
+    public bool IsCancelled
+    {
+        get => _isCancelled;
+        set
+        {
+            if (_isCancelled != value)
+            {
+                _isCancelled = value;
+                OnPropertyChanged(nameof(IsCancelled));
+            }
+        }
+    }
+
     public ICommand SaveLectureCommand { get; }
     public ICommand DeleteLectureCommand { get; }
     public ICommand CancelCommand { get; }
 
-    // Constructor with Dependency Injection for LucterService
-    public AddUpdateLectureViewModel(LucterService lucterService)
+    public AddUpdateLectureViewModel(LucterService lucterService, AppDbContext dbContext)
     {
         _lucterService = lucterService;
+        _dbContext = dbContext;
 
         SaveLectureCommand = new Command(async () => await OnSaveLectureExecuted());
         DeleteLectureCommand = new Command(async () => await OnDeleteLectureExecuted());
         CancelCommand = new Command(async () => await OnCancelExecuted());
     }
 
-    // Load existing lecture data for editing
+    private async Task ResolveGroupSubjectFromGroupAsync(int groupId)
+    {
+        var groupSubject = await _dbContext.GroupSubjects
+            .FirstOrDefaultAsync(gs => gs.GroupId == groupId);
+        if (groupSubject != null)
+        {
+            GroupSubjectId = groupSubject.Id;
+        }
+    }
+
     private async Task LoadLectureDataAsync(int id)
     {
         var lecture = await _lucterService.GetLectureByIdAsync(id);
         if (lecture != null)
         {
-            GroupId = lecture.GroupId;
-            SelectedDay = !string.IsNullOrEmpty(lecture.Day) ? lecture.Day : "السبت";
+            GroupSubjectId = lecture.GroupSubjectId ?? 0;
+            SelectedDay = ScheduleManagementViewModel.ToArabicDayName(lecture.DayOfWeek);
             HallName = lecture.HallName;
+            LectureDate = lecture.LectureDate;
+            StartTime = lecture.StartTime.ToTimeSpan();
+            EndTime = lecture.EndTime.ToTimeSpan();
+            IsCancelled = lecture.IsCancelled;
         }
     }
 
-    // Save or update lecture logic with Success/Failure alerts
     private async Task OnSaveLectureExecuted()
     {
         try
         {
+            if (GroupSubjectId <= 0 && GroupId > 0)
+            {
+                await ResolveGroupSubjectFromGroupAsync(GroupId);
+            }
+
+            if (GroupSubjectId <= 0)
+            {
+                await Shell.Current.DisplayAlert("تنبيه", "يرجى تحديد مجموعة المادة أولاً.", "موافق");
+                return;
+            }
+
+            if (EndTime <= StartTime)
+            {
+                await Shell.Current.DisplayAlert("تنبيه", "وقت النهاية يجب أن يكون بعد وقت البداية.", "موافق");
+                return;
+            }
+
+            var parsedDay = ScheduleManagementViewModel.ParseArabicDayName(SelectedDay) ?? WeekDay.Saturday;
+
             var lecture = new Lecture
             {
                 Id = LectureId,
-                GroupId = GroupId,
-                Day = SelectedDay ?? "السبت",
-                HallName = HallName ?? string.Empty
+                GroupSubjectId = GroupSubjectId,
+                DayOfWeek = parsedDay,
+                HallName = HallName?.Trim() ?? string.Empty,
+                LectureDate = LectureDate,
+                StartTime = TimeOnly.FromTimeSpan(StartTime),
+                EndTime = TimeOnly.FromTimeSpan(EndTime),
+                IsCancelled = IsCancelled
             };
 
             await _lucterService.SaveLectureAsync(lecture);
 
-            await Shell.Current.DisplayAlert("Success", "Lecture saved successfully.", "OK");
+            await Shell.Current.DisplayAlert("نجاح", "تم حفظ بيانات المحاضرة بنجاح.", "موافق");
             await Shell.Current.GoToAsync("..");
         }
         catch (Exception ex)
         {
             var errorMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            await Shell.Current.DisplayAlert("Error", $"Failed to save lecture: {errorMsg}", "OK");
+            await Shell.Current.DisplayAlert("خطأ", $"فشل حفظ المحاضرة: {errorMsg}", "موافق");
         }
     }
 
-    // Delete lecture logic with Confirmation Alert
     private async Task OnDeleteLectureExecuted()
     {
         if (LectureId == 0)
         {
-            await Shell.Current.DisplayAlert("Notice", "No lecture to delete.", "OK");
+            await Shell.Current.DisplayAlert("تنبيه", "لا توجد محاضرة لحذفها.", "موافق");
             return;
         }
 
         bool isConfirmed = await Shell.Current.DisplayAlert(
-            "Confirm Delete", 
-            "Are you sure you want to delete this lecture?", 
-            "Yes, Delete", 
-            "Cancel");
+            "تأكيد الحذف",
+            "هل أنت متأكد من حذف هذه المحاضرة؟",
+            "نعم، احذف",
+            "إلغاء");
 
         if (isConfirmed)
         {
@@ -140,20 +254,18 @@ public class AddUpdateLectureViewModel : BindableObject
                 if (lecture != null)
                 {
                     await _lucterService.DeleteLectureAsync(lecture);
-                    await Shell.Current.DisplayAlert("Success", "Lecture deleted successfully.", "OK");
-                    
+                    await Shell.Current.DisplayAlert("نجاح", "تم حذف المحاضرة بنجاح.", "موافق");
                     await Shell.Current.GoToAsync("..");
                 }
             }
             catch (Exception ex)
             {
                 var errorMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                await Shell.Current.DisplayAlert("Error", $"Failed to delete lecture: {errorMsg}", "OK");
+                await Shell.Current.DisplayAlert("خطأ", $"فشل حذف المحاضرة: {errorMsg}", "موافق");
             }
         }
     }
 
-    // Cancel and return back
     private async Task OnCancelExecuted()
     {
         await Shell.Current.GoToAsync("..");

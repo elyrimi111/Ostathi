@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Ostathi.Services;
 
@@ -11,24 +12,55 @@ namespace Ostathi;
 public class ScheduleManagementViewModel : BindableObject
 {
     private readonly LucterService _lucterService;
+    private readonly ScheduleService _scheduleService;
 
-    private string _selectedDay = "السبت"; // Default to Saturday
-    public string SelectedDay
+    private WeekDay _selectedWeekDay = WeekDay.Saturday;
+    public WeekDay SelectedWeekDay
     {
-        get => _selectedDay;
+        get => _selectedWeekDay;
         set
         {
-            if (_selectedDay != value)
+            if (_selectedWeekDay != value)
             {
-                _selectedDay = value;
+                _selectedWeekDay = value;
+                OnPropertyChanged(nameof(SelectedWeekDay));
                 OnPropertyChanged(nameof(SelectedDay));
-                // Automatically reload and filter lectures when the selected day changes
                 _ = LoadLecturesAsync();
             }
         }
     }
 
-    // List of lectures bound to the UI
+    // إبقاء SelectedDay لسهولة الربط مع الواجهة أو الأزرار النصية
+    public string SelectedDay
+    {
+        get => ToArabicDayName(_selectedWeekDay);
+        set
+        {
+            var parsedDay = ParseArabicDayName(value);
+            if (parsedDay.HasValue)
+            {
+                SelectedWeekDay = parsedDay.Value;
+            }
+        }
+    }
+
+    private Lecture? _nextLecture;
+    public Lecture? NextLecture
+    {
+        get => _nextLecture;
+        private set
+        {
+            if (_nextLecture != value)
+            {
+                _nextLecture = value;
+                OnPropertyChanged(nameof(NextLecture));
+                OnPropertyChanged(nameof(HasNextLecture));
+            }
+        }
+    }
+
+    public bool HasNextLecture => NextLecture is not null;
+
     public ObservableCollection<Lecture> LecturesList { get; }
 
     public ICommand AddLectureCommand { get; }
@@ -37,100 +69,124 @@ public class ScheduleManagementViewModel : BindableObject
     public ICommand LoadLecturesCommand { get; }
     public ICommand SelectDayCommand { get; }
 
-    // Constructor with Dependency Injection for LucterService
-    public ScheduleManagementViewModel(LucterService lucterService)
+    public ScheduleManagementViewModel(LucterService lucterService, ScheduleService? scheduleService = null)
     {
         _lucterService = lucterService;
+        _scheduleService = scheduleService ?? new ScheduleService();
         LecturesList = new ObservableCollection<Lecture>();
 
-        // Commands definition
         AddLectureCommand = new Command(async () => await OnAddLectureExecuted());
         EditLectureCommand = new Command<Lecture>(async (lecture) => await OnEditLectureExecuted(lecture));
         DeleteLectureCommand = new Command<Lecture>(async (lecture) => await OnDeleteLectureExecuted(lecture));
         LoadLecturesCommand = new Command(async () => await LoadLecturesAsync());
-        SelectDayCommand = new Command<string>((dayStr) => 
+        SelectDayCommand = new Command<string>((dayStr) =>
         {
-            if (!string.IsNullOrEmpty(dayStr))
+            if (!string.IsNullOrWhiteSpace(dayStr))
             {
                 SelectedDay = dayStr;
             }
         });
 
-        // Subscribe to the LectureAdded event from MessengerService
         MessengerService.LectureAdded += OnLectureAdded;
 
-        // Automatically load lectures when ViewModel initializes
         _ = LoadLecturesAsync();
     }
 
-    // Event handler to refresh lectures list when a lecture is added or updated
-    private async void OnLectureAdded()
+    private void OnLectureAdded()
     {
-        // Ensure UI updates run on the main thread if triggered from background tasks
-        MainThread.BeginInvokeOnMainThread(async () =>
+        MainThread.BeginInvokeOnMainThread(() =>
         {
-            await LoadLecturesAsync();
+            _ = LoadLecturesAsync();
         });
     }
 
-    // Load and filter lectures from the database based on SelectedDay (string)
     public async Task LoadLecturesAsync()
     {
         var allLectures = await _lucterService.GetAllLecturesAsync();
-        
-        LecturesList.Clear();
-        
-        // Filter lectures by the selected day string
+
+        // تحديث المحاضرة القادمة تلقائياً
+        NextLecture = _scheduleService.GetNextLecture(allLectures);
+
+        // تصفية وترتيب محاضرات اليوم المختار
         var filteredLectures = allLectures
-            .Where(l => l.Day == SelectedDay)
+            .Where(l => !l.IsCancelled && l.DayOfWeek == SelectedWeekDay)
+            .OrderBy(l => l.StartTime)
             .ToList();
 
-        foreach (var lecture in filteredLectures)
+        MainThread.BeginInvokeOnMainThread(() =>
         {
-            LecturesList.Add(lecture);
-        }
+            LecturesList.Clear();
+            foreach (var lecture in filteredLectures)
+            {
+                LecturesList.Add(lecture);
+            }
+        });
     }
 
-    // Navigate to Add/Update page for creating a new lecture
     private async Task OnAddLectureExecuted()
     {
         await Shell.Current.GoToAsync(nameof(AddUpdateLecturePage));
     }
 
-    // Navigate to Add/Update page passing the selected lecture's ID for editing
-    private async Task OnEditLectureExecuted(Lecture lecture)
+    private async Task OnEditLectureExecuted(Lecture? lecture)
     {
-        if (lecture == null) return;
+        if (lecture is null) return;
 
-        // Pass the lecture Id as a query parameter
         await Shell.Current.GoToAsync($"{nameof(AddUpdateLecturePage)}?LectureId={lecture.Id}");
     }
 
-    // Delete a lecture using LucterService with Confirmation Alert
-    private async Task OnDeleteLectureExecuted(Lecture lecture)
+    private async Task OnDeleteLectureExecuted(Lecture? lecture)
     {
-        if (lecture == null) return;
+        if (lecture is null) return;
 
-        // Confirmation alert before deletion
         bool isConfirmed = await Shell.Current.DisplayAlert(
-            "Confirm Delete", 
-            $"Are you sure you want to delete this lecture in hall \"{lecture.HallName}\"?", 
-            "Yes, Delete", 
-            "Cancel");
+            "تأكيد الحذف",
+            $"هل أنت متأكد من حذف المحاضرة في قاعة \"{lecture.HallName}\"؟",
+            "نعم، احذف",
+            "إلغاء");
 
         if (isConfirmed)
         {
             try
             {
                 await _lucterService.DeleteLectureAsync(lecture);
-                LecturesList.Remove(lecture);
-                await Shell.Current.DisplayAlert("Success", "Lecture deleted successfully.", "OK");
+                await LoadLecturesAsync();
+                await Shell.Current.DisplayAlert("نجاح", "تم حذف المحاضرة بنجاح.", "موافق");
             }
             catch (Exception ex)
             {
                 var errorMsg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                await Shell.Current.DisplayAlert("Error", $"Failed to delete lecture: {errorMsg}", "OK");
+                await Shell.Current.DisplayAlert("خطأ", $"فشل حذف المحاضرة: {errorMsg}", "موافق");
             }
         }
+    }
+
+    public static string ToArabicDayName(WeekDay day) => day switch
+    {
+        WeekDay.Saturday => "السبت",
+        WeekDay.Sunday => "الأحد",
+        WeekDay.Monday => "الإثنين",
+        WeekDay.Tuesday => "الثلاثاء",
+        WeekDay.Wednesday => "الأربعاء",
+        WeekDay.Thursday => "الخميس",
+        WeekDay.Friday => "الجمعة",
+        _ => "السبت"
+    };
+
+    public static WeekDay? ParseArabicDayName(string dayName) => dayName.Trim() switch
+    {
+        "السبت" => WeekDay.Saturday,
+        "الأحد" or "الاحد" => WeekDay.Sunday,
+        "الإثنين" or "الاثنين" => WeekDay.Monday,
+        "الثلاثاء" => WeekDay.Tuesday,
+        "الأربعاء" or "الاربعاء" => WeekDay.Wednesday,
+        "الخميس" => WeekDay.Thursday,
+        "الجمعة" => WeekDay.Friday,
+        _ => null
+    };
+
+    public void Cleanup()
+    {
+        MessengerService.LectureAdded -= OnLectureAdded;
     }
 }

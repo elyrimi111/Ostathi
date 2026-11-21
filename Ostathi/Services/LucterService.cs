@@ -16,36 +16,123 @@ public class LucterService
         _context = context;
     }
 
-    // Get all lectures
     public async Task<List<Lecture>> GetAllLecturesAsync()
     {
-        return await _context.Lectures.ToListAsync();
+        return await _context.Lectures
+            .OrderBy(l => l.LectureNumber)
+            .ThenBy(l => l.StartTime)
+            .ToListAsync();
     }
 
-    // Find lecture by ID (used internally for updating)
     public async Task<Lecture?> GetLectureByIdAsync(int id)
     {
         return await _context.Lectures.FindAsync(id);
     }
 
-    // Dedicated method for adding a lecture only
+    public async Task<List<Lecture>> GetLecturesByGroupSubjectIdAsync(int groupSubjectId)
+    {
+        return await _context.Lectures
+            .Where(l => l.GroupSubjectId.HasValue && l.GroupSubjectId.Value == groupSubjectId)
+            .OrderBy(l => l.LectureNumber)
+            .ThenBy(l => l.LectureDate)
+            .ToListAsync();
+    }
+
+    public async Task GenerateDefaultLecturesAsync(int groupSubjectId, int count = 12)
+    {
+        if (groupSubjectId <= 0 || count <= 0)
+            return;
+
+        var existingCount = await _context.Lectures
+            .CountAsync(l => l.GroupSubjectId.HasValue && l.GroupSubjectId.Value == groupSubjectId);
+
+        if (existingCount >= count)
+            return;
+
+        int startIndex = existingCount + 1;
+        var createdLectures = new List<Lecture>();
+
+        for (int i = startIndex; i <= count; i++)
+        {
+            var date = DateTime.Today.AddDays((i - 1) * 7);
+            var lecture = new Lecture
+            {
+                LectureNumber = i,
+                GroupSubjectId = groupSubjectId,
+                HallName = "قاعة 1",
+                DayOfWeek = ScheduleService.ToOstathiWeekDay(date.DayOfWeek),
+                LectureDate = date,
+                StartTime = new TimeOnly(8, 0),
+                EndTime = new TimeOnly(9, 30),
+                IsCancelled = false
+            };
+
+            createdLectures.Add(lecture);
+            _context.Lectures.Add(lecture);
+        }
+
+        await _context.SaveChangesAsync();
+
+        foreach (var lecture in createdLectures)
+        {
+            bool linkExists = await _context.GroupSubjectLucters
+                .AnyAsync(x => x.GroupSubjectId == groupSubjectId && x.LectureId == lecture.Id);
+
+            if (!linkExists)
+            {
+                _context.GroupSubjectLucters.Add(new GroupSubjectLucters
+                {
+                    GroupSubjectId = groupSubjectId,
+                    LectureId = lecture.Id,
+                    LectureNumber = lecture.LectureNumber,
+                    IsTaken = false
+                });
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        MessengerService.NotifyLectureAdded();
+    }
+
     public async Task<int> AddLectureAsync(Lecture lecture)
     {
+        if (lecture.LectureNumber <= 0)
+        {
+            int maxNumber = await _context.Lectures
+                .Select(l => (int?)l.LectureNumber)
+                .MaxAsync() ?? 0;
+
+            lecture.LectureNumber = maxNumber + 1;
+        }
+
+        if (lecture.DayOfWeek == default && lecture.LectureDate != default)
+        {
+            lecture.DayOfWeek = ScheduleService.ToOstathiWeekDay(lecture.LectureDate.DayOfWeek);
+        }
+
         _context.Lectures.Add(lecture);
         return await _context.SaveChangesAsync();
     }
 
-    // Dedicated method for updating a lecture only (uses ID lookup first)
     public async Task<int> UpdateLectureAsync(Lecture lecture)
     {
         var existingLecture = await GetLectureByIdAsync(lecture.Id);
-        
+
         if (existingLecture != null)
         {
-            // Update properties of the tracked entity to prevent tracking conflicts
-            existingLecture.GroupId = lecture.GroupId;
-            existingLecture.Day = lecture.Day;
+            existingLecture.LectureNumber = lecture.LectureNumber > 0
+                ? lecture.LectureNumber
+                : existingLecture.LectureNumber;
+            existingLecture.GroupSubjectId = lecture.GroupSubjectId;
+            existingLecture.DayOfWeek = lecture.DayOfWeek != default
+                ? lecture.DayOfWeek
+                : ScheduleService.ToOstathiWeekDay(lecture.LectureDate.DayOfWeek);
             existingLecture.HallName = lecture.HallName;
+            existingLecture.LectureDate = lecture.LectureDate;
+            existingLecture.StartTime = lecture.StartTime;
+            existingLecture.EndTime = lecture.EndTime;
+            existingLecture.IsCancelled = lecture.IsCancelled;
+            existingLecture.Notes = lecture.Notes;
         }
         else
         {
@@ -54,74 +141,23 @@ public class LucterService
 
         return await _context.SaveChangesAsync();
     }
-    
-    // Automatically generate default lectures up to a total of 12 for a specific group and subject
-    public async Task GenerateDefaultLecturesAsync(int groupId, string subjectName, string defaultHall = "قاعة 1", string defaultDay = "السبت")
-    {
-        // Fetch existing lectures count for this group and subject
-        var existingLectures = await _context.Lectures
-            .Where(l => l.GroupId == groupId && l.SubjectName == subjectName)
-            .ToListAsync();
 
-        int totalNeeded = 12;
-        int currentCount = existingLectures.Count;
-
-        // If we already have 12 or more, do nothing
-        if (currentCount >= totalNeeded) return;
-
-        var startDate = DateTime.Now;
-        // Generate the remaining lectures to reach 12
-        for (int i = currentCount + 1; i <= totalNeeded; i++)
-        {
-            var lecture = new Lecture
-            {
-                GroupId = groupId,
-                SubjectName = subjectName,
-                HallName = defaultHall,
-                Day = defaultDay,
-                LectureDate = startDate.AddDays((i - 1) * 7), // Weekly interval
-            };
-            _context.Lectures.Add(lecture);
-        }
-
-        await _context.SaveChangesAsync();
-        MessengerService.NotifyLectureAdded();
-    }
-
-    // Main save method that directs to either add or update based on ID
     public async Task<int> SaveLectureAsync(Lecture lecture)
     {
-        try
-        {
-            int result;
+        int result = lecture.Id == 0
+            ? await AddLectureAsync(lecture)
+            : await UpdateLectureAsync(lecture);
 
-            if (lecture.Id == 0)
-            {
-                // Call add method
-                result = await AddLectureAsync(lecture);
-            }
-            else
-            {
-                // Call update method
-                result = await UpdateLectureAsync(lecture);
-            }
-            
-            // Notify UI about the update
-            MessengerService.NotifyLectureAdded();
-            return result;
-        }
-        catch (Microsoft.EntityFrameworkCore.DbUpdateException ex)
-        {
-            var innerMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            System.Diagnostics.Debug.WriteLine($"DB ERROR: {innerMessage}");
-            throw;
-        }
+        MessengerService.NotifyLectureAdded();
+        return result;
     }
 
-    // Delete a lecture
     public async Task<int> DeleteLectureAsync(Lecture lecture)
     {
-        _context.Lectures.Remove(lecture);
-        return await _context.SaveChangesAsync();
+        var tracked = await GetLectureByIdAsync(lecture.Id);
+        _context.Lectures.Remove(tracked ?? lecture);
+        int result = await _context.SaveChangesAsync();
+        MessengerService.NotifyLectureAdded();
+        return result;
     }
 }

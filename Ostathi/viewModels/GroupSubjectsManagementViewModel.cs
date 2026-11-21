@@ -1,27 +1,54 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Maui.Controls;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
 using Ostathi.Services;
 
 namespace Ostathi.ViewModels
 {
+    public class GroupSubjectDisplayItem
+    {
+        public GroupSubject GroupSubject { get; set; } = null!;
+        public int Id => GroupSubject.Id;
+        public int GroupId => GroupSubject.GroupId;
+        public int SubjectId => GroupSubject.SubjectId;
+
+        public string GroupName { get; set; } = string.Empty;
+        public string SubjectName { get; set; } = string.Empty;
+        public string MajorName { get; set; } = string.Empty;
+        public string AcademicYear { get; set; } = string.Empty;
+    }
+
     public class GroupSubjectsManagementViewModel : BaseViewModel
     {
         private readonly GroupSubjectService _groupSubjectService;
         private readonly AppDbContext _dbContext;
 
-        private ObservableCollection<GroupSubject> _allGroupSubjects = new();
+        private List<GroupSubjectDisplayItem> _allItems = new();
+        private Dictionary<int, Group> _groupsById = new();
+        private Dictionary<int, Subject> _subjectsById = new();
+        private Dictionary<int, Major> _majorsById = new();
 
-        private ObservableCollection<GroupSubject> _filteredGroupSubjects = new();
-        public ObservableCollection<GroupSubject> FilteredGroupSubjects
+        private ObservableCollection<GroupSubjectDisplayItem> _filteredGroupSubjects = new();
+        public ObservableCollection<GroupSubjectDisplayItem> FilteredGroupSubjects
         {
             get => _filteredGroupSubjects;
-            set => SetProperty(ref _filteredGroupSubjects, value);
+            set
+            {
+                if (SetProperty(ref _filteredGroupSubjects, value))
+                {
+                    OnPropertyChanged(nameof(IsEmpty));
+                }
+            }
         }
+
+        public bool IsNotBusy => !IsBusy;
+        public bool IsEmpty => !IsBusy && FilteredGroupSubjects.Count == 0;
 
         public ObservableCollection<string> LevelsList { get; set; } = new();
         public ObservableCollection<Subject> SubjectsList { get; set; } = new();
@@ -48,12 +75,9 @@ namespace Ostathi.ViewModels
             set { if (SetProperty(ref _selectedMajor, value)) ApplyFilters(); }
         }
 
-        // Commands
         public ICommand RemoveSubjectCommand { get; }
         public ICommand OpenAssignSubjectCommand { get; }
         public ICommand ClearFiltersCommand { get; }
-        
-        // Command to open single group-subject management screen
         public ICommand OpenManageSubjectCommand { get; }
 
         public GroupSubjectsManagementViewModel(GroupSubjectService groupSubjectService, AppDbContext dbContext)
@@ -61,14 +85,18 @@ namespace Ostathi.ViewModels
             _groupSubjectService = groupSubjectService;
             _dbContext = dbContext;
 
-            RemoveSubjectCommand = new Command<GroupSubject>(async (item) => await OnRemoveSubjectExecuted(item));
+            RemoveSubjectCommand = new Command<GroupSubjectDisplayItem>(async (item) => await OnRemoveSubjectExecuted(item));
             OpenAssignSubjectCommand = new Command(async () => await OnOpenAssignSubjectExecuted());
             ClearFiltersCommand = new Command(OnClearFiltersExecuted);
-            
-            // Initialize navigation command
-            OpenManageSubjectCommand = new Command<GroupSubject>(async (item) => await OnOpenManageSubjectExecuted(item));
+            OpenManageSubjectCommand = new Command<GroupSubjectDisplayItem>(async (item) => await OnOpenManageSubjectExecuted(item));
 
             _ = LoadInitialDataAsync();
+        }
+
+        private void UpdateBusyState()
+        {
+            OnPropertyChanged(nameof(IsNotBusy));
+            OnPropertyChanged(nameof(IsEmpty));
         }
 
         public async Task LoadInitialDataAsync()
@@ -76,8 +104,36 @@ namespace Ostathi.ViewModels
             try
             {
                 IsBusy = true;
-                var subjects = await _dbContext.Subjects.ToListAsync();
-                var majors = await _dbContext.Majors.ToListAsync();
+                UpdateBusyState();
+
+                var subjects = await _dbContext.Subjects.AsNoTracking().ToListAsync();
+                var majors = await _dbContext.Majors.AsNoTracking().ToListAsync();
+                var groups = await _dbContext.Groups.AsNoTracking().ToListAsync();
+                var allRelations = await _dbContext.GroupSubjects.AsNoTracking().ToListAsync();
+
+                _subjectsById = subjects.ToDictionary(s => s.Id);
+                _majorsById = majors.ToDictionary(m => m.Id);
+                _groupsById = groups.ToDictionary(g => g.Id);
+
+                _allItems = allRelations.Select(gs =>
+                {
+                    _groupsById.TryGetValue(gs.GroupId, out var grp);
+                    _subjectsById.TryGetValue(gs.SubjectId, out var subj);
+                    Major? maj = null;
+                    if (grp != null)
+                    {
+                        _majorsById.TryGetValue(grp.MajorId, out maj);
+                    }
+
+                    return new GroupSubjectDisplayItem
+                    {
+                        GroupSubject = gs,
+                        GroupName = grp?.Name ?? $"مجموعة #{gs.GroupId}",
+                        SubjectName = subj?.Name ?? $"مادة #{gs.SubjectId}",
+                        MajorName = maj?.Name ?? string.Empty,
+                        AcademicYear = grp?.AcademicYear ?? string.Empty
+                    };
+                }).ToList();
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -95,12 +151,6 @@ namespace Ostathi.ViewModels
                     LevelsList.Add("المستوى الخامس");
                 });
 
-                var allRelations = await _dbContext.GroupSubjects
-                    .Include(gs => gs.Group)
-                    .Include(gs => gs.Subject)
-                    .ToListAsync();
-
-                _allGroupSubjects = new ObservableCollection<GroupSubject>(allRelations);
                 ApplyFilters();
             }
             catch (Exception ex)
@@ -113,44 +163,68 @@ namespace Ostathi.ViewModels
             finally
             {
                 IsBusy = false;
+                UpdateBusyState();
             }
         }
 
         private void ApplyFilters()
         {
-            var query = _allGroupSubjects.AsEnumerable();
+            var query = _allItems.AsEnumerable();
 
             if (SelectedSubject != null)
             {
                 query = query.Where(x => x.SubjectId == SelectedSubject.Id);
             }
 
+            if (SelectedMajor != null)
+            {
+                query = query.Where(x =>
+                    _groupsById.TryGetValue(x.GroupId, out var grp) &&
+                    grp.MajorId == SelectedMajor.Id);
+            }
+
+            if (!string.IsNullOrWhiteSpace(SelectedLevel))
+            {
+                query = query.Where(x =>
+                    !string.IsNullOrWhiteSpace(x.AcademicYear) &&
+                    x.AcademicYear.Contains(SelectedLevel, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var filteredList = query.ToList();
+
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                FilteredGroupSubjects = new ObservableCollection<GroupSubject>(query);
+                FilteredGroupSubjects = new ObservableCollection<GroupSubjectDisplayItem>(filteredList);
+                OnPropertyChanged(nameof(IsEmpty));
             });
         }
 
         private void OnClearFiltersExecuted()
         {
-            SelectedLevel = null;
-            SelectedSubject = null;
-            SelectedMajor = null;
+            _selectedLevel = null;
+            _selectedSubject = null;
+            _selectedMajor = null;
+
+            OnPropertyChanged(nameof(SelectedLevel));
+            OnPropertyChanged(nameof(SelectedSubject));
+            OnPropertyChanged(nameof(SelectedMajor));
+
             ApplyFilters();
         }
 
-        private async Task OnRemoveSubjectExecuted(GroupSubject groupSubject)
+        private async Task OnRemoveSubjectExecuted(GroupSubjectDisplayItem? item)
         {
-            if (groupSubject == null) return;
+            if (item == null) return;
 
             bool confirm = await Shell.Current.DisplayAlert("تأكيد الإزالة", "هل أنت متأكد من إزالة هذه المادة من المجموعة؟", "نعم", "إلغاء");
             if (!confirm) return;
 
-            var success = await _groupSubjectService.RemoveSubjectFromGroupAsync(groupSubject.Id);
+            var success = await _groupSubjectService.RemoveSubjectFromGroupAsync(item.Id);
             if (success)
             {
-                _allGroupSubjects.Remove(groupSubject);
-                FilteredGroupSubjects.Remove(groupSubject);
+                _allItems.RemoveAll(x => x.Id == item.Id);
+                FilteredGroupSubjects.Remove(item);
+                OnPropertyChanged(nameof(IsEmpty));
                 await Shell.Current.DisplayAlert("نجاح", "تمت إزالة المادة بنجاح", "موافق");
             }
             else
@@ -161,17 +235,20 @@ namespace Ostathi.ViewModels
 
         private async Task OnOpenAssignSubjectExecuted()
         {
-            await Shell.Current.DisplayAlert("إضافة مادة", "جارٍ فتح شاشة ربط مادة جديدة بالمجموعة...", "موافق");
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync(nameof(AddGroupSubjectPage));
+                await LoadInitialDataAsync();
+            }
         }
 
-        // Execute navigation to the single group-subject view
-        private async Task OnOpenManageSubjectExecuted(GroupSubject groupSubject)
+        private async Task OnOpenManageSubjectExecuted(GroupSubjectDisplayItem? item)
         {
-            if (groupSubject == null) return;
+            if (item == null || Shell.Current == null) return;
 
             var navigationParameters = new Dictionary<string, object>
             {
-                { "GroupSubject", groupSubject }
+                { "GroupSubject", item.GroupSubject }
             };
 
             await Shell.Current.GoToAsync(nameof(ManageSingleGroupSubjectView), navigationParameters);

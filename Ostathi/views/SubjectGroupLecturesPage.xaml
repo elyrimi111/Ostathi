@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:Ostathi"
              xmlns:viewmodels="clr-namespace:Ostathi.ViewModels"
              x:Class="Ostathi.SubjectGroupLecturesPage"
+             x:DataType="viewmodels:SubjectGroupLecturesViewModel"
              Title="إدارة محاضرات المادة"
              BackgroundColor="{StaticResource DarkBackground}"
              FlowDirection="RightToLeft">
@@ -62,22 +63,51 @@
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="local:Lecture">
                     <Border BackgroundColor="{StaticResource DarkSurface}"
                             StrokeThickness="0"
                             StrokeShape="RoundRectangle 14"
                             Padding="14">
-                        <Grid ColumnDefinitions="*" RowDefinitions="Auto, Auto" RowSpacing="6">
-                            
+                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" RowSpacing="6" ColumnSpacing="10">
+
                             <!-- Lecture Hall Name / Title -->
                             <Label Grid.Row="0" Grid.Column="0"
                                    Text="{Binding HallName, StringFormat='قاعة: {0}'}"
                                    FontSize="15"
                                    FontAttributes="Bold"
-                                   TextColor="{StaticResource TextPrimary}"/>
+                                   TextColor="{StaticResource TextPrimary}"
+                                   VerticalOptions="Center"/>
+
+                            <!-- Taken Status Badge -->
+                            <Border Grid.Row="0" Grid.Column="1"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    Padding="8,3"
+                                    VerticalOptions="Center">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsTaken}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="#1E3A2F"/>
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsTaken}" Value="False">
+                                        <Setter Property="BackgroundColor" Value="#3A2E1E"/>
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Label FontSize="11" FontAttributes="Bold">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsTaken}" Value="True">
+                                            <Setter Property="Text" Value="تم أخذها"/>
+                                            <Setter Property="TextColor" Value="#4ADE80"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsTaken}" Value="False">
+                                            <Setter Property="Text" Value="لم تُؤخذ"/>
+                                            <Setter Property="TextColor" Value="{StaticResource AccentYellow}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </Border>
 
                             <!-- Day & Date -->
-                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Spacing="8">
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="8">
                                 <Label Text="{Binding Day}" FontSize="12" TextColor="{StaticResource AccentYellow}"/>
                                 <Label Text="•" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
                                 <Label Text="{Binding LectureDate, StringFormat='{0:yyyy/MM/dd}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>

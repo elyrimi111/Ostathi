@@ -93,6 +93,7 @@ public class AddUpdateGroupViewModel : BaseViewModel
 
     public ICommand SaveGroupCommand { get; }
     public ICommand CancelCommand { get; }
+    public ICommand ImportStudentsCommand { get; }
 
     #endregion
 
@@ -102,8 +103,9 @@ public class AddUpdateGroupViewModel : BaseViewModel
         _groupService = groupService;
         _majorService = majorService;
 
-        SaveGroupCommand = new Command(async () => await OnSaveGroupAsync());
+        SaveGroupCommand = new Command(async () => await OnSaveGroupAsync(navigateBack: true));
         CancelCommand = new Command(async () => await OnCancelAsync());
+        ImportStudentsCommand = new Command(async () => await OnImportStudentsAsync());
 
         // Load available majors from database on initialization
         _ = LoadMajorsAsync();
@@ -158,7 +160,7 @@ public class AddUpdateGroupViewModel : BaseViewModel
                     GroupName = group.Name;
                     GroupDescription = group.Description ?? string.Empty;
                     SelectedAcademicYear = group.AcademicYear;
-                    
+
                     if (MajorsList.Any())
                     {
                         SelectedMajor = MajorsList.FirstOrDefault(m => m.Id == group.MajorId);
@@ -179,8 +181,7 @@ public class AddUpdateGroupViewModel : BaseViewModel
         }
     }
 
-    // Create or update a group record
-    private async Task OnSaveGroupAsync()
+    private async Task<bool> SaveGroupInternalAsync()
     {
         if (string.IsNullOrWhiteSpace(SubjectName))
         {
@@ -188,7 +189,7 @@ public class AddUpdateGroupViewModel : BaseViewModel
             {
                 await Shell.Current.DisplayAlert("Warning", "Please enter the subject name", "OK");
             }
-            return;
+            return false;
         }
 
         if (string.IsNullOrWhiteSpace(GroupName))
@@ -197,7 +198,7 @@ public class AddUpdateGroupViewModel : BaseViewModel
             {
                 await Shell.Current.DisplayAlert("Warning", "Please enter the group name", "OK");
             }
-            return;
+            return false;
         }
 
         if (SelectedMajor == null)
@@ -206,7 +207,7 @@ public class AddUpdateGroupViewModel : BaseViewModel
             {
                 await Shell.Current.DisplayAlert("Warning", "Please select a target major", "OK");
             }
-            return;
+            return false;
         }
 
         try
@@ -223,13 +224,15 @@ public class AddUpdateGroupViewModel : BaseViewModel
 
             await _groupService.SaveGroupAsync(groupToSave);
 
+            if (groupToSave.Id > 0)
+            {
+                _editingGroupId = groupToSave.Id;
+                _groupId = groupToSave.Id.ToString();
+            }
+
             // Notify subscriber ViewModels to refresh list on MainThread
             MessengerService.NotifyGroupAdded();
-
-            if (Shell.Current != null)
-            {
-                await Shell.Current.GoToAsync("..");
-            }
+            return true;
         }
         catch (Exception ex)
         {
@@ -237,6 +240,34 @@ public class AddUpdateGroupViewModel : BaseViewModel
             {
                 await Shell.Current.DisplayAlert("Error", $"Failed to save group: {ex.Message}", "OK");
             }
+            return false;
+        }
+    }
+
+    // Create or update a group record
+    private async Task OnSaveGroupAsync(bool navigateBack)
+    {
+        bool saved = await SaveGroupInternalAsync();
+        if (!saved) return;
+
+        if (navigateBack && Shell.Current != null)
+        {
+            await Shell.Current.GoToAsync("..");
+        }
+    }
+
+    // Save group if new, then navigate to Import Group page with GroupId
+    private async Task OnImportStudentsAsync()
+    {
+        if (_editingGroupId <= 0)
+        {
+            bool saved = await SaveGroupInternalAsync();
+            if (!saved) return;
+        }
+
+        if (Shell.Current != null)
+        {
+            await Shell.Current.GoToAsync($"{nameof(ImportGroupPage)}?GroupId={_editingGroupId}");
         }
     }
 

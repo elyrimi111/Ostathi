@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Logging;
 using Ostathi.ViewModels;
 using Ostathi.Services;
@@ -45,6 +46,9 @@ public static class MauiProgram
 
         builder.Services.AddTransient<AddUpdateGroupViewModel>();
         builder.Services.AddTransient<AddUpdateGroup>();
+
+        builder.Services.AddTransient<AddGroupSubjectPage>();
+        builder.Services.AddTransient<AddUpdateGroupSubjectViewModel>();
 
         builder.Services.AddTransient<MajorsPage>();
         builder.Services.AddTransient<MajorsViewMod>();
@@ -120,6 +124,9 @@ public static class MauiProgram
 
         builder.Services.AddTransient<ExportMasterPage>();
         builder.Services.AddTransient<ExportMasterViewModel>();
+        
+        builder.Services.AddTransient<ImportGroupPage>();
+        builder.Services.AddTransient<ImportGroupViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
+             x:Class="Ostathi.ImportGroupPage"
+             x:DataType="local:ImportGroupViewModel"
+             Title="استيراد مجموعة وطلاب"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ========================================== -->
+        <!-- 1. الهيدر العلوي                            -->
+        <!-- ========================================== -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,14"
+                StrokeShape="RoundRectangle 0,0,24,24">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="استيراد بيانات المجموعة والطلاب"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}"/>
+                <Label Text="{Binding GroupHeaderInfo}"
+                       FontSize="12"
+                       TextColor="{StaticResource AccentYellow}"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- 2. منطقة الاستيراد والمعاينة                -->
+        <!-- ========================================== -->
+        <ScrollView Grid.Row="1" Padding="16">
+            <VerticalStackLayout Spacing="14">
+
+                <!-- أزرار الاستيراد السريع -->
+                <Border BackgroundColor="{StaticResource DarkSurface}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14"
+                        Padding="14">
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="مصدر البيانات"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextPrimary}"/>
+
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <Button Grid.Column="0"
+                                    Text="اختيار ملف (CSV / TXT)"
+                                    Command="{Binding PickFileCommand}"
+                                    BackgroundColor="{StaticResource AccentYellow}"
+                                    TextColor="{StaticResource DarkBackground}"
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    CornerRadius="12"
+                                    HeightRequest="42"/>
+
+                            <Button Grid.Column="1"
+                                    Text="لصق من الحافظة"
+                                    Command="{Binding PasteFromClipboardCommand}"
+                                    BackgroundColor="{StaticResource DarkBackground}"
+                                    TextColor="{StaticResource AccentYellow}"
+                                    BorderColor="{StaticResource AccentYellow}"
+                                    BorderWidth="1"
+                                    FontAttributes="Bold"
+                                    FontSize="12"
+                                    CornerRadius="12"
+                                    HeightRequest="42"/>
+                        </Grid>
+
+                        <Label Text="{Binding SelectedFileName, StringFormat='الملف المحدد: {0}'}"
+                               IsVisible="{Binding HasSelectedFile}"
+                               FontSize="11"
+                               TextColor="{StaticResource TextSecondary}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- مربع إدخال أو لصق الأسماء يدوياً -->
+                <Border BackgroundColor="{StaticResource DarkSurface}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14"
+                        Padding="14">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0"
+                                   Text="الصق قائمة الطلاب هنا (كل طالب في سطر)"
+                                   FontSize="12"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   VerticalOptions="Center"/>
+
+                            <Button Grid.Column="1"
+                                    Text="معاينة الأسماء"
+                                    Command="{Binding ParseTextCommand}"
+                                    BackgroundColor="{StaticResource DarkBackground}"
+                                    TextColor="{StaticResource AccentYellow}"
+                                    FontSize="11"
+                                    FontAttributes="Bold"
+                                    CornerRadius="10"
+                                    HeightRequest="34"
+                                    Padding="12,0"/>
+                        </Grid>
+
+                        <Editor Text="{Binding RawStudentsText}"
+                                Placeholder="مثال:&#10;أحمد محمد علي الكبسي, 777123456&#10;سارة عبدالله ناصر العنسي, 777345678"
+                                HeightRequest="120"
+                                FontSize="13"
+                                TextColor="{StaticResource TextPrimary}"
+                                PlaceholderColor="{StaticResource TextSecondary}"
+                                BackgroundColor="{StaticResource DarkBackground}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- شريط إحصائيات المعاينة -->
+                <Grid ColumnDefinitions="*, Auto" Padding="4,0">
+                    <Label Grid.Column="0"
+                           Text="{Binding ImportedStudents.Count, StringFormat='الطلاب الجاهزون للاستيراد: {0} طالب'}"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}"
+                           VerticalOptions="Center"/>
+
+                    <Button Grid.Column="1"
+                            Text="مسح القائمة"
+                            Command="{Binding ClearListCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="#F87171"
+                            FontSize="12"
+                            Padding="6,0"
+                            HeightRequest="32"/>
+                </Grid>
+
+                <!-- قائمة معاينة الطلاب قبل الحفظ -->
+                <CollectionView ItemsSource="{Binding ImportedStudents}"
+                                SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8"/>
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.EmptyView>
+                        <Border BackgroundColor="{StaticResource DarkSurface}"
+                                StrokeThickness="0"
+                                StrokeShape="RoundRectangle 14"
+                                Padding="24">
+                            <Label Text="لم يتم استيراد أي أسماء بعد. اختر ملفاً أو الصق الأسماء ثم اضغط (معاينة الأسماء)."
+                                   FontSize="12"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   HorizontalTextAlignment="Center"/>
+                        </Border>
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="local:ImportedStudentPreviewItem">
+                            <Border BackgroundColor="{StaticResource DarkSurface}"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 12"
+                                    Padding="12,10">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                    <!-- رقم تسلسلي -->
+                                    <Border Grid.Column="0"
+                                            BackgroundColor="{StaticResource DarkBackground}"
+                                            StrokeThickness="0"
+                                            StrokeShape="RoundRectangle 8"
+                                            WidthRequest="30"
+                                            HeightRequest="30">
+                                        <Label Text="{Binding Index}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource AccentYellow}"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"/>
+                                    </Border>
+
+                                    <!-- اسم الطالب والرقم الأكاديمي -->
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding FullName}"
+                                               FontSize="13"
+                                               FontAttributes="Bold"
+                                               TextColor="{StaticResource TextPrimary}"/>
+                                        <Label Text="{Binding AcademicId, StringFormat='الرقم الأكاديمي: {0}'}"
+                                               FontSize="11"
+                                               TextColor="{StaticResource TextSecondary}"/>
+                                    </VerticalStackLayout>
+
+                                    <!-- زر حذف صف واحد من المعاينة -->
+                                    <Button Grid.Column="2"
+                                            Text="حذف"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type local:ImportGroupViewModel}}, Path=RemoveStudentItemCommand}"
+                                            CommandParameter="{Binding .}"
+                                            BackgroundColor="{StaticResource DarkBackground}"
+                                            TextColor="#F87171"
+                                            FontSize="11"
+                                            CornerRadius="8"
+                                            HeightRequest="32"
+                                            Padding="10,0"
+                                            VerticalOptions="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ========================================== -->
+        <!-- 3. شريط الأزرار السفلي                      -->
+        <!-- ========================================== -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12">
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <Button Grid.Column="0"
+                        Text="رجوع"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{StaticResource DarkBackground}"
+                        TextColor="{StaticResource TextSecondary}"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="14"
+                        HeightRequest="45"/>
+
+                <Button Grid.Column="1"
+                        Text="حفظ واستيراد الطلاب"
+                        Command="{Binding SaveImportedStudentsCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}"
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="14"
+                        HeightRequest="45"/>
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

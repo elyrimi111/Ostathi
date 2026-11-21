@@ -18,12 +18,10 @@
                 Padding="16,14" 
                 StrokeShape="RoundRectangle 0,0,24,24">
             
-            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="إدارة المجموعات والمواد" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="إضافة مجموعة دراسية جديدة، المادة، والتخصص المرتبط" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                </VerticalStackLayout>
-            </Grid>
+            <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                <Label Text="إدارة المجموعات والمواد" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                <Label Text="إضافة مجموعة دراسية جديدة، المادة، والتخصص المرتبط" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+            </VerticalStackLayout>
         </Border>
 
         <!-- ========================================== -->
@@ -32,20 +30,7 @@
         <ScrollView Grid.Row="1" Padding="20">
             <VerticalStackLayout Spacing="16">
 
-                <!-- 1. Subject / Course Name Input (اسم المادة) -->
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="اسم المادة الدراسية" FontSize="12" TextColor="{StaticResource TextSecondary}" />
-                    <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
-                        <Entry Text="{Binding SubjectName}"
-                               Placeholder="مثال: البرمجة كائنية التوجه (OOP)..." 
-                               FontSize="13" 
-                               TextColor="{StaticResource TextPrimary}" 
-                               PlaceholderColor="{StaticResource TextSecondary}" 
-                               VerticalOptions="Center" 
-                               BackgroundColor="Transparent"/>
-                    </Border>
-                </VerticalStackLayout>
-
+            
                 <!-- 2. Group Name / Sub-group Name Input (اسم المجموعة أو الفرع: مجموعة أ / ب) -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="اسم المجموعة (مثل: مجموعة أ أو مجموعة باء)" FontSize="12" TextColor="{StaticResource TextSecondary}" />
@@ -102,6 +87,19 @@
                                 VerticalOptions="Center"/>
                     </Border>
                 </VerticalStackLayout>
+
+                <!-- Import Students Screen Button -->
+                <Button Text="استيراد الطلاب"
+                        Command="{Binding ImportStudentsCommand}"
+                        BackgroundColor="{StaticResource DarkSurface}"
+                        TextColor="{StaticResource AccentYellow}"
+                        BorderColor="{StaticResource AccentYellow}"
+                        BorderWidth="1"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="12"
+                        HeightRequest="45"
+                        Margin="0,4,0,0" />
 
             </VerticalStackLayout>
         </ScrollView>

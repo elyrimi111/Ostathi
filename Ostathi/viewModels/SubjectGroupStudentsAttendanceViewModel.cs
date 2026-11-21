@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Ostathi.Models;
 using Ostathi.Services;
@@ -95,7 +97,6 @@ namespace Ostathi.ViewModels
 
         public ObservableCollection<StudentAttendanceSummary> StudentsAttendanceList { get; } = new();
 
-        // خاصية SelectedStudent لكي تتوافق مع SelectedItem في CollectionView
         private StudentAttendanceSummary? _selectedStudent;
         public StudentAttendanceSummary? SelectedStudent
         {
@@ -109,10 +110,7 @@ namespace Ostathi.ViewModels
 
                     if (_selectedStudent != null)
                     {
-                        // تنفيذ أمر الانتقال تلقائياً عند التحديد
                         _ = OnStudentSelectedAsync(_selectedStudent);
-                        
-                        // إعادة تعيين القيمة لكي يتمكن المستخدم من الضغط على نفس الطالب مرة أخرى لاحقاً
                         SelectedStudent = null;
                     }
                 }
@@ -127,16 +125,13 @@ namespace Ostathi.ViewModels
             _dbContext = dbContext;
             _studentService = studentService;
             RefreshCommand = new Command(async () => await LoadAttendanceDataAsync(GroupId, SubjectId));
-            
-            // Command executed when a student is selected from the list
             StudentSelectedCommand = new Command<StudentAttendanceSummary>(async (studentSummary) => await OnStudentSelectedAsync(studentSummary));
         }
 
-        private async Task OnStudentSelectedAsync(StudentAttendanceSummary studentSummary)
+        private async Task OnStudentSelectedAsync(StudentAttendanceSummary? studentSummary)
         {
             if (studentSummary == null) return;
 
-            // Navigate to StudentAttendanceLogPage passing GroupId, StudentId, and SubjectId
             if (Shell.Current != null)
             {
                 await Shell.Current.GoToAsync($"{nameof(StudentAttendanceLogPage)}?GroupId={GroupId}&StudentId={studentSummary.StudentId}&SubjectId={SubjectId}");
@@ -157,21 +152,45 @@ namespace Ostathi.ViewModels
             {
                 var group = await _dbContext.Groups.FindAsync(groupId);
                 var subject = await _dbContext.Subjects.FindAsync(subjectId);
-                
+
                 string targetSubjectName = subject?.Name ?? string.Empty;
+
+                var groupSubject = await _dbContext.GroupSubjects
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(gs => gs.GroupId == groupId && gs.SubjectId == subjectId);
 
                 var students = await _studentService.GetStudentsByGroupAsync(groupId);
 
-                var conductedLectures = await _dbContext.Lectures
-                    .Where(l => l.GroupId == groupId && l.SubjectName == targetSubjectName)
-                    .ToListAsync();
+                var conductedLectures = new List<Lecture>();
+                if (groupSubject != null)
+                {
+                    var takenLectureIds = await _dbContext.GroupSubjectLucters
+                        .AsNoTracking()
+                        .Where(x => x.GroupSubjectId == groupSubject.Id && x.IsTaken)
+                        .Select(x => x.LectureId)
+                        .ToListAsync();
+
+                    if (takenLectureIds.Count > 0)
+                    {
+                        conductedLectures = await _dbContext.Lectures
+                            .AsNoTracking()
+                            .Where(l => l.GroupSubjectId.HasValue &&
+                                        l.GroupSubjectId.Value == groupSubject.Id &&
+                                        !l.IsCancelled &&
+                                        takenLectureIds.Contains(l.Id))
+                            .ToListAsync();
+                    }
+                }
 
                 int conductedCount = conductedLectures.Count;
                 var lectureIds = conductedLectures.Select(l => l.Id).ToList();
 
-                var attendanceRecords = await _dbContext.Attendances
-                    .Where(a => lectureIds.Contains(a.LectureId) && a.Status == AttendanceStatus.Present)
-                    .ToListAsync();
+                var attendanceRecords = lectureIds.Count > 0
+                    ? await _dbContext.Attendances
+                        .AsNoTracking()
+                        .Where(a => lectureIds.Contains(a.LectureId) && a.Status == AttendanceStatus.Present)
+                        .ToListAsync()
+                    : new List<Attendance>();
 
                 var summaryList = students.Select(student =>
                 {

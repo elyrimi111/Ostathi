@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AddGroupSubjectPage"
+             Title="{Binding PageTitle}"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- 1. الهيدر العلوي -->
+        <Grid Grid.Row="0"
+              ColumnDefinitions="Auto, *, Auto"
+              Padding="20,16"
+              VerticalOptions="Center"
+              BackgroundColor="{StaticResource DarkBackground}">
+
+            <Button Grid.Column="0"
+                    Text="✕"
+                    FontSize="16"
+                    TextColor="{StaticResource TextPrimary}"
+                    BackgroundColor="{StaticResource DarkSurface}"
+                    CornerRadius="18"
+                    WidthRequest="36"
+                    HeightRequest="36"
+                    Command="{Binding ClosePageCommand}"/>
+
+            <Label Grid.Column="1"
+                   Text="{Binding PageTitle}"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AccentYellow}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"/>
+
+            <BoxView Grid.Column="2" WidthRequest="36" BackgroundColor="Transparent"/>
+        </Grid>
+
+        <!-- 2. نموذج الاختيار -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="18">
+
+                <!-- اختيار المجموعة -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="اختر المجموعة الدراسية"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextSecondary}"/>
+
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="0"
+                            Padding="12,4">
+                        <Picker ItemsSource="{Binding Groups}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedGroup}"
+                                TextColor="{StaticResource TextPrimary}"
+                                TitleColor="{StaticResource TextSecondary}"
+                                Title="اختر المجموعة..."/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- اختيار المادة -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="اختر المادة الدراسية"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextSecondary}"/>
+
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="0"
+                            Padding="12,4">
+                        <Picker ItemsSource="{Binding Subjects}"
+                                ItemDisplayBinding="{Binding Name}"
+                                SelectedItem="{Binding SelectedSubject}"
+                                TextColor="{StaticResource TextPrimary}"
+                                TitleColor="{StaticResource TextSecondary}"
+                                Title="اختر المادة..."/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- اختيار اليوم الدراسي للمحاضرة -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="يوم دراسة المحاضرة"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextSecondary}"/>
+
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeShape="RoundRectangle 14"
+                            StrokeThickness="0"
+                            Padding="12,4">
+                        <Picker ItemsSource="{Binding DaysOfWeek}"
+                                SelectedItem="{Binding SelectedDay}"
+                                TextColor="{StaticResource TextPrimary}"
+                                TitleColor="{StaticResource TextSecondary}"
+                                Title="اختر اليوم..."/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- تحديد وقت المحاضرة (من الساعة كم إلى الساعة كم) -->
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <Label Text="من الساعة"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextSecondary}"/>
+
+                        <Border BackgroundColor="{StaticResource DarkSurface}"
+                                StrokeShape="RoundRectangle 14"
+                                StrokeThickness="0"
+                                Padding="12,6">
+                            <TimePicker Time="{Binding StartTime}"
+                                        Format="hh:mm tt"
+                                        TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="إلى الساعة"
+                               FontSize="13"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextSecondary}"/>
+
+                        <Border BackgroundColor="{StaticResource DarkSurface}"
+                                StrokeShape="RoundRectangle 14"
+                                StrokeThickness="0"
+                                Padding="12,6">
+                            <TimePicker Time="{Binding EndTime}"
+                                        Format="hh:mm tt"
+                                        TextColor="{StaticResource TextPrimary}"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                </Grid>
+
+                <!-- مؤشر التحميل -->
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource AccentYellow}"
+                                   HorizontalOptions="Center"
+                                   Margin="0,10,0,0"/>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- 3. زر الحفظ السفلي -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="20,14">
+            <Button Text="{Binding SaveButtonText}"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsNotBusy}"
+                    BackgroundColor="{StaticResource AccentYellow}"
+                    TextColor="{StaticResource DarkBackground}"
+                    FontAttributes="Bold"
+                    FontSize="14"
+                    CornerRadius="12"
+                    HeightRequest="46"/>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

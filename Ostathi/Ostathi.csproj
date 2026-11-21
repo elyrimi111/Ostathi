@@ -97,6 +97,8 @@
     <MauiXaml Include="views/SubjectGroupGradesOverviewPage.xaml" />
     <MauiXaml Include="views/SubjectGroupStudentGradeDetailsPage.xaml" />
     <MauiXaml Include="views/StudentCommunicationPage.xaml" />
+    <MauiXaml Include="views/AddUpdateGroupSubjectViewModel.xaml" />
+    <MauiXaml Include="views/ImportGroupPage.xaml" />
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\*" />

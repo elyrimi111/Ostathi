@@ -1,64 +1,263 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Ostathi"
              xmlns:viewmodels="clr-namespace:Ostathi.ViewModels"
              x:Class="Ostathi.LectureDetailsPage"
+             x:DataType="local:LectureDetailsViewModel"
              Title="تفاصيل وتعديل المحاضرة"
              BackgroundColor="{StaticResource DarkBackground}"
              FlowDirection="RightToLeft">
 
-    <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="20">
+    <Grid RowDefinitions="*, Auto">
 
-            <!-- معلومات عامة (اسم المقرر للقراءة فقط) -->
-            <Border BackgroundColor="{StaticResource DarkSurface}"
-                    StrokeThickness="0"
-                    StrokeShape="RoundRectangle 14"
-                    Padding="16">
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="المقرر الدراسي:" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-                    <Label Text="{Binding SubjectName}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}"/>
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- معلومات عامة (اسم المقرر للقراءة فقط) -->
+                <Border BackgroundColor="{StaticResource DarkSurface}"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 14"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="المقرر الدراسي:" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                        <Label Text="{Binding SubjectName}" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}"/>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- حقول التعديل والعرض -->
+                <VerticalStackLayout Spacing="16">
+
+                    <!-- اسم أو رقم القاعة -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="اسم أو رقم القاعة" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                        <Entry Text="{Binding HallName}"
+                               Placeholder="أدخل اسم القاعة"
+                               BackgroundColor="{StaticResource DarkSurface}"
+                               TextColor="{StaticResource TextPrimary}"
+                               PlaceholderColor="{StaticResource TextSecondary}"
+                               HeightRequest="48"/>
+                    </VerticalStackLayout>
+
+                    <!-- يوم المحاضرة (تلقائي وغير قابل للتحديد أو الكتابة) -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="اليوم (تلقائي)" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                        <Border BackgroundColor="{StaticResource DarkSurface}"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="14,12"
+                                MinimumHeightRequest="48"
+                                InputTransparent="True">
+                            <Label Text="{Binding Day}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   VerticalOptions="Center"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- تاريخ المحاضرة (تلقائي وغير قابل للتحديد أو الكتابة) -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="تاريخ المحاضرة (تلقائي)" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
+                        <Border BackgroundColor="{StaticResource DarkSurface}"
+                                StrokeShape="RoundRectangle 12"
+                                StrokeThickness="0"
+                                Padding="14,12"
+                                MinimumHeightRequest="48"
+                                InputTransparent="True">
+                            <Label Text="{Binding LectureDate, StringFormat='{0:yyyy/MM/dd}'}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   VerticalOptions="Center"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- حالة أخذ المحاضرة (IsTaken) -->
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 14"
+                            Padding="16,12">
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
+                                <Label Text="حالة المحاضرة"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}"/>
+                                <Label FontSize="12">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsTaken}" Value="True">
+                                            <Setter Property="Text" Value="تم أخذ المحاضرة"/>
+                                            <Setter Property="TextColor" Value="#4ADE80"/>
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsTaken}" Value="False">
+                                            <Setter Property="Text" Value="لم تُؤخذ بعد"/>
+                                            <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+                            </VerticalStackLayout>
+
+                            <Switch Grid.Column="1"
+                                    IsToggled="{Binding IsTaken}"
+                                    OnColor="{StaticResource AccentYellow}"
+                                    ThumbColor="{StaticResource TextPrimary}"
+                                    VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+
                 </VerticalStackLayout>
-            </Border>
 
-            <!-- حقول التعديل والعرض -->
-            <VerticalStackLayout Spacing="16">
+                <!-- ========================================== -->
+                <!-- تحضير طلاب المجموعة للمحاضرة             -->
+                <!-- ========================================== -->
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                        <Label Grid.Column="0"
+                               Text="تحضير طلاب المجموعة:"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource TextSecondary}"
+                               VerticalOptions="Center"/>
+                        <Label Grid.Column="1"
+                               Text="{Binding StudentsAttendanceList.Count, StringFormat='{0} طالب'}"
+                               FontSize="12"
+                               TextColor="{StaticResource AccentYellow}"
+                               VerticalOptions="Center"/>
+                    </Grid>
 
-                <!-- اسم أو رقم القاعة -->
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="اسم أو رقم القاعة" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
-                    <Entry Text="{Binding HallName}"
-                           Placeholder="أدخل اسم القاعة"
-                           BackgroundColor="{StaticResource DarkSurface}"
-                           TextColor="{StaticResource TextPrimary}"
-                           PlaceholderColor="{StaticResource TextSecondary}"
-                           HeightRequest="48"/>
-                </VerticalStackLayout>
+                    <CollectionView ItemsSource="{Binding StudentsAttendanceList}"
+                                    SelectionMode="None">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                        </CollectionView.ItemsLayout>
 
-                <!-- يوم المحاضرة -->
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="اليوم" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
-                    <Picker Title="اختر اليوم"
-                            ItemsSource="{Binding DaysList}"
-                            SelectedItem="{Binding Day}"
-                            BackgroundColor="{StaticResource DarkSurface}"
-                            TextColor="{StaticResource TextPrimary}"
-                            TitleColor="{StaticResource TextSecondary}"
-                            HeightRequest="48"/>
-                </VerticalStackLayout>
+                        <CollectionView.EmptyView>
+                            <Border BackgroundColor="{StaticResource DarkSurface}"
+                                    StrokeShape="RoundRectangle 14"
+                                    StrokeThickness="0"
+                                    Padding="20">
+                                <Label Text="لا يوجد طلاب مسجلون في هذه المجموعة."
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextSecondary}"
+                                       HorizontalTextAlignment="Center"/>
+                            </Border>
+                        </CollectionView.EmptyView>
 
-                <!-- تاريخ المحاضرة -->
-                <VerticalStackLayout Spacing="6">
-                    <Label Text="تاريخ المحاضرة" FontSize="13" TextColor="{StaticResource TextSecondary}"/>
-                    <DatePicker Date="{Binding LectureDate}"
-                                BackgroundColor="{StaticResource DarkSurface}"
-                                TextColor="{StaticResource TextPrimary}"
-                                HeightRequest="48"/>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="local:StudentAttendanceItem">
+                                <Border BackgroundColor="{StaticResource DarkSurface}"
+                                        StrokeShape="RoundRectangle 16"
+                                        StrokeThickness="0"
+                                        Padding="16">
+                                    <VerticalStackLayout Spacing="10">
+
+                                        <!-- بيانات الطالب -->
+                                        <VerticalStackLayout Spacing="3">
+                                            <Label Text="{Binding FullName}"
+                                                   FontSize="15"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource TextPrimary}"/>
+                                            <Label Text="{Binding PhoneNumber, StringFormat='الرقم الأكاديمي: {0}'}"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource TextSecondary}"/>
+                                        </VerticalStackLayout>
+
+                                        <!-- أزرار التحضير المباشرة (حاضر / غائب / مستأذن) -->
+                                        <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
+
+                                            <!-- حاضر -->
+                                            <Button Grid.Column="0"
+                                                    Text="حاضر"
+                                                    FontSize="12"
+                                                    FontAttributes="Bold"
+                                                    CornerRadius="10"
+                                                    HeightRequest="36"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:LectureDetailsViewModel}}, Path=SetStudentPresentCommand}"
+                                                    CommandParameter="{Binding}">
+                                                <Button.Triggers>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Present">
+                                                        <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}"/>
+                                                        <Setter Property="TextColor" Value="{StaticResource DarkBackground}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Absent">
+                                                        <Setter Property="BackgroundColor" Value="#1E2A38"/>
+                                                        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Excused">
+                                                        <Setter Property="BackgroundColor" Value="#1E2A38"/>
+                                                        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+                                                    </DataTrigger>
+                                                </Button.Triggers>
+                                            </Button>
+
+                                            <!-- غائب -->
+                                            <Button Grid.Column="1"
+                                                    Text="غائب"
+                                                    FontSize="12"
+                                                    FontAttributes="Bold"
+                                                    CornerRadius="10"
+                                                    HeightRequest="36"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:LectureDetailsViewModel}}, Path=SetStudentAbsentCommand}"
+                                                    CommandParameter="{Binding}">
+                                                <Button.Triggers>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Absent">
+                                                        <Setter Property="BackgroundColor" Value="#FF6B6B"/>
+                                                        <Setter Property="TextColor" Value="White"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Present">
+                                                        <Setter Property="BackgroundColor" Value="#1E2A38"/>
+                                                        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Excused">
+                                                        <Setter Property="BackgroundColor" Value="#1E2A38"/>
+                                                        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+                                                    </DataTrigger>
+                                                </Button.Triggers>
+                                            </Button>
+
+                                            <!-- مستأذن -->
+                                            <Button Grid.Column="2"
+                                                    Text="مستأذن"
+                                                    FontSize="12"
+                                                    FontAttributes="Bold"
+                                                    CornerRadius="10"
+                                                    HeightRequest="36"
+                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:LectureDetailsViewModel}}, Path=SetStudentExcusedCommand}"
+                                                    CommandParameter="{Binding}">
+                                                <Button.Triggers>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Excused">
+                                                        <Setter Property="BackgroundColor" Value="#FFA500"/>
+                                                        <Setter Property="TextColor" Value="{StaticResource DarkBackground}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Present">
+                                                        <Setter Property="BackgroundColor" Value="#1E2A38"/>
+                                                        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Button" Binding="{Binding Status}" Value="Absent">
+                                                        <Setter Property="BackgroundColor" Value="#1E2A38"/>
+                                                        <Setter Property="TextColor" Value="{StaticResource TextSecondary}"/>
+                                                    </DataTrigger>
+                                                </Button.Triggers>
+                                            </Button>
+
+                                        </Grid>
+
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
+        </ScrollView>
 
-            <!-- زر حفظ التعديلات -->
+        <!-- شريط الحفظ السفلي -->
+        <Border Grid.Row="1"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="20,12">
             <Button Text="حفظ التعديلات"
                     Command="{Binding SaveCommand}"
                     BackgroundColor="{StaticResource AccentYellow}"
@@ -66,10 +265,9 @@
                     FontAttributes="Bold"
                     FontSize="15"
                     CornerRadius="12"
-                    HeightRequest="50"
-                    Margin="0,20,0,0"/>
+                    HeightRequest="50"/>
+        </Border>
 
-        </VerticalStackLayout>
-    </ScrollView>
+    </Grid>
 
 </ContentPage>

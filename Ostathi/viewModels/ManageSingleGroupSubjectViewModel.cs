@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
-using Ostathi.Services;
 
 namespace Ostathi.ViewModels
 {
@@ -12,9 +13,16 @@ namespace Ostathi.ViewModels
     [QueryProperty(nameof(CurrentGroupSubject), "GroupSubject")]
     public partial class ManageSingleGroupSubjectViewModel : ObservableObject
     {
-        // Target GroupSubject property
+        private readonly AppDbContext _dbContext = new();
+
         [ObservableProperty]
         private GroupSubject? _currentGroupSubject;
+
+        [ObservableProperty]
+        private string _groupName = "غير محدد";
+
+        [ObservableProperty]
+        private string _subjectName = "غير محدد";
 
         #region Commands for Interactive Cards and Buttons
 
@@ -29,26 +37,54 @@ namespace Ostathi.ViewModels
 
         public ManageSingleGroupSubjectViewModel()
         {
-            // Initialize commands corresponding strictly to the current UI buttons
             ExportCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(ExportMasterPage)));
-            
-            // Open SubjectGroupStudentsAttendanceView with GroupId and SubjectId parameters
             OpenAttendanceCommand = new AsyncRelayCommand(OpenSubjectGroupAttendanceAsync);
-
-            // Open SubjectGroupAssignmentsPage with GroupId and SubjectId parameters
             OpenAssignmentsCommand = new AsyncRelayCommand(OpenSubjectGroupAssignmentsAsync);
-
-            // Open SubjectGroupLecturesPage with GroupId and SubjectId parameters
             OpenLecturesCommand = new AsyncRelayCommand(OpenSubjectGroupLecturesAsync);
-
-            // الانتقال إلى شاشة "التواصل مع الطلاب" وتمرير GroupId
             OpenStudentCommunicationCommand = new AsyncRelayCommand(OpenStudentCommunicationAsync);
-            
-            // ربط أمر الدرجات بشاشة النظرة العامة الجديدة لدرجات مجموعة المادة
             OpenGradesCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(SubjectGroupGradesOverviewPage)));
         }
 
-        // Navigate to SubjectGroupStudentsAttendanceView passing GroupId and SubjectId
+        partial void OnCurrentGroupSubjectChanged(GroupSubject? value)
+        {
+            if (value == null)
+            {
+                GroupName = "غير محدد";
+                SubjectName = "غير محدد";
+                return;
+            }
+
+            _ = LoadGroupAndSubjectNamesAsync(value.GroupId, value.SubjectId);
+        }
+
+        private async Task LoadGroupAndSubjectNamesAsync(int groupId, int subjectId)
+        {
+            try
+            {
+                var group = await _dbContext.Groups
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(g => g.Id == groupId);
+
+                var subject = await _dbContext.Subjects
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(s => s.Id == subjectId);
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    GroupName = group?.Name ?? $"مجموعة #{groupId}";
+                    SubjectName = subject?.Name ?? $"مادة #{subjectId}";
+                });
+            }
+            catch
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    GroupName = $"مجموعة #{groupId}";
+                    SubjectName = $"مادة #{subjectId}";
+                });
+            }
+        }
+
         private async Task OpenSubjectGroupAttendanceAsync()
         {
             if (CurrentGroupSubject == null)
@@ -67,7 +103,6 @@ namespace Ostathi.ViewModels
             }
         }
 
-        // Navigate to SubjectGroupAssignmentsPage passing GroupId and SubjectId
         private async Task OpenSubjectGroupAssignmentsAsync()
         {
             if (CurrentGroupSubject == null)
@@ -86,7 +121,6 @@ namespace Ostathi.ViewModels
             }
         }
 
-        // Navigate to SubjectGroupLecturesPage passing GroupId and SubjectId
         private async Task OpenSubjectGroupLecturesAsync()
         {
             if (CurrentGroupSubject == null)
@@ -105,7 +139,6 @@ namespace Ostathi.ViewModels
             }
         }
 
-        // الانتقال إلى شاشة التواصل مع الطلاب والمندوب وتمرير GroupId
         private async Task OpenStudentCommunicationAsync()
         {
             if (CurrentGroupSubject == null)
@@ -123,7 +156,6 @@ namespace Ostathi.ViewModels
             }
         }
 
-        // Helper method to navigate to subpages passing GroupSubjectId and GroupId
         protected virtual async Task GoToAsync(string pageName)
         {
             if (CurrentGroupSubject == null)

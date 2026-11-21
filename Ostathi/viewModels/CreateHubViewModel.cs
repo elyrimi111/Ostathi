@@ -70,7 +70,7 @@ public partial class CreateHubViewModel : ObservableObject
     {
         if (Shell.Current != null)
         {
-            await Shell.Current.GoToAsync(nameof(GroupSubjectsManagementView));
+            await Shell.Current.GoToAsync(nameof(AddGroupSubjectPage));
         }
     }
 }

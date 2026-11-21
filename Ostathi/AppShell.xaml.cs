@@ -20,6 +20,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(AddUpdateGroup), typeof(AddUpdateGroup));
         Routing.RegisterRoute(nameof(AddUpdateLecturePage), typeof(AddUpdateLecturePage));
         Routing.RegisterRoute(nameof(AddUpdateAssignmentPage), typeof(AddUpdateAssignmentPage));
+        Routing.RegisterRoute(nameof(AddGroupSubjectPage), typeof(AddGroupSubjectPage));
 
         // Attendance, Year Work & Assignments Routes
         Routing.RegisterRoute(nameof(AttendancePage), typeof(AttendancePage));
@@ -53,5 +54,9 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(AboutPage), typeof(AboutPage));
         Routing.RegisterRoute(nameof(StudentDetailsPage), typeof(StudentDetailsPage));
         Routing.RegisterRoute(nameof(EditStudentGradesPage), typeof(EditStudentGradesPage));
+        
+        Routing.RegisterRoute(nameof(ImportGroupPage), typeof(ImportGroupPage));
+
+    
     }
 }

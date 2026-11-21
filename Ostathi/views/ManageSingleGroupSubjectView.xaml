@@ -19,8 +19,8 @@
         <Border Grid.Row="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 22" StrokeThickness="0" Padding="18">
             <VerticalStackLayout Spacing="14">
                 <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                    <Label Text="{Binding CurrentGroupSubject.Group.Name, StringFormat='المجموعة: {0}'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalTextAlignment="Center"/>
-                    <Label Text="{Binding CurrentGroupSubject.Subject.Name, StringFormat='المادة: {0}'}" FontSize="12" TextColor="{StaticResource AccentYellow}" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                    <Label Text="{Binding GroupName, StringFormat='المجموعة: {0}'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalTextAlignment="Center"/>
+                    <Label Text="{Binding SubjectName, StringFormat='المادة: {0}'}" FontSize="12" TextColor="{StaticResource AccentYellow}" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
                 </VerticalStackLayout>
 
                 <BoxView HeightRequest="1" BackgroundColor="{StaticResource DarkBackground}" Opacity="0.6"/>
@@ -70,7 +70,7 @@
                 </Grid>
             </Border>
 
-            <!-- التواصل مع الطلاب والمندوب (البطاقة المحدثة بدلاً من الإشعارات) -->
+            <!-- التواصل مع الطلاب والمندوب -->
             <Border Grid.Row="1" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenStudentCommunicationCommand}"/></Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
@@ -94,7 +94,7 @@
                 </Grid>
             </Border>
 
-            <!-- الدرجات (تمتد على العمودين في الصف الأخير لتكون بارزة ومتناسقة) -->
+            <!-- الدرجات -->
             <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenGradesCommand}"/></Border.GestureRecognizers>
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center" HorizontalOptions="Center">

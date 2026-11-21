@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Ostathi"
              x:Class="Ostathi.ScheduleManagementPage"
+             x:DataType="local:ScheduleManagementViewModel"
              Title="إدارة جدول المحاضرات"
              BackgroundColor="{StaticResource DarkBackground}"
              FlowDirection="RightToLeft">
@@ -11,31 +12,47 @@
 
         <!-- 1. الهيدر العلوي لشاشة جدول المحاضرات -->
         <Border Grid.Row="0" BackgroundColor="{StaticResource DarkSurface}" StrokeThickness="0" Padding="20,16" StrokeShape="RoundRectangle 0,0,24,24">
-            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                <VerticalStackLayout Grid.Column="0" Spacing="2">
-                    <Label Text="جدول المحاضرات الأسبوعي" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="تنظيم وتحديد أوقات القاعات والمجموعات" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                </VerticalStackLayout>
-
-                <!-- زر إضافة محاضرة جديدة -->
-                <Button Grid.Column="1" Text="+ إضافة محاضرة" 
-                        Command="{Binding AddLectureCommand}"
-                        BackgroundColor="{StaticResource AccentYellow}" 
-                        TextColor="{StaticResource DarkBackground}"
-                        FontAttributes="Bold" FontSize="12" CornerRadius="14" HeightRequest="40" Padding="14,0" />
-            </Grid>
+            <VerticalStackLayout Spacing="2">
+                <Label Text="جدول المحاضرات الأسبوعي" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                <Label Text="تنظيم وتحديد أوقات القاعات والمجموعات" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+            </VerticalStackLayout>
         </Border>
 
         <!-- 2. محتوى المحاضرات والأيام -->
         <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="20" Spacing="20">
+            <VerticalStackLayout Padding="20" Spacing="18">
 
-                <!-- شريط أياّم الأسبوع للفلترة والتنقل السريع -->
+                <!-- بطاقة المحاضرة القادمة -->
+                <Border IsVisible="{Binding HasNextLecture}"
+                        BackgroundColor="{StaticResource DarkSurface}"
+                        Stroke="{StaticResource AccentYellow}"
+                        StrokeThickness="1.5"
+                        StrokeShape="RoundRectangle 20"
+                        Padding="16">
+                    <VerticalStackLayout Spacing="6">
+                        <HorizontalStackLayout Spacing="8">
+                            <Label Text="المحاضرة القادمة" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
+                            <Label Text="{Binding NextLecture.StartTime, StringFormat='• تبدأ {0:hh\\:mm}'}" FontSize="12" TextColor="{StaticResource TextSecondary}" />
+                        </HorizontalStackLayout>
+
+                        <Label Text="{Binding NextLecture.HallName, StringFormat='القاعة: {0}'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+
+                        <HorizontalStackLayout Spacing="12">
+                            <Label Text="{Binding NextLecture.StartTime, StringFormat='من {0:hh\\:mm}'}" FontSize="11" TextColor="{StaticResource AccentLime}" FontAttributes="Bold" />
+                            <Label Text="{Binding NextLecture.EndTime, StringFormat='إلى {0:hh\\:mm}'}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- شريط أيام الأسبوع للفلترة والتنقل السريع -->
                 <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                     <HorizontalStackLayout Spacing="8">
-                        
+
                         <!-- السبت -->
                         <Border StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0" BackgroundColor="{StaticResource DarkSurface}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="السبت" />
+                            </Border.GestureRecognizers>
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding SelectedDay}" Value="السبت">
                                     <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}" />
@@ -47,14 +64,14 @@
                                         <Setter Property="TextColor" Value="{StaticResource DarkBackground}" />
                                     </DataTrigger>
                                 </Label.Triggers>
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="السبت"/>
-                                </Label.GestureRecognizers>
                             </Label>
                         </Border>
 
                         <!-- الأحد -->
                         <Border StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0" BackgroundColor="{StaticResource DarkSurface}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الأحد" />
+                            </Border.GestureRecognizers>
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding SelectedDay}" Value="الأحد">
                                     <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}" />
@@ -66,14 +83,14 @@
                                         <Setter Property="TextColor" Value="{StaticResource DarkBackground}" />
                                     </DataTrigger>
                                 </Label.Triggers>
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الأحد"/>
-                                </Label.GestureRecognizers>
                             </Label>
                         </Border>
 
                         <!-- الإثنين -->
                         <Border StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0" BackgroundColor="{StaticResource DarkSurface}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الإثنين" />
+                            </Border.GestureRecognizers>
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding SelectedDay}" Value="الإثنين">
                                     <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}" />
@@ -85,14 +102,14 @@
                                         <Setter Property="TextColor" Value="{StaticResource DarkBackground}" />
                                     </DataTrigger>
                                 </Label.Triggers>
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الإثنين"/>
-                                </Label.GestureRecognizers>
                             </Label>
                         </Border>
 
                         <!-- الثلاثاء -->
                         <Border StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0" BackgroundColor="{StaticResource DarkSurface}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الثلاثاء" />
+                            </Border.GestureRecognizers>
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding SelectedDay}" Value="الثلاثاء">
                                     <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}" />
@@ -104,14 +121,14 @@
                                         <Setter Property="TextColor" Value="{StaticResource DarkBackground}" />
                                     </DataTrigger>
                                 </Label.Triggers>
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الثلاثاء"/>
-                                </Label.GestureRecognizers>
                             </Label>
                         </Border>
 
                         <!-- الأربعاء -->
                         <Border StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0" BackgroundColor="{StaticResource DarkSurface}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الأربعاء" />
+                            </Border.GestureRecognizers>
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding SelectedDay}" Value="الأربعاء">
                                     <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}" />
@@ -123,14 +140,14 @@
                                         <Setter Property="TextColor" Value="{StaticResource DarkBackground}" />
                                     </DataTrigger>
                                 </Label.Triggers>
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الأربعاء"/>
-                                </Label.GestureRecognizers>
                             </Label>
                         </Border>
 
                         <!-- الخميس -->
                         <Border StrokeShape="RoundRectangle 14" Padding="16,8" StrokeThickness="0" BackgroundColor="{StaticResource DarkSurface}">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الخميس" />
+                            </Border.GestureRecognizers>
                             <Border.Triggers>
                                 <DataTrigger TargetType="Border" Binding="{Binding SelectedDay}" Value="الخميس">
                                     <Setter Property="BackgroundColor" Value="{StaticResource AccentYellow}" />
@@ -142,9 +159,6 @@
                                         <Setter Property="TextColor" Value="{StaticResource DarkBackground}" />
                                     </DataTrigger>
                                 </Label.Triggers>
-                                <Label.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding SelectDayCommand}" CommandParameter="الخميس"/>
-                                </Label.GestureRecognizers>
                             </Label>
                         </Border>
 
@@ -168,38 +182,29 @@
                 <VerticalStackLayout Spacing="12">
                     <Label Text="قائمة المحاضرات" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
 
-                    <!-- استخدام BindableLayout لعرض كروت المحاضرات بناءً على الـ ViewModel -->
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding LecturesList}" Spacing="12">
                         <BindableLayout.ItemTemplate>
-                            <DataTemplate>
+                            <DataTemplate x:DataType="local:Lecture">
                                 <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 18" StrokeThickness="0" Padding="16">
                                     <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                                         <!-- تفاصيل المحاضرة -->
                                         <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                            <Label Text="{Binding Major}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                            <Label Text="{Binding LectureNumber, StringFormat='محاضرة رقم {0}'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
                                             <HorizontalStackLayout Spacing="12">
-                                                <Label Text="{Binding AcademicYear}" FontSize="11" TextColor="{StaticResource AccentLime}" FontAttributes="Bold" />
-                                                <Label Text="{Binding HallName, StringFormat='📍 القاعة: {0}'}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
-                                                <Label Text="{Binding Group, StringFormat='مجموعة: {0}'}" FontSize="11" TextColor="{StaticResource AccentYellow}" />
+                                                <Label Text="{Binding HallName, StringFormat='📍 القاعة: {0}'}" FontSize="11" TextColor="{StaticResource AccentLime}" FontAttributes="Bold" />
+                                                <Label Text="{Binding StartTime, StringFormat='من {0:hh\\:mm}'}" FontSize="11" TextColor="{StaticResource AccentYellow}" />
+                                                <Label Text="{Binding EndTime, StringFormat='إلى {0:hh\\:mm}'}" FontSize="11" TextColor="{StaticResource TextSecondary}" />
                                             </HorizontalStackLayout>
                                         </VerticalStackLayout>
 
-                                        <!-- أزرار الإجراءات (تعديل وحذف) -->
-                                        <HorizontalStackLayout Grid.Column="1" Spacing="6">
-                                            <Button Text="تعديل" 
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:ScheduleManagementViewModel}}, Path=EditLectureCommand}" 
-                                                    CommandParameter="{Binding .}"
-                                                    BackgroundColor="{StaticResource DarkBackground}" 
-                                                    TextColor="{StaticResource TextPrimary}" 
-                                                    FontSize="11" CornerRadius="10" HeightRequest="34" Padding="10,0" />
-                                            
-                                            <Button Text="حذف" 
-                                                    Command="{Binding Source={RelativeSource AncestorType={x:Type local:ScheduleManagementViewModel}}, Path=DeleteLectureCommand}" 
-                                                    CommandParameter="{Binding .}"
-                                                    BackgroundColor="{StaticResource DarkSurface}" 
-                                                    TextColor="#FF5252" 
-                                                    FontSize="11" CornerRadius="10" HeightRequest="34" Padding="10,0" />
-                                        </HorizontalStackLayout>
+                                        <!-- زر التعديل -->
+                                        <Button Grid.Column="1"
+                                                Text="تعديل"
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ScheduleManagementViewModel}}, Path=EditLectureCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="{StaticResource DarkBackground}"
+                                                TextColor="{StaticResource TextPrimary}"
+                                                FontSize="11" CornerRadius="10" HeightRequest="34" Padding="12,0" />
                                     </Grid>
                                 </Border>
                             </DataTemplate>

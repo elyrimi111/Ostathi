@@ -1,34 +1,24 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Ostathi;
 
 public class Lecture
 {
-    // Primary Key for the Lecture entity
-    [Key]
     public int Id { get; set; }
+    public int LectureNumber { get; set; }
 
-    // Hall or Room Name (e.g., "قاعة 1", "مدرج أ")
-    [MaxLength(100)]
+    public int? GroupSubjectId { get; set; }
+    public WeekDay DayOfWeek { get; set; }
+
     public string HallName { get; set; } = string.Empty;
 
-    // Subject Name (e.g., "OOP", "Database Management")
-    [MaxLength(100)]
-    public string SubjectName { get; set; } = string.Empty;
+    public DateTime LectureDate { get; set; } = DateTime.Today;
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
 
-    // Major ID or Specialization identifier
-    [MaxLength(100)]
-    public string MajorId { get; set; } = string.Empty;
+    public bool IsCancelled { get; set; }
+    public string Notes { get; set; } = string.Empty;
 
-    // Foreign key referencing the related Group entity
-    public int GroupId { get; set; }
-
-    // Day of the week (e.g., "Saturday", "Sunday")
-    [Required]
-    [MaxLength(50)]
-    public string Day { get; set; } = "السبت";
-
-    // Lecture Date for tracking attendance history
-    public DateTime LectureDate { get; set; } = DateTime.Now;
+    public DateTime StartDateTime => LectureDate.Date.Add(StartTime.ToTimeSpan());
+    public DateTime EndDateTime => LectureDate.Date.Add(EndTime.ToTimeSpan());
 }
