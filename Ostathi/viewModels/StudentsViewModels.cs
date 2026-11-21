@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Ostathi.Services;
 
@@ -12,6 +14,8 @@ namespace Ostathi
     public class StudentsViewModel : BaseViewModel
     {
         private readonly StudentService _studentService;
+        private readonly AppDbContext _dbContext;
+        private readonly SubjectGroupStudentGradeService _gradeService;
         private List<Student> _allStudents = new();
 
         #region Fields & Properties
@@ -79,22 +83,31 @@ namespace Ostathi
         public ICommand LoadStudentsCommand { get; }
         public ICommand EditStudentCommand { get; }
         public ICommand DeleteStudentCommand { get; }
-        public ICommand StudentTappedCommand { get; } // أمر الضغط على الطالب لعرض التفاصيل
+        public ICommand StudentTappedCommand { get; }
 
         #endregion
 
         #region Constructors
 
-        // Default constructor fallback for XAML / DI instantiations
-        public StudentsViewModel() : this(new StudentService(new AppDbContext()))
+        public StudentsViewModel()
+            : this(new StudentService(new AppDbContext()), new AppDbContext(), new SubjectGroupStudentGradeService(new AppDbContext()))
         {
         }
 
         public StudentsViewModel(StudentService studentService)
+            : this(studentService, new AppDbContext(), new SubjectGroupStudentGradeService(new AppDbContext()))
+        {
+        }
+
+        public StudentsViewModel(
+            StudentService studentService,
+            AppDbContext dbContext,
+            SubjectGroupStudentGradeService gradeService)
         {
             _studentService = studentService ?? new StudentService(new AppDbContext());
+            _dbContext = dbContext ?? new AppDbContext();
+            _gradeService = gradeService ?? new SubjectGroupStudentGradeService(_dbContext);
 
-            // Initialize commands
             ImportSheetCommand = new Command(async () => await OnImportSheetExecuteAsync());
             AddStudentCommand = new Command(async () => await OnAddStudentExecuteAsync());
             LoadStudentsCommand = new Command(async () => await LoadStudentsAsync());
@@ -102,10 +115,8 @@ namespace Ostathi
             DeleteStudentCommand = new Command<Student>(async (student) => await OnDeleteStudentExecuteAsync(student));
             StudentTappedCommand = new Command<Student>(async (student) => await OnStudentTappedExecuteAsync(student));
 
-            // Subscribe to real-time additions/updates notification
             MessengerService.StudentAdded += OnStudentAddedNotification;
 
-            // Automatically load students from database upon instantiation
             _ = LoadStudentsAsync();
         }
 
@@ -121,14 +132,12 @@ namespace Ostathi
             });
         }
 
-        // Fetch all students from the database asynchronously
         public async Task LoadStudentsAsync()
         {
             try
             {
                 IsBusy = true;
 
-                // Load initial real data directly from SQLite via StudentService
                 var studentsFromDb = await _studentService.GetStudentsAsync();
                 _allStudents = studentsFromDb ?? new List<Student>();
 
@@ -163,14 +172,32 @@ namespace Ostathi
             }
         }
 
-        // Navigate to StudentDetailsPage when tapping a student card
-        private async Task OnStudentTappedExecuteAsync(Student? student)
-        {
-            if (student == null || Shell.Current == null) return;
+      private async Task OnStudentTappedExecuteAsync(Student? student)
+      {
+       if (student == null || Shell.Current == null) return;
 
-            // Go to StudentDetailsPage passing StudentId via query parameters
-            await Shell.Current.GoToAsync($"{nameof(StudentDetailsPage)}?StudentId={student.Id}");
+       int groupSubjectId = 0;
+       int gradeId = 0;
+
+       if (student.GroupId > 0)
+       {
+        var groupSubject = await _dbContext.GroupSubjects
+            .AsNoTracking()
+            .FirstOrDefaultAsync(gs => gs.GroupId == student.GroupId);
+
+        if (groupSubject != null)
+        {
+            groupSubjectId = groupSubject.Id;
+
+            var existingGrades = await _gradeService.GetByGroupSubjectIdAsync(groupSubjectId);
+            var gradeRecord = existingGrades.FirstOrDefault(g => g.StudentId == student.Id);
+            gradeId = gradeRecord?.Id ?? 0;
         }
+       }
+
+    await Shell.Current.GoToAsync(
+        $"{nameof(StudentDetailsPage)}?StudentId={student.Id}&GroupSubjectId={groupSubjectId}&GradeId={gradeId}");
+}
 
         private async Task OnEditStudentExecuteAsync(Student? student)
         {
@@ -204,27 +231,23 @@ namespace Ostathi
             }
         }
 
-        // Filter student list dynamically by Search Query, Academic Year, and Group
         private void FilterStudents()
         {
             var query = _allStudents.AsEnumerable();
 
-            // 1. Apply search query filter (matches FullName or AcademicId)
             if (!string.IsNullOrWhiteSpace(SearchQuery))
             {
-                query = query.Where(s => 
+                query = query.Where(s =>
                     s.FullName.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
                     (!string.IsNullOrEmpty(s.AcademicId) && s.AcademicId.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
                 );
             }
 
-            // 2. Apply Academic Year filter
             if (!string.IsNullOrWhiteSpace(SelectedYear) && !SelectedYear.Equals("كل السنوات", StringComparison.OrdinalIgnoreCase))
             {
                 query = query.Where(s => s.AcademicYear.Equals(SelectedYear, StringComparison.OrdinalIgnoreCase));
             }
 
-            // 3. Apply Group filter
             if (!string.IsNullOrWhiteSpace(SelectedGroup) && !SelectedGroup.Equals("كل المجموعات", StringComparison.OrdinalIgnoreCase))
             {
                 int targetGroupId = SelectedGroup switch
@@ -243,7 +266,6 @@ namespace Ostathi
 
             var resultsList = query.ToList();
 
-            // Update collection items directly on the UI thread
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 FilteredStudents.Clear();

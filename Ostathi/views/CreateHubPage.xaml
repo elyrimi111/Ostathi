@@ -91,27 +91,7 @@
                     </Grid>
                 </Border>
 
-                <!-- 3. إضافة محاضرة / حصة في الجدول -->
-                <Border BackgroundColor="{StaticResource DarkSurface}" 
-                        StrokeShape="RoundRectangle 16" 
-                        StrokeThickness="0" 
-                        Padding="16">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding AddLectureCommand}"/>
-                    </Border.GestureRecognizers>
-                    <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
-                        <Border Grid.Column="0" WidthRequest="44" HeightRequest="44" StrokeShape="RoundRectangle 12" BackgroundColor="{StaticResource DarkBackground}" StrokeThickness="0">
-                            <Label Text="📅" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-                        <VerticalStackLayout Grid.Column="1" Spacing="2" Margin="14,0,0,0" VerticalOptions="Center">
-                            <Label Text="إضافة موعد محاضرة" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                            <Label Text="جدولة حصة جديدة لمجموعة محددة" FontSize="11" TextColor="{StaticResource TextSecondary}"/>
-                        </VerticalStackLayout>
-                        <Label Grid.Column="2" Text="❮" FontSize="14" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
-                    </Grid>
-                </Border>
-
-                <!-- 4. إضافة تكليف / واجب جديد -->
+                <!-- 3. إضافة تكليف / واجب جديد -->
                 <Border BackgroundColor="{StaticResource DarkSurface}" 
                         StrokeShape="RoundRectangle 16" 
                         StrokeThickness="0" 
@@ -131,7 +111,7 @@
                     </Grid>
                 </Border>
 
-                <!-- 5. تدريس مادة لمجموعة -->
+                <!-- 4. تدريس مادة لمجموعة -->
                 <Border BackgroundColor="{StaticResource DarkSurface}" 
                         StrokeShape="RoundRectangle 16" 
                         StrokeThickness="0" 

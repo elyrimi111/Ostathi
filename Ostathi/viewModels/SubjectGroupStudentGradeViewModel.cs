@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.Controls;
 using Ostathi.Services;
 
@@ -30,6 +31,9 @@ public partial class SubjectGroupStudentGradeViewModel : ObservableObject
 
     [ObservableProperty]
     private string _academicId = string.Empty;
+
+    [ObservableProperty]
+    private string _subjectName = string.Empty;
 
     [ObservableProperty]
     private double _attendance;
@@ -78,7 +82,39 @@ public partial class SubjectGroupStudentGradeViewModel : ObservableObject
         }
     }
 
-    // جلب بيانات الطالب والسجلات المسجلة مسبقاً
+    // تحديث اسم المادة تلقائياً بمجرد وصول أو تغير GroupSubjectId عبر التنقل
+    partial void OnGroupSubjectIdChanged(int value)
+    {
+        if (value > 0)
+        {
+            _ = LoadSubjectNameAsync();
+        }
+    }
+
+    // جلب اسم المادة من خلال GroupSubjectId -> SubjectId
+    private async Task LoadSubjectNameAsync()
+    {
+        if (GroupSubjectId <= 0)
+        {
+            SubjectName = string.Empty;
+            return;
+        }
+
+        var groupSubject = await _context.GroupSubjects
+            .AsNoTracking()
+            .FirstOrDefaultAsync(gs => gs.Id == GroupSubjectId);
+
+        if (groupSubject != null && groupSubject.SubjectId > 0)
+        {
+            var subject = await _context.Subjects
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == groupSubject.SubjectId);
+
+            SubjectName = subject?.Name ?? $"مادة #{groupSubject.SubjectId}";
+        }
+    }
+
+    // جلب بيانات الطالب والمادة والسجلات المسجلة مسبقاً
     public async Task InitializeDataAsync()
     {
         if (StudentId > 0)
@@ -91,6 +127,11 @@ public partial class SubjectGroupStudentGradeViewModel : ObservableObject
             }
         }
 
+        if (GroupSubjectId > 0)
+        {
+            await LoadSubjectNameAsync();
+        }
+
         if (GradeId > 0)
         {
             var grade = await _gradeService.GetByIdAsync(GradeId);
@@ -100,6 +141,12 @@ public partial class SubjectGroupStudentGradeViewModel : ObservableObject
                 Assignments = grade.Assignments;
                 Midterm = grade.Midterm;
                 Final = grade.Final;
+
+                if (GroupSubjectId == 0 && grade.GroupSubjectId > 0)
+                {
+                    GroupSubjectId = grade.GroupSubjectId;
+                    await LoadSubjectNameAsync();
+                }
             }
         }
     }

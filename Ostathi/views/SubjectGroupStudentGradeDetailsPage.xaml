@@ -9,9 +9,10 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
 
-            <!-- Student Info Card -->
+            <!-- Student & Subject Info Card -->
             <Border BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 20" StrokeThickness="0" Padding="18">
                 <VerticalStackLayout Spacing="6">
+                    <Label Text="{Binding SubjectName, StringFormat='المادة: {0}'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource AccentYellow}" />
                     <Label Text="{Binding StudentFullName}" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
                     <Label Text="{Binding AcademicId, StringFormat='الرقم الجامعي: {0}'}" FontSize="13" TextColor="{StaticResource TextSecondary}" />
                 </VerticalStackLayout>

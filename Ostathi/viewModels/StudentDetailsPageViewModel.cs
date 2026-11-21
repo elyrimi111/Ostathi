@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Maui.Controls;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Maui.Controls;
 
 namespace Ostathi;
 
@@ -11,6 +13,7 @@ namespace Ostathi;
 public class StudentDetailsPageViewModel : BaseViewModel
 {
     private readonly AppDbContext _dbContext;
+    private readonly GroupSubjectService _groupSubjectService;
 
     private int _studentId;
     public int StudentId
@@ -91,22 +94,13 @@ public class StudentDetailsPageViewModel : BaseViewModel
     public StudentDetailsPageViewModel()
     {
         _dbContext = new AppDbContext();
+        _groupSubjectService = new GroupSubjectService();
 
         EditStudentCommand = new Command(async () => await OnEditStudentExecuted());
         ClosePageCommand = new Command(async () => await OnClosePageExecuted());
         SendWhatsAppCommand = new Command(async () => await OnSendWhatsAppExecuted());
         AddNoteCommand = new Command(async () => await OnAddNoteExecuted());
         SelectSubjectCommand = new Command<StudentSubjectItem>(async (subject) => await OnSelectSubjectExecuted(subject));
-
-        LoadSampleSubjects();
-    }
-
-    private void LoadSampleSubjects()
-    {
-        StudentSubjectsList.Clear();
-        StudentSubjectsList.Add(new StudentSubjectItem { SubjectId = 1, SubjectName = "برمجة الحاسوب C#", TeacherOrDetails = "انقر لإدارة درجات المادة", Grade = "88/100" });
-        StudentSubjectsList.Add(new StudentSubjectItem { SubjectId = 2, SubjectName = "قواعد البيانات SQLite", TeacherOrDetails = "انقر لإدارة درجات المادة", Grade = "92/100" });
-        StudentSubjectsList.Add(new StudentSubjectItem { SubjectId = 3, SubjectName = "هيكلة البيانات والوارزميات", TeacherOrDetails = "انقر لإدارة درجات المادة", Grade = "79/100" });
     }
 
     private async Task LoadStudentDataAsync()
@@ -114,30 +108,44 @@ public class StudentDetailsPageViewModel : BaseViewModel
         try
         {
             IsBusy = true;
-            var student = await _dbContext.Students.FirstOrDefaultAsync(s => s.Id == StudentId);
+            StudentSubjectsList.Clear();
 
-            if (student != null)
+            var student = await _dbContext.Students
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == StudentId);
+
+            if (student == null)
+                return;
+
+            FullName = string.IsNullOrWhiteSpace(student.FullName) ? "اسم الطالب غير متوفر" : student.FullName;
+            AcademicId = string.IsNullOrWhiteSpace(student.AcademicId) ? "غير محدد" : student.AcademicId;
+            PhoneNumber = "777000000";
+            AcademicLevel = string.IsNullOrWhiteSpace(student.AcademicYear) ? "المستوى الأول" : student.AcademicYear;
+            MajorName = $"تخصص #{student.MajorId}";
+
+            if (student.GroupId > 0)
             {
-                FullName = string.IsNullOrWhiteSpace(student.FullName) ? "اسم الطالب غير متوفر" : student.FullName;
-                AcademicId = string.IsNullOrWhiteSpace(student.AcademicId) ? "غير محدد" : student.AcademicId;
-                PhoneNumber = "777000000";
-                AcademicLevel = string.IsNullOrWhiteSpace(student.AcademicYear) ? "المستوى الأول" : student.AcademicYear;
-                MajorName = $"تخصص #{student.MajorId}";
+                var group = await _dbContext.Groups
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(g => g.Id == student.GroupId);
 
-                if (student.GroupId > 0)
-                {
-                    var group = await _dbContext.Groups.FirstOrDefaultAsync(g => g.Id == student.GroupId);
-                    GroupName = (group != null && !string.IsNullOrWhiteSpace(group.Name)) ? group.Name : $"مجموعة #{student.GroupId}";
-                }
-                else
-                {
-                    GroupName = "بدون مجموعة";
-                }
+                GroupName = (group != null && !string.IsNullOrWhiteSpace(group.Name))
+                    ? group.Name
+                    : $"مجموعة #{student.GroupId}";
+
+                await LoadStudentSubjectsAsync(student.Id, student.GroupId);
+            }
+            else
+            {
+                GroupName = "بدون مجموعة";
             }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Error", $"فشل تحميل بيانات الطالب: {ex.Message}", "OK");
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("Error", $"فشل تحميل بيانات الطالب: {ex.Message}", "OK");
+            }
         }
         finally
         {
@@ -145,14 +153,67 @@ public class StudentDetailsPageViewModel : BaseViewModel
         }
     }
 
+    private async Task LoadStudentSubjectsAsync(int studentId, int groupId)
+    {
+        List<GroupSubject> groupSubjects = await _groupSubjectService.GetSubjectsForGroupAsync(groupId);
+        if (groupSubjects.Count == 0)
+            return;
+
+        var subjectIds = groupSubjects.Select(gs => gs.SubjectId).Distinct().ToList();
+        var groupSubjectIds = groupSubjects.Select(gs => gs.Id).Distinct().ToList();
+
+        var subjectsMap = await _dbContext.Subjects
+            .AsNoTracking()
+            .Where(s => subjectIds.Contains(s.Id))
+            .ToDictionaryAsync(s => s.Id);
+
+        var gradesMap = await _dbContext.SubjectGroupStudentGrades
+            .AsNoTracking()
+            .Where(g => g.StudentId == studentId && groupSubjectIds.Contains(g.GroupSubjectId))
+            .ToDictionaryAsync(g => g.GroupSubjectId);
+
+        foreach (var gs in groupSubjects)
+        {
+            subjectsMap.TryGetValue(gs.SubjectId, out var subjectEntity);
+            gradesMap.TryGetValue(gs.Id, out var gradeRecord);
+
+            double total = gradeRecord != null
+                ? gradeRecord.Attendance + gradeRecord.Assignments + gradeRecord.Midterm + gradeRecord.Final
+                : 0;
+
+            StudentSubjectsList.Add(new StudentSubjectItem
+            {
+                SubjectId = gs.SubjectId,
+                GroupSubjectId = gs.Id,
+                GradeId = gradeRecord?.Id ?? 0,
+                SubjectName = !string.IsNullOrWhiteSpace(subjectEntity?.Name)
+                    ? subjectEntity.Name
+                    : $"مادة #{gs.SubjectId}",
+                TeacherOrDetails = "انقر لإدارة درجات المادة",
+                Grade = $"{total:0.#}/100"
+            });
+        }
+    }
+
     private async Task OnSelectSubjectExecuted(StudentSubjectItem subject)
     {
-        if (subject == null) return;
+        if (subject == null || Shell.Current == null) return;
 
         try
         {
-            // فتح شاشة تعديل درجات هذه المادة لهذا الطالب
-            await Shell.Current.GoToAsync($"{nameof(EditStudentGradesPage)}?StudentId={StudentId}&SubjectId={subject.SubjectId}");
+            int gradeId = subject.GradeId;
+
+            if (gradeId == 0 && subject.GroupSubjectId > 0 && StudentId > 0)
+            {
+                var existingGrade = await _dbContext.SubjectGroupStudentGrades
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(g => g.StudentId == StudentId && g.GroupSubjectId == subject.GroupSubjectId);
+
+                gradeId = existingGrade?.Id ?? 0;
+            }
+
+            await Shell.Current.GoToAsync(
+                $"{nameof(SubjectGroupStudentGradeDetailsPage)}?GradeId={gradeId}&StudentId={StudentId}&GroupSubjectId={subject.GroupSubjectId}");
         }
         catch (Exception ex)
         {
@@ -166,15 +227,22 @@ public class StudentDetailsPageViewModel : BaseViewModel
         {
             if (string.IsNullOrWhiteSpace(PhoneNumber) || PhoneNumber == "غير متوفر")
             {
-                await Shell.Current.DisplayAlert("تنبيـه", "رقم الهاتف غير متوفر لهذا الطالب.", "OK");
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlert("تنبيـه", "رقم الهاتف غير متوفر لهذا الطالب.", "OK");
+                }
                 return;
             }
+
             string cleanPhone = PhoneNumber.Replace("+", "").Replace(" ", "").Trim();
             await Launcher.Default.OpenAsync(new Uri($"https://wa.me/{cleanPhone}?text=مرحباً بك يا طالبنا العزيز {FullName}،"));
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("خطأ", $"تعذر فتح تطبيق واتساب: {ex.Message}", "OK");
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("خطأ", $"تعذر فتح تطبيق واتساب: {ex.Message}", "OK");
+            }
         }
     }
 
@@ -182,7 +250,10 @@ public class StudentDetailsPageViewModel : BaseViewModel
     {
         if (string.IsNullOrWhiteSpace(NewNoteText))
         {
-            await Shell.Current.DisplayAlert("تنبيـه", "الرجاء كتابة نص الملاحظة أولاً.", "OK");
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("تنبيـه", "الرجاء كتابة نص الملاحظة أولاً.", "OK");
+            }
             return;
         }
 
@@ -197,18 +268,26 @@ public class StudentDetailsPageViewModel : BaseViewModel
 
     private async Task OnEditStudentExecuted()
     {
-        await Shell.Current.GoToAsync($"{nameof(AddUpdateStudent)}?StudentId={StudentId}");
+        if (Shell.Current != null)
+        {
+            await Shell.Current.GoToAsync($"{nameof(AddUpdateStudent)}?StudentId={StudentId}");
+        }
     }
 
     private async Task OnClosePageExecuted()
     {
-        await Shell.Current.GoToAsync("..");
+        if (Shell.Current != null)
+        {
+            await Shell.Current.GoToAsync("..");
+        }
     }
 }
 
 public class StudentSubjectItem
 {
     public int SubjectId { get; set; }
+    public int GroupSubjectId { get; set; }
+    public int GradeId { get; set; }
     public string SubjectName { get; set; } = string.Empty;
     public string TeacherOrDetails { get; set; } = string.Empty;
     public string Grade { get; set; } = "0/100";

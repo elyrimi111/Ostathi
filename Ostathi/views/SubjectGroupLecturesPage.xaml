@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:Ostathi"
              xmlns:viewmodels="clr-namespace:Ostathi.ViewModels"
              x:Class="Ostathi.SubjectGroupLecturesPage"
+             x:Name="LecturesRootPage"
              x:DataType="viewmodels:SubjectGroupLecturesViewModel"
              Title="إدارة محاضرات المادة"
              BackgroundColor="{StaticResource DarkBackground}"
@@ -11,9 +12,7 @@
 
     <Grid RowDefinitions="Auto, Auto, *" Padding="16" RowSpacing="14">
 
-        <!-- ========================================== -->
-        <!-- 1. Header Information (Group & Subject)    -->
-        <!-- ========================================== -->
+        <!-- 1. Header Information (Group & Subject) -->
         <Border Grid.Row="0"
                 BackgroundColor="{StaticResource DarkSurface}"
                 StrokeThickness="0"
@@ -30,9 +29,7 @@
             </VerticalStackLayout>
         </Border>
 
-        <!-- ========================================== -->
-        <!-- 2. Section Title                           -->
-        <!-- ========================================== -->
+        <!-- 2. Section Title -->
         <Grid Grid.Row="1" VerticalOptions="Center">
             <Label Text="قائمة المحاضرات الـ 12 المسجلة:"
                    FontSize="14"
@@ -41,9 +38,7 @@
                    VerticalOptions="Center"/>
         </Grid>
 
-        <!-- ========================================== -->
-        <!-- 3. Lectures List (CollectionView)          -->
-        <!-- ========================================== -->
+        <!-- 3. Lectures List (CollectionView) -->
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding LecturesList}"
                         SelectedItem="{Binding SelectedLecture}"
@@ -63,27 +58,56 @@
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="local:Lecture">
+                <DataTemplate x:DataType="viewmodels:SubjectGroupLectureDisplayItem">
                     <Border BackgroundColor="{StaticResource DarkSurface}"
                             StrokeThickness="0"
                             StrokeShape="RoundRectangle 14"
                             Padding="14">
-                        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" RowSpacing="6" ColumnSpacing="10">
+                        <Grid ColumnDefinitions="Auto, *, Auto" RowDefinitions="Auto, Auto" RowSpacing="8" ColumnSpacing="12">
 
-                            <!-- Lecture Hall Name / Title -->
-                            <Label Grid.Row="0" Grid.Column="0"
-                                   Text="{Binding HallName, StringFormat='قاعة: {0}'}"
-                                   FontSize="15"
-                                   FontAttributes="Bold"
-                                   TextColor="{StaticResource TextPrimary}"
-                                   VerticalOptions="Center"/>
-
-                            <!-- Taken Status Badge -->
-                            <Border Grid.Row="0" Grid.Column="1"
-                                    StrokeThickness="0"
-                                    StrokeShape="RoundRectangle 8"
-                                    Padding="8,3"
+                            <!-- شارة رقم المحاضرة الأساسية -->
+                            <Border Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                                    BackgroundColor="{StaticResource DarkBackground}"
+                                    Stroke="{StaticResource AccentYellow}"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 12"
+                                    WidthRequest="54"
+                                    HeightRequest="54"
                                     VerticalOptions="Center">
+                                <VerticalStackLayout Spacing="0" HorizontalOptions="Center" VerticalOptions="Center">
+                                    <Label Text="محاضرة"
+                                           FontSize="9"
+                                           TextColor="{StaticResource TextSecondary}"
+                                           HorizontalTextAlignment="Center"/>
+                                    <Label Text="{Binding LectureNumber}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource AccentYellow}"
+                                           HorizontalTextAlignment="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- العنوان الأساسي برقم المحاضرة والقاعة -->
+                            <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                <Label Text="{Binding LectureNumber, StringFormat='المحاضرة رقم {0}'}"
+                                       FontSize="15"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource TextPrimary}"/>
+                                <Label Text="{Binding HallName, StringFormat='القاعة: {0}'}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource AccentLime}"/>
+                            </VerticalStackLayout>
+
+                            <!-- زر تبديل حالة: هل أُخذت المحاضرة أم لا -->
+                            <Border Grid.Row="0" Grid.Column="2"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 10"
+                                    Padding="10,5"
+                                    VerticalOptions="Center">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference LecturesRootPage}, Path=BindingContext.ToggleTakenCommand}"
+                                                          CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
                                 <Border.Triggers>
                                     <DataTrigger TargetType="Border" Binding="{Binding IsTaken}" Value="True">
                                         <Setter Property="BackgroundColor" Value="#1E3A2F"/>
@@ -92,25 +116,38 @@
                                         <Setter Property="BackgroundColor" Value="#3A2E1E"/>
                                     </DataTrigger>
                                 </Border.Triggers>
-                                <Label FontSize="11" FontAttributes="Bold">
+                                <Label Text="{Binding TakenStatusText}"
+                                       FontSize="11"
+                                       FontAttributes="Bold">
                                     <Label.Triggers>
                                         <DataTrigger TargetType="Label" Binding="{Binding IsTaken}" Value="True">
-                                            <Setter Property="Text" Value="تم أخذها"/>
                                             <Setter Property="TextColor" Value="#4ADE80"/>
                                         </DataTrigger>
                                         <DataTrigger TargetType="Label" Binding="{Binding IsTaken}" Value="False">
-                                            <Setter Property="Text" Value="لم تُؤخذ"/>
                                             <Setter Property="TextColor" Value="{StaticResource AccentYellow}"/>
                                         </DataTrigger>
                                     </Label.Triggers>
                                 </Label>
                             </Border>
 
-                            <!-- Day & Date -->
-                            <HorizontalStackLayout Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Spacing="8">
-                                <Label Text="{Binding Day}" FontSize="12" TextColor="{StaticResource AccentYellow}"/>
-                                <Label Text="•" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
-                                <Label Text="{Binding LectureDate, StringFormat='{0:yyyy/MM/dd}'}" FontSize="12" TextColor="{StaticResource TextSecondary}"/>
+                            <!-- اليوم العربي والتاريخ والوقت -->
+                            <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Spacing="8" VerticalOptions="Center">
+                                <Label Text="{Binding ArabicDayName}"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource AccentYellow}"/>
+                                <Label Text="•"
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextSecondary}"/>
+                                <Label Text="{Binding LectureDate, StringFormat='{0:yyyy/MM/dd}'}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextSecondary}"/>
+                                <Label Text="•"
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextSecondary}"/>
+                                <Label Text="{Binding StartTime, StringFormat='{0:hh\\:mm}'}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource TextSecondary}"/>
                             </HorizontalStackLayout>
 
                         </Grid>

@@ -7,6 +7,12 @@ using Ostathi.Services;
 
 namespace Ostathi;
 
+public class LectureSaveResult
+{
+    public bool Success { get; set; }
+    public string? ErrorMessage { get; set; }
+}
+
 public class LucterService
 {
     private readonly AppDbContext _context;
@@ -159,5 +165,90 @@ public class LucterService
         int result = await _context.SaveChangesAsync();
         MessengerService.NotifyLectureAdded();
         return result;
+    }
+
+    public async Task<LectureSaveResult> SaveLectureAttendanceAndStatusAsync(
+        Lecture lecture,
+        int groupSubjectId,
+        string hallName,
+        WeekDay dayOfWeek,
+        DateTime lectureDate,
+        bool isTaken,
+        IEnumerable<StudentAttendanceItem> studentsAttendance)
+    {
+        try
+        {
+            lecture.GroupSubjectId = groupSubjectId > 0 ? groupSubjectId : null;
+            lecture.HallName = hallName;
+            lecture.DayOfWeek = dayOfWeek;
+            lecture.LectureDate = lectureDate;
+
+            await UpdateLectureAsync(lecture);
+
+            int lectureNum = lecture.LectureNumber > 0 ? lecture.LectureNumber : 1;
+
+            if (lecture.GroupSubjectId.HasValue)
+            {
+                var link = await _context.GroupSubjectLucters
+                    .FirstOrDefaultAsync(x => x.LectureId == lecture.Id);
+
+                if (link != null)
+                {
+                    link.IsTaken = isTaken;
+                    link.LectureNumber = lectureNum;
+                }
+                else
+                {
+                    await _context.GroupSubjectLucters.AddAsync(new GroupSubjectLucters
+                    {
+                        GroupSubjectId = lecture.GroupSubjectId.Value,
+                        LectureId = lecture.Id,
+                        LectureNumber = lectureNum,
+                        IsTaken = isTaken
+                    });
+                }
+            }
+
+            var existingRecords = await _context.Attendances
+                .Where(a => a.LectureId == lecture.Id)
+                .ToListAsync();
+
+            var existingByStudentId = existingRecords.ToDictionary(a => a.StudentId, a => a);
+
+            foreach (var item in studentsAttendance)
+            {
+                if (existingByStudentId.TryGetValue(item.StudentId, out var existingRecord))
+                {
+                    existingRecord.Status = item.Status;
+                    existingRecord.Date = lectureDate;
+                }
+                else
+                {
+                    await _context.Attendances.AddAsync(new Attendance
+                    {
+                        StudentId = item.StudentId,
+                        LectureId = lecture.Id,
+                        Status = item.Status,
+                        Date = lectureDate
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            MessengerService.NotifyLectureAdded();
+
+            return new LectureSaveResult
+            {
+                Success = true
+            };
+        }
+        catch (Exception ex)
+        {
+            return new LectureSaveResult
+            {
+                Success = false,
+                ErrorMessage = ex.InnerException?.Message ?? ex.Message
+            };
+        }
     }
 }

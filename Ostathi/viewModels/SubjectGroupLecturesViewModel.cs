@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,12 +11,41 @@ using Ostathi.Services;
 
 namespace Ostathi.ViewModels
 {
+    public class SubjectGroupLectureDisplayItem : BaseViewModel
+    {
+        public Lecture Lecture { get; set; } = null!;
+        public int Id => Lecture.Id;
+        public int LectureNumber => Lecture.LectureNumber;
+        public string HallName => Lecture.HallName;
+        public DateTime LectureDate => Lecture.LectureDate;
+        public TimeOnly StartTime => Lecture.StartTime;
+        public TimeOnly EndTime => Lecture.EndTime;
+        public string ArabicDayName { get; set; } = string.Empty;
+
+        private bool _isTaken;
+        public bool IsTaken
+        {
+            get => _isTaken;
+            set
+            {
+                if (SetProperty(ref _isTaken, value))
+                {
+                    OnPropertyChanged(nameof(TakenStatusText));
+                }
+            }
+        }
+
+        public string TakenStatusText => IsTaken ? "تم أخذها" : "لم تُؤخذ";
+    }
+
     [QueryProperty(nameof(GroupId), nameof(GroupId))]
     [QueryProperty(nameof(SubjectId), nameof(SubjectId))]
     public class SubjectGroupLecturesViewModel : BaseViewModel
     {
         private readonly AppDbContext _dbContext;
         private readonly LucterService _lecturesService;
+
+        private int _currentGroupSubjectId;
 
         private int _groupId;
         public int GroupId
@@ -61,10 +91,10 @@ namespace Ostathi.ViewModels
             set => SetProperty(ref _subjectName, value);
         }
 
-        public ObservableCollection<Lecture> LecturesList { get; } = new();
+        public ObservableCollection<SubjectGroupLectureDisplayItem> LecturesList { get; } = new();
 
-        private Lecture? _selectedLecture;
-        public Lecture? SelectedLecture
+        private SubjectGroupLectureDisplayItem? _selectedLecture;
+        public SubjectGroupLectureDisplayItem? SelectedLecture
         {
             get => _selectedLecture;
             set
@@ -80,6 +110,7 @@ namespace Ostathi.ViewModels
 
         public ICommand EditLectureCommand { get; }
         public ICommand DeleteLectureCommand { get; }
+        public ICommand ToggleTakenCommand { get; }
         public ICommand RefreshCommand { get; }
 
         public SubjectGroupLecturesViewModel(AppDbContext dbContext, LucterService lecturesService)
@@ -87,14 +118,12 @@ namespace Ostathi.ViewModels
             _dbContext = dbContext;
             _lecturesService = lecturesService;
 
-            EditLectureCommand = new Command<Lecture>(async (lecture) => await NavigateToEditLectureAsync(lecture));
-            DeleteLectureCommand = new Command<Lecture>(async (lecture) => await DeleteLectureAsync(lecture));
+            EditLectureCommand = new Command<SubjectGroupLectureDisplayItem>(async (item) => await NavigateToEditLectureAsync(item));
+            DeleteLectureCommand = new Command<SubjectGroupLectureDisplayItem>(async (item) => await DeleteLectureAsync(item));
+            ToggleTakenCommand = new Command<SubjectGroupLectureDisplayItem>(async (item) => await ToggleTakenAsync(item));
             RefreshCommand = new Command(async () => await LoadDataAsync());
         }
 
-        /// <summary>
-        /// Load group details, subject name, and filtered lectures from the database
-        /// </summary>
         public async Task LoadDataAsync()
         {
             try
@@ -103,7 +132,6 @@ namespace Ostathi.ViewModels
 
                 IsBusy = true;
 
-                // 1. Fetch Group Name
                 var group = await _dbContext.Groups
                     .AsNoTracking()
                     .FirstOrDefaultAsync(g => g.Id == GroupId);
@@ -112,35 +140,57 @@ namespace Ostathi.ViewModels
                     GroupName = group.Name;
                 }
 
-                // 2. Fetch Subject Name
                 var subject = await _dbContext.Subjects
                     .AsNoTracking()
                     .FirstOrDefaultAsync(s => s.Id == SubjectId);
                 SubjectName = subject?.Name ?? string.Empty;
 
-                // 3. Resolve GroupSubjectId for this Group and Subject
                 var groupSubject = await _dbContext.GroupSubjects
                     .AsNoTracking()
                     .FirstOrDefaultAsync(gs => gs.GroupId == GroupId && gs.SubjectId == SubjectId);
 
                 if (groupSubject == null)
                 {
+                    _currentGroupSubjectId = 0;
                     MainThread.BeginInvokeOnMainThread(() => LecturesList.Clear());
                     return;
                 }
 
-                // 4. Automatically generate 12 lectures if they don't exist yet for this GroupSubject
+                _currentGroupSubjectId = groupSubject.Id;
+
                 await _lecturesService.GenerateDefaultLecturesAsync(groupSubject.Id);
 
-                // 5. Fetch Lectures matching this GroupSubjectId
                 var filteredLectures = await _lecturesService.GetLecturesByGroupSubjectIdAsync(groupSubject.Id);
+
+                var links = await _dbContext.GroupSubjectLucters
+                    .AsNoTracking()
+                    .Where(x => x.GroupSubjectId == groupSubject.Id)
+                    .ToListAsync();
+
+                var linksByLectureId = links.ToDictionary(x => x.LectureId, x => x);
+
+                var displayItems = filteredLectures
+                    .Where(l => !l.IsCancelled)
+                    .OrderBy(l => l.LectureNumber)
+                    .ThenBy(l => l.LectureDate)
+                    .Select(lecture =>
+                    {
+                        linksByLectureId.TryGetValue(lecture.Id, out var link);
+                        return new SubjectGroupLectureDisplayItem
+                        {
+                            Lecture = lecture,
+                            ArabicDayName = ScheduleManagementViewModel.ToArabicDayName(lecture.DayOfWeek),
+                            IsTaken = link?.IsTaken ?? false
+                        };
+                    })
+                    .ToList();
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     LecturesList.Clear();
-                    foreach (var lecture in filteredLectures.Where(l => !l.IsCancelled))
+                    foreach (var item in displayItems)
                     {
-                        LecturesList.Add(lecture);
+                        LecturesList.Add(item);
                     }
                 });
             }
@@ -157,21 +207,58 @@ namespace Ostathi.ViewModels
             }
         }
 
-        /// <summary>
-        /// Navigate to lecture details/edit page passing LectureId
-        /// </summary>
-        private async Task NavigateToEditLectureAsync(Lecture? lecture)
+        private async Task ToggleTakenAsync(SubjectGroupLectureDisplayItem? item)
         {
-            if (lecture == null) return;
-            await Shell.Current.GoToAsync($"{nameof(LectureDetailsPage)}?LectureId={lecture.Id}");
+            if (item == null || _currentGroupSubjectId <= 0) return;
+
+            try
+            {
+                bool nextState = !item.IsTaken;
+
+                var link = await _dbContext.GroupSubjectLucters
+                    .FirstOrDefaultAsync(x => x.GroupSubjectId == _currentGroupSubjectId && x.LectureId == item.Id);
+
+                if (link != null)
+                {
+                    link.IsTaken = nextState;
+                    link.LectureNumber = item.LectureNumber;
+                }
+                else
+                {
+                    _dbContext.GroupSubjectLucters.Add(new GroupSubjectLucters
+                    {
+                        GroupSubjectId = _currentGroupSubjectId,
+                        LectureId = item.Id,
+                        LectureNumber = item.LectureNumber,
+                        IsTaken = nextState
+                    });
+                }
+
+                await _dbContext.SaveChangesAsync();
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    item.IsTaken = nextState;
+                });
+            }
+            catch (Exception ex)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlert("خطأ", $"تعذر تحديث حالة المحاضرة: {ex.Message}", "موافق");
+                }
+            }
         }
 
-        /// <summary>
-        /// Delete a specific lecture item
-        /// </summary>
-        private async Task DeleteLectureAsync(Lecture? lecture)
+        private async Task NavigateToEditLectureAsync(SubjectGroupLectureDisplayItem? item)
         {
-            if (lecture == null) return;
+            if (item == null) return;
+            await Shell.Current.GoToAsync($"{nameof(LectureDetailsPage)}?LectureId={item.Id}");
+        }
+
+        private async Task DeleteLectureAsync(SubjectGroupLectureDisplayItem? item)
+        {
+            if (item == null || Shell.Current == null) return;
 
             bool confirm = await Shell.Current.DisplayAlert(
                 "Confirm Delete",
@@ -183,15 +270,12 @@ namespace Ostathi.ViewModels
             {
                 try
                 {
-                    await _lecturesService.DeleteLectureAsync(lecture);
-                    MainThread.BeginInvokeOnMainThread(() => LecturesList.Remove(lecture));
+                    await _lecturesService.DeleteLectureAsync(item.Lecture);
+                    MainThread.BeginInvokeOnMainThread(() => LecturesList.Remove(item));
                 }
                 catch (Exception ex)
                 {
-                    if (Shell.Current != null)
-                    {
-                        await Shell.Current.DisplayAlert("Error", $"Failed to delete: {ex.Message}", "OK");
-                    }
+                    await Shell.Current.DisplayAlert("Error", $"Failed to delete: {ex.Message}", "OK");
                 }
             }
         }

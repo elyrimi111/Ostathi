@@ -29,6 +29,21 @@ public class LectureDetailsViewModel : BaseViewModel
         }
     }
 
+    private int _lectureNumber = 1;
+    public int LectureNumber
+    {
+        get => _lectureNumber;
+        private set
+        {
+            if (SetProperty(ref _lectureNumber, value))
+            {
+                OnPropertyChanged(nameof(LectureNumberText));
+            }
+        }
+    }
+
+    public string LectureNumberText => $"المحاضرة رقم {LectureNumber}";
+
     private int _groupSubjectId;
     public int GroupSubjectId
     {
@@ -124,47 +139,12 @@ public class LectureDetailsViewModel : BaseViewModel
             var groupSubjectLink = await _context.GroupSubjectLucters
                 .FirstOrDefaultAsync(x => x.LectureId == requestedLecture.Id);
 
-            // إذا كانت المحاضرة مسجلة كمأخوذة مسبقاً، انتقل تلقائياً لأقرب محاضرة غير مأخوذة لنفس مجموعة المادة
-            if (groupSubjectLink?.IsTaken == true && requestedLecture.GroupSubjectId.HasValue)
-            {
-                var takenLectureIds = await _context.GroupSubjectLucters
-                    .Where(x => x.GroupSubjectId == requestedLecture.GroupSubjectId.Value && x.IsTaken)
-                    .Select(x => x.LectureId)
-                    .ToListAsync();
-
-                var nextUnTakenLecture = await _context.Lectures
-                    .Where(l => l.GroupSubjectId == requestedLecture.GroupSubjectId.Value &&
-                                !l.IsCancelled &&
-                                !takenLectureIds.Contains(l.Id))
-                    .OrderBy(l => l.LectureDate)
-                    .ThenBy(l => l.StartTime)
-                    .ThenBy(l => l.Id)
-                    .FirstOrDefaultAsync();
-
-                if (nextUnTakenLecture == null)
-                {
-                    if (Shell.Current != null)
-                    {
-                        await Shell.Current.DisplayAlert("تنبيه", "تم أخذ جميع محاضرات هذا المقرر مسبقاً.", "موافق");
-                        await Shell.Current.GoToAsync("..");
-                    }
-                    return;
-                }
-
-                requestedLecture = nextUnTakenLecture;
-                _lectureId = requestedLecture.Id;
-                OnPropertyChanged(nameof(LectureId));
-
-                groupSubjectLink = await _context.GroupSubjectLucters
-                    .FirstOrDefaultAsync(x => x.LectureId == requestedLecture.Id);
-            }
-
             _currentLecture = requestedLecture;
+            LectureNumber = _currentLecture.LectureNumber > 0 ? _currentLecture.LectureNumber : 1;
             GroupSubjectId = _currentLecture.GroupSubjectId ?? 0;
             HallName = _currentLecture.HallName;
             IsTaken = groupSubjectLink?.IsTaken ?? false;
 
-            // إسناد اليوم والتاريخ الحاليين تلقائياً
             _currentLecture.DayOfWeek = ScheduleService.ToOstathiWeekDay(LectureDate.DayOfWeek);
             _currentLecture.LectureDate = LectureDate;
 
@@ -251,109 +231,30 @@ public class LectureDetailsViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            // تحديث اليوم والتاريخ تلقائياً لحظة الحفظ واعتماد المحاضرة كمأخوذة
             ApplyCurrentDayAndDate();
-            IsTaken = true;
 
-            _currentLecture.GroupSubjectId = GroupSubjectId > 0 ? GroupSubjectId : null;
-            _currentLecture.HallName = HallName;
-            _currentLecture.DayOfWeek = ScheduleService.ToOstathiWeekDay(LectureDate.DayOfWeek);
-            _currentLecture.LectureDate = LectureDate;
+            var result = await _lecturesService.SaveLectureAttendanceAndStatusAsync(
+                _currentLecture,
+                GroupSubjectId,
+                HallName,
+                ScheduleService.ToOstathiWeekDay(LectureDate.DayOfWeek),
+                LectureDate,
+                IsTaken,
+                StudentsAttendanceList);
 
-            await _lecturesService.UpdateLectureAsync(_currentLecture);
-
-            if (_currentLecture.GroupSubjectId.HasValue)
+            if (!result.Success)
             {
-                var link = await _context.GroupSubjectLucters
-                    .FirstOrDefaultAsync(x => x.LectureId == _currentLecture.Id);
-
-                if (link != null)
+                if (Shell.Current != null)
                 {
-                    link.IsTaken = true;
+                    await Shell.Current.DisplayAlert("خطأ", $"فشل في حفظ التعديلات: {result.ErrorMessage}", "موافق");
                 }
-                else
-                {
-                    await _context.GroupSubjectLucters.AddAsync(new GroupSubjectLucters
-                    {
-                        GroupSubjectId = _currentLecture.GroupSubjectId.Value,
-                        LectureId = _currentLecture.Id,
-                        LectureNumber = _currentLecture.LectureNumber > 0 ? _currentLecture.LectureNumber : 1,
-                        IsTaken = true
-                    });
-                }
-            }
-
-            var existingRecords = await _context.Attendances
-                .Where(a => a.LectureId == _currentLecture.Id)
-                .ToListAsync();
-
-            var existingByStudentId = existingRecords.ToDictionary(a => a.StudentId, a => a);
-
-            foreach (var item in StudentsAttendanceList)
-            {
-                if (existingByStudentId.TryGetValue(item.StudentId, out var existingRecord))
-                {
-                    existingRecord.Status = item.Status;
-                    existingRecord.Date = LectureDate;
-                }
-                else
-                {
-                    await _context.Attendances.AddAsync(new Attendance
-                    {
-                        StudentId = item.StudentId,
-                        LectureId = _currentLecture.Id,
-                        Status = item.Status,
-                        Date = LectureDate
-                    });
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            MessengerService.NotifyLectureAdded();
-
-            // البحث عن المحاضرة التالية غير المأخوذة لنفس مجموعة المادة والانتقال إليها
-            if (GroupSubjectId > 0)
-            {
-                var takenLectureIds = await _context.GroupSubjectLucters
-                    .Where(x => x.GroupSubjectId == GroupSubjectId && x.IsTaken)
-                    .Select(x => x.LectureId)
-                    .ToListAsync();
-
-                var nextLecture = await _context.Lectures
-                    .Where(l => l.GroupSubjectId == GroupSubjectId &&
-                                !l.IsCancelled &&
-                                l.Id != _currentLecture.Id &&
-                                !takenLectureIds.Contains(l.Id))
-                    .OrderBy(l => l.LectureDate)
-                    .ThenBy(l => l.StartTime)
-                    .ThenBy(l => l.Id)
-                    .FirstOrDefaultAsync();
-
-                if (nextLecture != null)
-                {
-                    if (Shell.Current != null)
-                    {
-                        await Shell.Current.DisplayAlert("تم الحفظ", "تم حفظ التحضير بنجاح والانتقال إلى المحاضرة القادمة.", "موافق");
-                    }
-
-                    IsBusy = false;
-                    LectureId = nextLecture.Id;
-                    return;
-                }
+                return;
             }
 
             if (Shell.Current != null)
             {
-                await Shell.Current.DisplayAlert("اكتمل التحضير", "تم حفظ التحضير بنجاح واكتملت جميع محاضرات هذا المقرر.", "موافق");
+                await Shell.Current.DisplayAlert("إتمام", "تم حفظ التعديلات والتحضير بنجاح.", "موافق");
                 await Shell.Current.GoToAsync("..");
-            }
-        }
-        catch (Exception ex)
-        {
-            var err = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-            if (Shell.Current != null)
-            {
-                await Shell.Current.DisplayAlert("خطأ", $"فشل في حفظ التعديلات: {err}", "موافق");
             }
         }
         finally
