@@ -13,7 +13,6 @@ public partial class CreateHubViewModel : ObservableObject
     public ICommand AddStudentCommand { get; }
     public ICommand AddGroupCommand { get; }
     public ICommand AddLectureCommand { get; }
-    public ICommand AddAssignmentCommand { get; }
     public ICommand AddGroupSubjectCommand { get; }
 
     public CreateHubViewModel()
@@ -22,7 +21,6 @@ public partial class CreateHubViewModel : ObservableObject
         AddStudentCommand = new AsyncRelayCommand(AddStudentAsync);
         AddGroupCommand = new AsyncRelayCommand(AddGroupAsync);
         AddLectureCommand = new AsyncRelayCommand(AddLectureAsync);
-        AddAssignmentCommand = new AsyncRelayCommand(AddAssignmentAsync);
         AddGroupSubjectCommand = new AsyncRelayCommand(AddGroupSubjectAsync);
     }
 
@@ -55,14 +53,6 @@ public partial class CreateHubViewModel : ObservableObject
         if (Shell.Current != null)
         {
             await Shell.Current.GoToAsync(nameof(AddUpdateLecturePage));
-        }
-    }
-
-    private async Task AddAssignmentAsync()
-    {
-        if (Shell.Current != null)
-        {
-            await Shell.Current.GoToAsync(nameof(AddUpdateAssignmentPage));
         }
     }
 

@@ -4,42 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
-using Ostathi.Services;
 
 namespace Ostathi;
 
-[QueryProperty(nameof(GroupId), "GroupId")]
 public class AddUpdateGroupViewModel : BaseViewModel
 {
     private readonly GroupService _groupService;
     private readonly MajorService _majorService;
 
-    private string _groupId = string.Empty;
-    public string GroupId
-    {
-        get => _groupId;
-        set
-        {
-            if (SetProperty(ref _groupId, value))
-            {
-                // Load group details for editing if GroupId is provided
-                _ = LoadGroupDetailsAsync();
-            }
-        }
-    }
-
-    private int _editingGroupId = 0;
-    private int? _pendingMajorId = null;
-
-    // Subject / Course Name Property
-    private string _subjectName = string.Empty;
-    public string SubjectName
-    {
-        get => _subjectName;
-        set => SetProperty(ref _subjectName, value);
-    }
-
-    // Group Name Property
     private string _groupName = string.Empty;
     public string GroupName
     {
@@ -47,7 +19,6 @@ public class AddUpdateGroupViewModel : BaseViewModel
         set => SetProperty(ref _groupName, value);
     }
 
-    // Group Description or Notes Property
     private string _groupDescription = string.Empty;
     public string GroupDescription
     {
@@ -89,35 +60,50 @@ public class AddUpdateGroupViewModel : BaseViewModel
         set => SetProperty(ref _selectedAcademicYear, value);
     }
 
-    #region Commands
+    private bool _isBusy;
+    public bool IsBusy
+    {
+        get => _isBusy;
+        set => SetProperty(ref _isBusy, value);
+    }
+
+    private bool _isLoadingMajors;
+    public bool IsLoadingMajors
+    {
+        get => _isLoadingMajors;
+        set => SetProperty(ref _isLoadingMajors, value);
+    }
 
     public ICommand SaveGroupCommand { get; }
     public ICommand CancelCommand { get; }
     public ICommand ImportStudentsCommand { get; }
+    public ICommand RefreshMajorsCommand { get; }
 
-    #endregion
-
-    // Constructor injecting services via Dependency Injection
     public AddUpdateGroupViewModel(GroupService groupService, MajorService majorService)
     {
         _groupService = groupService;
         _majorService = majorService;
 
-        SaveGroupCommand = new Command(async () => await OnSaveGroupAsync(navigateBack: true));
+        SaveGroupCommand = new Command(async () => await OnCreateGroupAsync(navigateBack: true));
         CancelCommand = new Command(async () => await OnCancelAsync());
         ImportStudentsCommand = new Command(async () => await OnImportStudentsAsync());
+        RefreshMajorsCommand = new Command(async () => await LoadMajorsAsync());
 
-        // Load available majors from database on initialization
+        // Load available academic majors from SQLite on initialization
         _ = LoadMajorsAsync();
     }
 
-    // Fetch majors list from SQLite database
-    private async Task LoadMajorsAsync()
+    // Fetch majors list from the database without blocking group save actions
+    public async Task LoadMajorsAsync()
     {
+        if (IsLoadingMajors) return;
+
         try
         {
+            IsLoadingMajors = true;
             var majors = await _majorService.GetMajorsAsync();
-            MainThread.BeginInvokeOnMainThread(() =>
+
+            await MainThread.InvokeOnMainThreadAsync(() =>
             {
                 MajorsList.Clear();
                 if (majors != null)
@@ -128,11 +114,10 @@ public class AddUpdateGroupViewModel : BaseViewModel
                     }
                 }
 
-                // Assign selected major after populating list if in edit mode
-                if (_pendingMajorId.HasValue && MajorsList.Any())
+                // Keep or restore selection if still present in MajorsList
+                if (SelectedMajor != null)
                 {
-                    SelectedMajor = MajorsList.FirstOrDefault(m => m.Id == _pendingMajorId.Value);
-                    _pendingMajorId = null;
+                    SelectedMajor = MajorsList.FirstOrDefault(m => m.Id == SelectedMajor.Id);
                 }
             });
         }
@@ -140,65 +125,26 @@ public class AddUpdateGroupViewModel : BaseViewModel
         {
             if (Shell.Current != null)
             {
-                await Shell.Current.DisplayAlert("Error", $"Failed to load majors: {ex.Message}", "OK");
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                    await Shell.Current.DisplayAlert("Error", $"Failed to load majors: {ex.Message}", "OK"));
             }
+        }
+        finally
+        {
+            IsLoadingMajors = false;
         }
     }
 
-    // Populate fields when editing an existing group
-    private async Task LoadGroupDetailsAsync()
+    // Validate inputs against GroupConfiguration constraints and persist a new Group
+    private async Task<Group?> CreateGroupInternalAsync()
     {
-        if (int.TryParse(GroupId, out int id) && id > 0)
-        {
-            _editingGroupId = id;
-            try
-            {
-                var group = await _groupService.GetGroupByIdAsync(id);
-                if (group != null)
-                {
-                    SubjectName = group.SubjectName;
-                    GroupName = group.Name;
-                    GroupDescription = group.Description ?? string.Empty;
-                    SelectedAcademicYear = group.AcademicYear;
-
-                    if (MajorsList.Any())
-                    {
-                        SelectedMajor = MajorsList.FirstOrDefault(m => m.Id == group.MajorId);
-                    }
-                    else
-                    {
-                        _pendingMajorId = group.MajorId;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                if (Shell.Current != null)
-                {
-                    await Shell.Current.DisplayAlert("Error", $"Failed to load group details: {ex.Message}", "OK");
-                }
-            }
-        }
-    }
-
-    private async Task<bool> SaveGroupInternalAsync()
-    {
-        if (string.IsNullOrWhiteSpace(SubjectName))
-        {
-            if (Shell.Current != null)
-            {
-                await Shell.Current.DisplayAlert("Warning", "Please enter the subject name", "OK");
-            }
-            return false;
-        }
-
         if (string.IsNullOrWhiteSpace(GroupName))
         {
             if (Shell.Current != null)
             {
                 await Shell.Current.DisplayAlert("Warning", "Please enter the group name", "OK");
             }
-            return false;
+            return null;
         }
 
         if (SelectedMajor == null)
@@ -207,75 +153,120 @@ public class AddUpdateGroupViewModel : BaseViewModel
             {
                 await Shell.Current.DisplayAlert("Warning", "Please select a target major", "OK");
             }
-            return false;
+            return null;
+        }
+
+        string trimmedName = GroupName.Trim();
+        string? trimmedDescription = string.IsNullOrWhiteSpace(GroupDescription) ? null : GroupDescription.Trim();
+        string? academicYear = string.IsNullOrWhiteSpace(SelectedAcademicYear) ? null : SelectedAcademicYear.Trim();
+
+        // Enforce schema MaxLength limits defined in GroupConfiguration
+        if (trimmedName.Length > 150)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("Warning", "Group name must not exceed 150 characters", "OK");
+            }
+            return null;
+        }
+
+        if (trimmedDescription != null && trimmedDescription.Length > 500)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("Warning", "Description must not exceed 500 characters", "OK");
+            }
+            return null;
+        }
+
+        if (academicYear != null && academicYear.Length > 100)
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.DisplayAlert("Warning", "Academic year must not exceed 100 characters", "OK");
+            }
+            return null;
         }
 
         try
         {
-            var groupToSave = new Group
+            // Keep Id at 0 so SQLite assigns the primary key automatically on insert
+            var newGroup = new Group
             {
-                Id = _editingGroupId,
-                SubjectName = SubjectName.Trim(),
-                Name = GroupName.Trim(),
-                Description = GroupDescription?.Trim(),
-                AcademicYear = SelectedAcademicYear,
-                MajorId = SelectedMajor.Id
+                Id = 0,
+                Name = trimmedName,
+                Description = trimmedDescription,
+                AcademicYear = academicYear,
+                MajorId = SelectedMajor.Id,
+                RepresentativeStudentId = null
             };
 
-            await _groupService.SaveGroupAsync(groupToSave);
+            await _groupService.SaveGroupAsync(newGroup);
 
-            if (groupToSave.Id > 0)
-            {
-                _editingGroupId = groupToSave.Id;
-                _groupId = groupToSave.Id.ToString();
-            }
-
-            // Notify subscriber ViewModels to refresh list on MainThread
-            MessengerService.NotifyGroupAdded();
-            return true;
+            // TODO: Re-enable group-added notification once MessengerService namespace/signature is confirmed
+            return newGroup;
         }
         catch (Exception ex)
         {
+            // Extract inner exception details to pinpoint the exact SQLite constraint error
+            string details = ex.InnerException?.Message ?? ex.Message;
+
             if (Shell.Current != null)
             {
-                await Shell.Current.DisplayAlert("Error", $"Failed to save group: {ex.Message}", "OK");
+                await Shell.Current.DisplayAlert("Error", $"Failed to create group: {details}", "OK");
             }
-            return false;
+            return null;
         }
     }
 
-    // Create or update a group record
-    private async Task OnSaveGroupAsync(bool navigateBack)
+    // Create a new group and navigate back to the previous page
+    private async Task OnCreateGroupAsync(bool navigateBack)
     {
-        bool saved = await SaveGroupInternalAsync();
-        if (!saved) return;
+        if (IsBusy) return;
 
-        if (navigateBack && Shell.Current != null)
+        try
         {
-            await Shell.Current.GoToAsync("..");
+            IsBusy = true;
+            var createdGroup = await CreateGroupInternalAsync();
+            if (createdGroup == null) return;
+
+            if (navigateBack && Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync("..");
+            }
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
-    // Save group if new, then navigate to Import Group page with GroupId
+    // Create the group first so a valid GroupId exists before opening ImportGroupPage
     private async Task OnImportStudentsAsync()
     {
-        if (_editingGroupId <= 0)
-        {
-            bool saved = await SaveGroupInternalAsync();
-            if (!saved) return;
-        }
+        if (IsBusy) return;
 
-        if (Shell.Current != null)
+        try
         {
-            await Shell.Current.GoToAsync($"{nameof(ImportGroupPage)}?GroupId={_editingGroupId}");
+            IsBusy = true;
+            var createdGroup = await CreateGroupInternalAsync();
+            if (createdGroup == null || createdGroup.Id <= 0) return;
+
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync($"{nameof(ImportGroupPage)}?GroupId={createdGroup.Id}");
+            }
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 
+    // Navigate back without creating a group
     private async Task OnCancelAsync()
     {
-        if (Shell.Current != null)
-        {
-            await Shell.Current.GoToAsync("..");
-        }
+        if (IsBusy || Shell.Current == null) return;
+        await Shell.Current.GoToAsync("..");
     }
 }

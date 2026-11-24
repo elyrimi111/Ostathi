@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-
 
 namespace Ostathi;
 
@@ -21,7 +21,10 @@ public class MajorService
     {
         try
         {
-            return await _dbContext.Majors.ToListAsync();
+            return await _dbContext.Majors
+                .AsNoTracking()
+                .OrderBy(m => m.Id)
+                .ToListAsync();
         }
         catch (Exception)
         {
@@ -29,41 +32,58 @@ public class MajorService
         }
     }
 
-    // Save a new major or update an existing major record
+    // Retrieve a single major by Id for edit mode
+    public async Task<Major?> GetMajorByIdAsync(int id)
+    {
+        try
+        {
+            return await _dbContext.Majors
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     // Save a new major or update an existing major record safely
     public async Task SaveMajorAsync(Major major)
     {
-    if (major == null) return;
+        if (major == null) return;
 
-    if (major.Id == 0)
-    {
-        // Insert a new major entity
-        _dbContext.Majors.Add(major);
-    }
-    else
-    {
-        // Check if an entity with the same Id is already tracked, and detach it if necessary
-        var trackedEntity = _dbContext.Majors.Local.FirstOrDefault(m => m.Id == major.Id);
-        if (trackedEntity != null)
+        if (major.Id == 0)
         {
-            _dbContext.Entry(trackedEntity).State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            // Insert a new major entity
+            await _dbContext.Majors.AddAsync(major);
+        }
+        else
+        {
+            // Detach any already-tracked instance with the same Id to avoid tracking conflicts
+            var trackedEntity = _dbContext.Majors.Local.FirstOrDefault(m => m.Id == major.Id);
+            if (trackedEntity != null)
+            {
+                _dbContext.Entry(trackedEntity).State = EntityState.Detached;
+            }
+
+            _dbContext.Majors.Update(major);
         }
 
-        // Update an existing major entity safely
-        _dbContext.Majors.Update(major);
+        await _dbContext.SaveChangesAsync();
     }
 
-    await _dbContext.SaveChangesAsync();
-}
-
-
-    // Delete a specific major from the database
+    // Delete a specific major from the database safely
     public async Task DeleteMajorAsync(Major major)
     {
-        if (major != null)
+        if (major == null) return;
+
+        var trackedEntity = _dbContext.Majors.Local.FirstOrDefault(m => m.Id == major.Id);
+        if (trackedEntity != null && !ReferenceEquals(trackedEntity, major))
         {
-            _dbContext.Majors.Remove(major);
-            await _dbContext.SaveChangesAsync();
+            _dbContext.Entry(trackedEntity).State = EntityState.Detached;
         }
+
+        _dbContext.Majors.Remove(major);
+        await _dbContext.SaveChangesAsync();
     }
 }

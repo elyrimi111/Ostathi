@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AddUpdateMajorPage"
+             Title="{Binding PageTitle}"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <!-- Main page layout grid -->
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- Page header section -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,14"
+                StrokeShape="RoundRectangle 0,0,24,24">
+
+            <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                <Label Text="{Binding PageTitle}"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}" />
+                <Label Text="إدخال بيانات التخصص الأكاديمي وعدد سنوات الدراسة"
+                       FontSize="11"
+                       TextColor="{StaticResource TextSecondary}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Scrollable form fields -->
+        <ScrollView Grid.Row="1" Padding="20">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- MajorName input -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="اسم التخصص"
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeShape="RoundRectangle 12"
+                            HeightRequest="45"
+                            StrokeThickness="0"
+                            Padding="12,0">
+                        <Entry Text="{Binding MajorName}"
+                               Placeholder="مثال: علوم الحاسوب..."
+                               MaxLength="150"
+                               FontSize="13"
+                               TextColor="{StaticResource TextPrimary}"
+                               PlaceholderColor="{StaticResource TextSecondary}"
+                               VerticalOptions="Center"
+                               BackgroundColor="Transparent" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- DurationYears input -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="عدد سنوات الدراسة"
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeShape="RoundRectangle 12"
+                            HeightRequest="45"
+                            StrokeThickness="0"
+                            Padding="12,0">
+                        <Entry Text="{Binding DurationYears}"
+                               Keyboard="Numeric"
+                               Placeholder="4"
+                               MaxLength="2"
+                               FontSize="13"
+                               TextColor="{StaticResource TextPrimary}"
+                               PlaceholderColor="{StaticResource TextSecondary}"
+                               VerticalOptions="Center"
+                               BackgroundColor="Transparent" />
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom action bar -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12">
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <!-- Save button -->
+                <Button Grid.Column="0"
+                        Text="حفظ التخصص"
+                        Command="{Binding SaveMajorCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}"
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="14"
+                        HeightRequest="45" />
+
+                <!-- Cancel button -->
+                <Button Grid.Column="1"
+                        Text="إلغاء"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{StaticResource DarkBackground}"
+                        TextColor="{StaticResource TextSecondary}"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="14"
+                        HeightRequest="45" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

@@ -56,6 +56,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(EditStudentGradesPage), typeof(EditStudentGradesPage));
         
         Routing.RegisterRoute(nameof(ImportGroupPage), typeof(ImportGroupPage));
+        Routing.RegisterRoute(nameof(AddUpdateMajorPage), typeof(AddUpdateMajorPage));
 
     
     }

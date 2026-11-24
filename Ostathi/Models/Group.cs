@@ -13,10 +13,6 @@ public class Group
     [MaxLength(150)]
     public string Name { get; set; } = string.Empty; // Group name (e.g., مجموعة أ / مجموعة ب)
 
-    [Required]
-    [MaxLength(150)]
-    public string SubjectName { get; set; } = string.Empty; // Course or Subject name (اسم المادة الدراسية)
-
     public string? Description { get; set; } // Description or notes
 
     [MaxLength(100)]

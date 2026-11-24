@@ -7,6 +7,8 @@ namespace Ostathi;
 
 public partial class SettingsViewModel : BindableObject
 {
+    private bool _isNavigating;
+
     // Command for navigating to the Academic Settings page
     public ICommand OpenAcademicSettingsCommand { get; }
 
@@ -25,44 +27,52 @@ public partial class SettingsViewModel : BindableObject
     public SettingsViewModel()
     {
         // Initialize navigation & action commands
-        OpenAcademicSettingsCommand = new Command(async () => await OnOpenAcademicSettingsExecuted());
-        OpenScheduleManagementCommand = new Command(async () => await OnOpenScheduleManagementExecuted());
-        OpenMajorsPageCommand = new Command(async () => await OnOpenMajorsPageExecuted());
-        OpenAboutPageCommand = new Command(async () => await OnOpenAboutPageExecuted());
+        OpenAcademicSettingsCommand = new Command(async () => await NavigateToAsync(nameof(AcademicSettingsPage)));
+        OpenScheduleManagementCommand = new Command(async () => await NavigateToAsync(nameof(ScheduleManagementPage)));
+        OpenMajorsPageCommand = new Command(async () => await NavigateToAsync(nameof(MajorsPage)));
+        OpenAboutPageCommand = new Command(async () => await NavigateToAsync(nameof(AboutPage)));
         LogoutCommand = new Command(async () => await OnLogoutExecuted());
     }
 
-    // Handles navigation to AcademicSettingsPage
-    private async Task OnOpenAcademicSettingsExecuted()
+    // Safely navigate to a registered Shell route while preventing duplicate taps
+    private async Task NavigateToAsync(string route)
     {
-        await Shell.Current.GoToAsync(nameof(AcademicSettingsPage));
-    }
+        if (_isNavigating || Shell.Current == null) return;
 
-    // Handles navigation to ScheduleManagementPage
-    private async Task OnOpenScheduleManagementExecuted()
-    {
-        await Shell.Current.GoToAsync(nameof(ScheduleManagementPage));
-    }
-
-    // Handles navigation to MajorsPage
-    private async Task OnOpenMajorsPageExecuted()
-    {
-        await Shell.Current.GoToAsync(nameof(MajorsPage));
-    }
-
-    // Handles navigation to AboutPage
-    private async Task OnOpenAboutPageExecuted()
-    {
-        await Shell.Current.GoToAsync(nameof(AboutPage));
+        try
+        {
+            _isNavigating = true;
+            await Shell.Current.GoToAsync(route);
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
     }
 
     // Handles Logout action
     private async Task OnLogoutExecuted()
     {
-        bool confirm = await Shell.Current.DisplayAlert("تسجيل الخروج", "هل أنت متأكد من رغبتك في تسجيل الخروج من النظام؟", "نعم", "إلغاء");
-        if (confirm)
+        if (_isNavigating || Shell.Current == null) return;
+
+        try
         {
-            await Shell.Current.DisplayAlert("تنبيه", "تم تسجيل الخروج بنجاح", "حسناً");
+            _isNavigating = true;
+            bool confirm = await Shell.Current.DisplayAlert(
+                "تسجيل الخروج",
+                "هل أنت متأكد من رغبتك في تسجيل الخروج من النظام؟",
+                "نعم",
+                "إلغاء"
+            );
+
+            if (confirm)
+            {
+                await Shell.Current.DisplayAlert("تنبيه", "تم تسجيل الخروج بنجاح", "حسناً");
+            }
+        }
+        finally
+        {
+            _isNavigating = false;
         }
     }
 }

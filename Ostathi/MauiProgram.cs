@@ -127,6 +127,10 @@ public static class MauiProgram
         
         builder.Services.AddTransient<ImportGroupPage>();
         builder.Services.AddTransient<ImportGroupViewModel>();
+        
+        builder.Services.AddTransient<AddUpdateMajorViewModel>();
+        builder.Services.AddTransient<AddUpdateMajorPage>();
+
 
 #if DEBUG
         builder.Logging.AddDebug();

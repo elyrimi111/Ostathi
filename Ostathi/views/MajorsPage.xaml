@@ -6,12 +6,9 @@
              FlowDirection="RightToLeft"
              BackgroundColor="{StaticResource DarkBackground}">
 
-    <!-- Main grid layout defining rows for header, collection view, and input form -->
-    <Grid RowDefinitions="Auto, *, Auto" Padding="20">
+    <Grid RowDefinitions="Auto, *" Padding="20">
 
-        <!-- ========================================== -->
-        <!-- 1. Modern Page Header Section -->
-        <!-- ========================================== -->
+        <!-- 1. Page Header Section -->
         <Border Grid.Row="0" 
                 BackgroundColor="{StaticResource DarkSurface}" 
                 StrokeThickness="0" 
@@ -19,17 +16,27 @@
                 StrokeShape="RoundRectangle 0,0,20,20"
                 Margin="0,0,0,14">
             
-            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10" VerticalOptions="Center">
                 <VerticalStackLayout Grid.Column="0" Spacing="2">
                     <Label Text="إدارة التخصصات الأكاديمية" FontSize="17" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
-                    <Label Text="عرض، تعديل، وإضافة التخصصات المتاحة في النظام" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                    <Label Text="اضغط على أي تخصص لتعديله" FontSize="11" TextColor="{StaticResource TextSecondary}" />
                 </VerticalStackLayout>
+
+                <Button Grid.Column="1"
+                        Text="+ إضافة تخصص"
+                        Command="{Binding AddMajorCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}"
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        CornerRadius="12"
+                        HeightRequest="38"
+                        Padding="14,0"
+                        VerticalOptions="Center" />
             </Grid>
         </Border>
 
-        <!-- ========================================== -->
         <!-- 2. Majors List CollectionView -->
-        <!-- ========================================== -->
         <CollectionView Grid.Row="1" ItemsSource="{Binding MajorsList}">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
@@ -39,9 +46,16 @@
                             Padding="14"
                             Margin="0,0,0,10">
                         
+                        <!-- Navigate directly to AddUpdateMajorPage on tap -->
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMajorCommand}"
+                                CommandParameter="{Binding}" />
+                        </Border.GestureRecognizers>
+
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
                             
-                            <!-- Major Icon / Badge Frame -->
+                            <!-- Major Icon -->
                             <Border Grid.Column="0" 
                                     BackgroundColor="{StaticResource DarkBackground}" 
                                     StrokeShape="RoundRectangle 10" 
@@ -62,36 +76,18 @@
                                        TextColor="{StaticResource TextSecondary}" />
                             </VerticalStackLayout>
 
-                            <!-- Edit and Delete Action Buttons -->
-                            <HorizontalStackLayout Grid.Column="2" Spacing="6" VerticalOptions="Center">
-                                <!-- Edit Major Button bound to EditMajorCommand in MajorsViewMod -->
-                                <Button Text="تعديل"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditMajorCommand}"
-                                        CommandParameter="{Binding}"
-                                        BackgroundColor="{StaticResource DarkBackground}"
-                                        TextColor="{StaticResource AccentYellow}"
-                                        FontSize="11"
-                                        CornerRadius="8"
-                                        HeightRequest="34"
-                                        Padding="10,0"/>
-
-                                <!-- Delete Major Button bound to DeleteMajorCommand in MajorsViewMod -->
-                                <Button Text="حذف"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteMajorCommand}"
-                                        CommandParameter="{Binding}"
-                                        BackgroundColor="{StaticResource DarkBackground}"
-                                        TextColor="#FF5252"
-                                        FontSize="11"
-                                        CornerRadius="8"
-                                        HeightRequest="34"
-                                        Padding="10,0"/>
-                            </HorizontalStackLayout>
+                            <!-- Navigation Arrow Indicator -->
+                            <Label Grid.Column="2"
+                                   Text="‹"
+                                   FontSize="22"
+                                   TextColor="{StaticResource TextSecondary}"
+                                   VerticalOptions="Center"
+                                   Margin="4,0" />
                         </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
 
-            <!-- Empty view when no majors are available -->
             <CollectionView.EmptyView>
                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8" Padding="20">
                     <Label Text="📂" FontSize="32" HorizontalOptions="Center" />
@@ -102,46 +98,6 @@
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
         </CollectionView>
-
-        <!-- ========================================== -->
-        <!-- 3. Add / Edit Major Input Form Section -->
-        <!-- ========================================== -->
-        <Border Grid.Row="2"
-                BackgroundColor="{StaticResource DarkSurface}"
-                StrokeThickness="0"
-                StrokeShape="RoundRectangle 16"
-                Padding="16"
-                Margin="0,10,0,0">
-            
-            <VerticalStackLayout Spacing="8">
-                <Label Text="إضافة أو تعديل تخصص" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextSecondary}" />
-                
-                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
-                    <!-- Major Name Entry Input bound to NewMajorName property -->
-                    <Border Grid.Column="0" BackgroundColor="{StaticResource DarkBackground}" StrokeShape="RoundRectangle 12" HeightRequest="45" StrokeThickness="0" Padding="12,0">
-                        <Entry Text="{Binding NewMajorName}"
-                               Placeholder="أدخل اسم التخصص هنا..." 
-                               FontSize="13" 
-                               TextColor="{StaticResource TextPrimary}" 
-                               PlaceholderColor="{StaticResource TextSecondary}" 
-                               VerticalOptions="Center" 
-                               BackgroundColor="Transparent"/>
-                    </Border>
-
-                    <!-- Save / Add Major Button bound to SaveMajorCommand -->
-                    <Button Grid.Column="1"
-                            Command="{Binding SaveMajorCommand}"
-                            Text="حفظ التخصص"
-                            BackgroundColor="{StaticResource AccentYellow}"
-                            TextColor="{StaticResource DarkBackground}"
-                            FontAttributes="Bold"
-                            FontSize="12"
-                            CornerRadius="12"
-                            HeightRequest="45"
-                            Padding="16,0" />
-                </Grid>
-            </VerticalStackLayout>
-        </Border>
 
     </Grid>
 

@@ -91,27 +91,7 @@
                     </Grid>
                 </Border>
 
-                <!-- 3. إضافة تكليف / واجب جديد -->
-                <Border BackgroundColor="{StaticResource DarkSurface}" 
-                        StrokeShape="RoundRectangle 16" 
-                        StrokeThickness="0" 
-                        Padding="16">
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding AddAssignmentCommand}"/>
-                    </Border.GestureRecognizers>
-                    <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
-                        <Border Grid.Column="0" WidthRequest="44" HeightRequest="44" StrokeShape="RoundRectangle 12" BackgroundColor="{StaticResource DarkBackground}" StrokeThickness="0">
-                            <Label Text="📝" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center"/>
-                        </Border>
-                        <VerticalStackLayout Grid.Column="1" Spacing="2" Margin="14,0,0,0" VerticalOptions="Center">
-                            <Label Text="إضافة تكليف / مشروع" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
-                            <Label Text="تعيين واجب جديد وتحديد موعد التسليم" FontSize="11" TextColor="{StaticResource TextSecondary}"/>
-                        </VerticalStackLayout>
-                        <Label Grid.Column="2" Text="❮" FontSize="14" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center"/>
-                    </Grid>
-                </Border>
-
-                <!-- 4. تدريس مادة لمجموعة -->
+                <!-- 3. تدريس مادة لمجموعة -->
                 <Border BackgroundColor="{StaticResource DarkSurface}" 
                         StrokeShape="RoundRectangle 16" 
                         StrokeThickness="0" 
