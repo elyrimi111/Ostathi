@@ -1,6 +1,4 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Ostathi;
 
@@ -11,16 +9,23 @@ public class Group
 
     [Required]
     [MaxLength(150)]
-    public string Name { get; set; } = string.Empty; // Group name (e.g., مجموعة أ / مجموعة ب)
+    public string Name { get; set; } = string.Empty;
 
-    public string? Description { get; set; } // Description or notes
+    [MaxLength(500)]
+    public string? Description { get; set; }
 
     [MaxLength(100)]
-    public string? AcademicYear { get; set; } // Academic year level
+    public string? AcademicYear { get; set; }
 
-    // Foreign key for the related Major entity
+    // Foreign key for the related Major.
     public int MajorId { get; set; }
 
-    // Foreign key for the Group Representative (Student Id) - Nullable in case no representative is assigned yet
+    // Navigation property for the related Major.
+    public Major? Major { get; set; }
+
+    // Foreign key for the group representative.
     public int? RepresentativeStudentId { get; set; }
+
+    // Navigation property for the representative Student.
+    public Student? RepresentativeStudent { get; set; }
 }
