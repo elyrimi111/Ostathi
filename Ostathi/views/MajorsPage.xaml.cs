@@ -4,12 +4,19 @@ namespace Ostathi;
 
 public partial class MajorsPage : ContentPage
 {
-    // Constructor injecting MajorsViewMod via Dependency Injection
     public MajorsPage(MajorsViewMod viewModel)
     {
         InitializeComponent();
-        
-        // Bind the page to its corresponding ViewModel
         BindingContext = viewModel;
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (BindingContext is MajorsViewMod viewModel)
+        {
+            await viewModel.OnAppearingAsync();
+        }
     }
 }
