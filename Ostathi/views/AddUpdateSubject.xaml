@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.AddUpdateSubject"
+             Title="{Binding PageTitleText}"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <!-- Main page layout grid -->
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- Page header section -->
+        <Border Grid.Row="0"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,14"
+                StrokeShape="RoundRectangle 0,0,24,24">
+
+            <VerticalStackLayout Spacing="2" VerticalOptions="Center">
+                <Label Text="{Binding PageTitleText}"
+                       FontSize="17"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource TextPrimary}" />
+                <Label Text="إدخال بيانات المادة الدراسية ووصفها"
+                       FontSize="11"
+                       TextColor="{StaticResource TextSecondary}" />
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Scrollable form fields -->
+        <ScrollView Grid.Row="1" Padding="20">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Subject Name input -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="اسم المادة"
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeShape="RoundRectangle 12"
+                            HeightRequest="45"
+                            StrokeThickness="0"
+                            Padding="12,0">
+                        <Entry Text="{Binding Name}"
+                               Placeholder="مثال: الرياضيات، قواعد البيانات..."
+                               MaxLength="150"
+                               FontSize="13"
+                               TextColor="{StaticResource TextPrimary}"
+                               PlaceholderColor="{StaticResource TextSecondary}"
+                               VerticalOptions="Center"
+                               BackgroundColor="Transparent" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Subject Description input -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="الوصف (اختياري)"
+                           FontSize="12"
+                           TextColor="{StaticResource TextSecondary}" />
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeShape="RoundRectangle 12"
+                            MinimumHeightRequest="90"
+                            StrokeThickness="0"
+                            Padding="12,8">
+                        <Editor Text="{Binding Description}"
+                                Placeholder="اكتب وصفاً مختصراً للمادة..."
+                                MaxLength="500"
+                                FontSize="13"
+                                TextColor="{StaticResource TextPrimary}"
+                                PlaceholderColor="{StaticResource TextSecondary}"
+                                AutoSize="TextChanges"
+                                BackgroundColor="Transparent" />
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Bottom action bar -->
+        <Border Grid.Row="2"
+                BackgroundColor="{StaticResource DarkSurface}"
+                StrokeThickness="0"
+                Padding="16,12">
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <!-- Save button -->
+                <Button Grid.Column="0"
+                        Text="{Binding SaveButtonText}"
+                        Command="{Binding SaveSubjectCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}"
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="14"
+                        HeightRequest="45" />
+
+                <!-- Cancel button -->
+                <Button Grid.Column="1"
+                        Text="إلغاء"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="{StaticResource DarkBackground}"
+                        TextColor="{StaticResource TextSecondary}"
+                        FontAttributes="Bold"
+                        FontSize="13"
+                        CornerRadius="14"
+                        HeightRequest="45" />
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

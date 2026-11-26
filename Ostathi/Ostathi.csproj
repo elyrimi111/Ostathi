@@ -75,7 +75,6 @@
     <MauiXaml Include="views/StudentDetailsPage.xaml" />
     <MauiXaml Include="views/EditStudentGradesPage.xaml" />
     <MauiXaml Include="views/GroupSubjectsManagementView.xaml" />
-    <Compile Remove="viewModels/GroupsViewModel.cs" />
     <Compile Remove="views/groupsPage.xaml.cs" />
     <MauiXaml Include="views/ManageSingleGroupSubjectView.xaml" />
     <MauiXaml Include="views/GroupSubjectCardView.xaml" />
@@ -100,6 +99,13 @@
     <MauiXaml Include="views/AddUpdateGroupSubjectViewModel.xaml" />
     <MauiXaml Include="views/ImportGroupPage.xaml" />
     <MauiXaml Include="views/AddUpdateMajorPage.xaml" />
+    <Compile Remove="Models/DTOs.cs" />
+    <MauiXaml Include="views/SubjectsPage.xaml" />
+    <MauiXaml Include="views/AddUpdateSubject.xaml" />
+    <MauiXaml Include="views/GroupSubjectsPage.xaml" />
+    <MauiXaml Include="viewModels/GroupSubjectStudentsPage.xaml" />
+    <MauiXaml Include="views/GroupSubjectStudentsPage.xaml" />
+    <Compile Remove="viewModels/GroupSubjectStudentsPage.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
     <MauiImage Include="Resources\Images\*" />

@@ -15,11 +15,14 @@ public class GroupSubjectService
         _dbContext = new AppDbContext();
     }
 
+    // Retrieve a single GroupSubject record including related Group and Subject
     public async Task<GroupSubject?> GetByIdAsync(int groupSubjectId)
     {
         try
         {
             return await _dbContext.GroupSubjects
+                .Include(gs => gs.Group)
+                .Include(gs => gs.Subject)
                 .FirstOrDefaultAsync(gs => gs.Id == groupSubjectId);
         }
         catch (Exception)
@@ -28,12 +31,14 @@ public class GroupSubjectService
         }
     }
 
-    // Get all subjects assigned to a specific group
+    // Get all subjects assigned to a specific group with related details
     public async Task<List<GroupSubject>> GetSubjectsForGroupAsync(int groupId)
     {
         try
         {
             return await _dbContext.GroupSubjects
+                .Include(gs => gs.Group)
+                .Include(gs => gs.Subject)
                 .Where(gs => gs.GroupId == groupId)
                 .ToListAsync();
         }
@@ -43,8 +48,12 @@ public class GroupSubjectService
         }
     }
 
-    // Assign a subject to a specific group
-    public async Task<bool> AssignSubjectToGroupAsync(int groupId, int subjectId)
+    // Assign a subject to a specific group with optional status and notes
+    public async Task<bool> AssignSubjectToGroupAsync(
+        int groupId,
+        int subjectId,
+        string status = "Active",
+        string? notes = null)
     {
         try
         {
@@ -57,7 +66,9 @@ public class GroupSubjectService
             var groupSubject = new GroupSubject
             {
                 GroupId = groupId,
-                SubjectId = subjectId
+                SubjectId = subjectId,
+                Status = string.IsNullOrWhiteSpace(status) ? "Active" : status.Trim(),
+                Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim()
             };
 
             _dbContext.GroupSubjects.Add(groupSubject);
@@ -70,8 +81,13 @@ public class GroupSubjectService
         }
     }
 
-    // Update an existing GroupSubject record
-    public async Task<bool> UpdateGroupSubjectAsync(int groupSubjectId, int newGroupId, int newSubjectId)
+    // Update an existing GroupSubject record including status and notes
+    public async Task<bool> UpdateGroupSubjectAsync(
+        int groupSubjectId,
+        int newGroupId,
+        int newSubjectId,
+        string? status = null,
+        string? notes = null)
     {
         try
         {
@@ -91,6 +107,16 @@ public class GroupSubjectService
 
             existingRecord.GroupId = newGroupId;
             existingRecord.SubjectId = newSubjectId;
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                existingRecord.Status = status.Trim();
+            }
+
+            if (notes != null)
+            {
+                existingRecord.Notes = string.IsNullOrWhiteSpace(notes) ? null : notes.Trim();
+            }
 
             await _dbContext.SaveChangesAsync();
             return true;

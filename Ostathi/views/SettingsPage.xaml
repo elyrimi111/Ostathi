@@ -8,9 +8,7 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <!-- ========================================== -->
-        <!-- 1. Header Section (Instagram Style Header) -->
-        <!-- ========================================== -->
+        <!-- Header Section -->
         <Border Grid.Row="0" 
                 BackgroundColor="{StaticResource DarkSurface}" 
                 StrokeThickness="0" 
@@ -26,9 +24,7 @@
             </VerticalStackLayout>
         </Border>
 
-        <!-- ========================================== -->
-        <!-- 2. Settings Rows List Area -->
-        <!-- ========================================== -->
+        <!-- Settings Rows List Area -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="16" Spacing="24">
 
@@ -91,6 +87,23 @@
                                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                                     <Label Text="إدارة التخصصات الأكاديمية" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
                                     <Label Text="إضافة وتعديل قوائم الاقسام والتخصصات" FontSize="11" TextColor="{StaticResource TextSecondary}" />
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="‹" FontSize="20" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center" />
+                            </Grid>
+
+                            <BoxView HeightRequest="1" Color="{StaticResource DarkBackground}" Margin="16,0" />
+
+                            <!-- Row 4: Subjects Management -->
+                            <Grid ColumnDefinitions="Auto, *, Auto" 
+                                  Padding="16,14" 
+                                  BackgroundColor="Transparent">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding OpenSubjectsPageCommand}" />
+                                </Grid.GestureRecognizers>
+                                <Label Grid.Column="0" Text="📚" FontSize="18" VerticalOptions="Center" Margin="0,0,12,0"/>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                    <Label Text="إدارة المواد الدراسية" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" />
+                                    <Label Text="إضافة وتعديل وحذف المواد الدراسية" FontSize="11" TextColor="{StaticResource TextSecondary}" />
                                 </VerticalStackLayout>
                                 <Label Grid.Column="2" Text="‹" FontSize="20" TextColor="{StaticResource TextSecondary}" VerticalOptions="Center" />
                             </Grid>

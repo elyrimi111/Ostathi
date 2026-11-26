@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
+using Ostathi;
 
 namespace Ostathi.ViewModels
 {
@@ -32,6 +33,7 @@ namespace Ostathi.ViewModels
         public ICommand OpenStudentCommunicationCommand { get; }
         public ICommand OpenLecturesCommand { get; }
         public ICommand OpenGradesCommand { get; }
+        public ICommand OpenGroupStudentsCommand { get; }
 
         #endregion
 
@@ -43,6 +45,7 @@ namespace Ostathi.ViewModels
             OpenLecturesCommand = new AsyncRelayCommand(OpenSubjectGroupLecturesAsync);
             OpenStudentCommunicationCommand = new AsyncRelayCommand(OpenStudentCommunicationAsync);
             OpenGradesCommand = new AsyncRelayCommand(async () => await GoToAsync(nameof(SubjectGroupGradesOverviewPage)));
+            OpenGroupStudentsCommand = new AsyncRelayCommand(OpenGroupStudentsAsync);
         }
 
         partial void OnCurrentGroupSubjectChanged(GroupSubject? value)
@@ -153,6 +156,24 @@ namespace Ostathi.ViewModels
             if (Shell.Current != null)
             {
                 await Shell.Current.GoToAsync($"{nameof(StudentCommunicationPage)}?GroupId={CurrentGroupSubject.GroupId}");
+            }
+        }
+
+        private async Task OpenGroupStudentsAsync()
+        {
+            if (CurrentGroupSubject == null)
+            {
+                if (Shell.Current != null)
+                {
+                    await Shell.Current.DisplayAlert("تنبيه", "الرجاء اختيار مادة المجموعة أولاً", "موافق");
+                }
+                return;
+            }
+
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync(
+                    $"{nameof(GroupSubjectStudentsPage)}?GroupId={CurrentGroupSubject.GroupId}&SubjectId={CurrentGroupSubject.SubjectId}&GroupSubjectId={CurrentGroupSubject.Id}");
             }
         }
 

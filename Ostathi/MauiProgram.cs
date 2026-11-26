@@ -38,6 +38,7 @@ public static class MauiProgram
         builder.Services.AddTransient<MajorService>();
         builder.Services.AddTransient<GroupService>();
         builder.Services.AddTransient<GroupSubjectService>();
+        builder.Services.AddTransient<SubjectService>();
         builder.Services.AddTransient<LucterService>();
         builder.Services.AddTransient<ExportService>();
 
@@ -46,6 +47,21 @@ public static class MauiProgram
 
         builder.Services.AddTransient<AddUpdateGroupViewModel>();
         builder.Services.AddTransient<AddUpdateGroup>();
+
+        builder.Services.AddTransient<GroupsPage>();
+        builder.Services.AddTransient<GroupsViewModel>();
+
+        // Register Subject pages and ViewModels
+        builder.Services.AddTransient<SubjectsPage>();
+        builder.Services.AddTransient<SubjectsViewModel>();
+        builder.Services.AddTransient<AddUpdateSubject>();
+        builder.Services.AddTransient<AddUpdateSubjectViewModel>();
+
+        builder.Services.AddTransient<GroupSubjectsPageViewModel>();
+        builder.Services.AddTransient<GroupSubjectsPage>();
+
+        builder.Services.AddTransient<GroupSubjectStudentsViewModel>();
+        builder.Services.AddTransient<GroupSubjectStudentsPage>();
 
         builder.Services.AddTransient<AddGroupSubjectPage>();
         builder.Services.AddTransient<AddUpdateGroupSubjectViewModel>();
@@ -124,13 +140,12 @@ public static class MauiProgram
 
         builder.Services.AddTransient<ExportMasterPage>();
         builder.Services.AddTransient<ExportMasterViewModel>();
-        
+
         builder.Services.AddTransient<ImportGroupPage>();
         builder.Services.AddTransient<ImportGroupViewModel>();
-        
+
         builder.Services.AddTransient<AddUpdateMajorViewModel>();
         builder.Services.AddTransient<AddUpdateMajorPage>();
-
 
 #if DEBUG
         builder.Logging.AddDebug();

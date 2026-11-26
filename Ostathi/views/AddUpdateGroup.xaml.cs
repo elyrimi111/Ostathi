@@ -12,4 +12,15 @@ public partial class AddUpdateGroup : ContentPage
         // ربط الصفحة بالـ ViewModel الخاص بها
         BindingContext = viewModel;
     }
+    
+    protected override async void OnAppearing()
+{
+    base.OnAppearing();
+
+    if (BindingContext is AddUpdateGroupViewModel vm)
+    {
+        await vm.LoadImportedStudentsAsync();
+    }
+}
+
 }

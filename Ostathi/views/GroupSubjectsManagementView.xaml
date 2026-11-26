@@ -13,18 +13,30 @@
                              Spacing="14">
 
             <!-- Header -->
-            <VerticalStackLayout Spacing="4">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="إدارة مواد المجموعات والدفعات"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}"/>
 
-                <Label Text="إدارة مواد المجموعات والدفعات"
-                       FontSize="18"
-                       FontAttributes="Bold"
-                       TextColor="{StaticResource TextPrimary}"/>
+                    <Label Text="عرض شامل ومصفوفة متكاملة لجميع المواد والمجموعات الأكاديمية"
+                           Style="{StaticResource CardAccentSubtitleStyle}"
+                           FontSize="12"/>
+                </VerticalStackLayout>
 
-                <Label Text="عرض شامل ومصفوفة متكاملة لجميع المواد والمجموعات الأكاديمية"
-                       Style="{StaticResource CardAccentSubtitleStyle}"
-                       FontSize="12"/>
-
-            </VerticalStackLayout>
+                <Button Grid.Column="1"
+                        Text="+ إسناد مادة"
+                        Command="{Binding OpenAssignSubjectCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}"
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        CornerRadius="10"
+                        HeightRequest="38"
+                        Padding="12,0"
+                        VerticalOptions="Center"/>
+            </Grid>
 
             <!-- Filters -->
             <Border Style="{StaticResource UnifiedHorizontalCardStyle}"
@@ -146,19 +158,31 @@
                                     <Label Text="{Binding MajorName}"
                                            FontSize="11"
                                            TextColor="{StaticResource TextSecondary}"/>
+
+                                    <Label Text="{Binding Status, StringFormat='الحالة: {0}'}"
+                                           FontSize="11"
+                                           TextColor="{StaticResource TextSecondary}"/>
+
+                                    <Label Text="{Binding Notes}"
+                                           FontSize="11"
+                                           TextColor="{StaticResource TextSecondary}"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="1">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label"
+                                                         Binding="{Binding Notes}"
+                                                         Value="{x:Null}">
+                                                <Setter Property="IsVisible" Value="False" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
                                 </VerticalStackLayout>
 
-                                <Button Grid.Column="2"
-                                        Text="🗑"
-                                        FontSize="14"
-                                        BackgroundColor="{StaticResource DarkInputBackground}"
-                                        TextColor="{StaticResource TextPrimary}"
-                                        CornerRadius="10"
-                                        WidthRequest="38"
-                                        HeightRequest="38"
-                                        VerticalOptions="Center"
-                                        Command="{Binding Source={x:Reference RootView}, Path=BindingContext.RemoveSubjectCommand}"
-                                        CommandParameter="{Binding .}"/>
+                                <Label Grid.Column="2"
+                                       Text="‹"
+                                       FontSize="20"
+                                       TextColor="{StaticResource TextSecondary}"
+                                       VerticalOptions="Center"/>
 
                             </Grid>
 

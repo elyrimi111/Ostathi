@@ -44,7 +44,7 @@ public partial class CreateHubViewModel : ObservableObject
     {
         if (Shell.Current != null)
         {
-            await Shell.Current.GoToAsync(nameof(AddUpdateGroup));
+            await Shell.Current.GoToAsync(nameof(GroupsPage));
         }
     }
 
@@ -56,11 +56,12 @@ public partial class CreateHubViewModel : ObservableObject
         }
     }
 
+    // Navigate to the Group Subjects management page instead of opening AddGroupSubjectPage directly
     private async Task AddGroupSubjectAsync()
     {
         if (Shell.Current != null)
         {
-            await Shell.Current.GoToAsync(nameof(AddGroupSubjectPage));
+            await Shell.Current.GoToAsync(nameof(GroupSubjectsPage));
         }
     }
 }

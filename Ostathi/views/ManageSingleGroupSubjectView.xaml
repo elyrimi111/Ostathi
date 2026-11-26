@@ -40,7 +40,7 @@
         <!-- 3. عنوان فرعي للخدمات -->
         <Label Grid.Row="2" Text="الخدمات والعمليات السريعة" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" Margin="2,4,2,0"/>
 
-        <!-- 4. شبكة المربعات السفلية (5 عناصر موزعة بذكاء على 3 صفوف) -->
+        <!-- 4. شبكة المربعات السفلية (6 عناصر موزعة على 3 صفوف) -->
         <Grid Grid.Row="3" 
               ColumnDefinitions="*, *" ColumnSpacing="12" 
               RowDefinitions="*, *, *" RowSpacing="10" 
@@ -95,13 +95,25 @@
             </Border>
 
             <!-- الدرجات -->
-            <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
+            <Border Grid.Row="2" Grid.Column="0" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
                 <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenGradesCommand}"/></Border.GestureRecognizers>
-                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center" HorizontalOptions="Center">
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
                     <Label Grid.Column="0" Text="🎓" FontSize="24" VerticalOptions="Center"/>
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                        <Label Text="الدرجات" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}" HorizontalTextAlignment="Center"/>
-                        <Label Text="النتائج والتقييم النهائي" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}" HorizontalTextAlignment="Center"/>
+                        <Label Text="الدرجات" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="النتائج والتقييم النهائي" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- إدارة طلاب المجموعة -->
+            <Border Grid.Row="2" Grid.Column="1" BackgroundColor="{StaticResource DarkSurface}" StrokeShape="RoundRectangle 16" StrokeThickness="0" Padding="12" VerticalOptions="Fill" HorizontalOptions="Fill">
+                <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding OpenGroupStudentsCommand}"/></Border.GestureRecognizers>
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
+                    <Label Grid.Column="0" Text="👥" FontSize="24" VerticalOptions="Center"/>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                        <Label Text="إدارة طلاب المجموعة" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource TextPrimary}"/>
+                        <Label Text="قائمة الطلاب والإدارة" FontSize="10" TextColor="{StaticResource CardAccentSubtitleStyle}"/>
                     </VerticalStackLayout>
                 </Grid>
             </Border>

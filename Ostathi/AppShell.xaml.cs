@@ -9,7 +9,7 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
-        // Main & Hub Routes (لا تسجل MainLayoutView هنا إذا كانت موجودة في AppShell.xaml)
+        // Main & Hub Routes (do not register MainLayoutView here if defined in AppShell.xaml)
         Routing.RegisterRoute(nameof(CreateHubPage), typeof(CreateHubPage));
         Routing.RegisterRoute(nameof(HomePage), typeof(HomePage));
         Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
@@ -21,6 +21,8 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(AddUpdateLecturePage), typeof(AddUpdateLecturePage));
         Routing.RegisterRoute(nameof(AddUpdateAssignmentPage), typeof(AddUpdateAssignmentPage));
         Routing.RegisterRoute(nameof(AddGroupSubjectPage), typeof(AddGroupSubjectPage));
+        Routing.RegisterRoute(nameof(AddUpdateSubject), typeof(AddUpdateSubject));
+        Routing.RegisterRoute(nameof(AddUpdateMajorPage), typeof(AddUpdateMajorPage));
 
         // Attendance, Year Work & Assignments Routes
         Routing.RegisterRoute(nameof(AttendancePage), typeof(AttendancePage));
@@ -33,9 +35,11 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(NotificationsPage), typeof(NotificationsPage));
         Routing.RegisterRoute(nameof(LecturesPage), typeof(LecturesPage));
 
-        // Group Subjects Management Routes
+        // Group Subjects & Roster Management Routes
+        Routing.RegisterRoute(nameof(GroupSubjectsPage), typeof(GroupSubjectsPage));
         Routing.RegisterRoute(nameof(GroupSubjectsManagementView), typeof(GroupSubjectsManagementView));
         Routing.RegisterRoute(nameof(ManageSingleGroupSubjectView), typeof(ManageSingleGroupSubjectView));
+        Routing.RegisterRoute(nameof(GroupSubjectStudentsPage), typeof(GroupSubjectStudentsPage));
         Routing.RegisterRoute(nameof(SubjectGroupStudentsAttendanceView), typeof(SubjectGroupStudentsAttendanceView));
         Routing.RegisterRoute(nameof(SubjectGroupLecturesPage), typeof(SubjectGroupLecturesPage));
         Routing.RegisterRoute(nameof(LectureDetailsPage), typeof(LectureDetailsPage));
@@ -49,15 +53,13 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(FinalExamPage), typeof(FinalExamPage));
         Routing.RegisterRoute(nameof(ExportMasterPage), typeof(ExportMasterPage));
         Routing.RegisterRoute(nameof(ImportRosterPage), typeof(ImportRosterPage));
+        Routing.RegisterRoute(nameof(ImportGroupPage), typeof(ImportGroupPage));
         Routing.RegisterRoute(nameof(MajorsPage), typeof(MajorsPage));
+        Routing.RegisterRoute(nameof(GroupsPage), typeof(GroupsPage));
+        Routing.RegisterRoute(nameof(SubjectsPage), typeof(SubjectsPage));
         Routing.RegisterRoute(nameof(AcademicSettingsPage), typeof(AcademicSettingsPage));
         Routing.RegisterRoute(nameof(AboutPage), typeof(AboutPage));
         Routing.RegisterRoute(nameof(StudentDetailsPage), typeof(StudentDetailsPage));
         Routing.RegisterRoute(nameof(EditStudentGradesPage), typeof(EditStudentGradesPage));
-        
-        Routing.RegisterRoute(nameof(ImportGroupPage), typeof(ImportGroupPage));
-        Routing.RegisterRoute(nameof(AddUpdateMajorPage), typeof(AddUpdateMajorPage));
-
-    
     }
 }

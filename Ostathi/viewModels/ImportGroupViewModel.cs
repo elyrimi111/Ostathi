@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +9,6 @@ using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.ApplicationModel.DataTransfer;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
-using Ostathi.Services;
 
 namespace Ostathi;
 
@@ -19,6 +16,7 @@ namespace Ostathi;
 public class ImportGroupViewModel : BaseViewModel
 {
     private readonly AppDbContext _dbContext;
+    private readonly StudentImportService _importService;
 
     private int _groupId;
     public int GroupId
@@ -74,9 +72,10 @@ public class ImportGroupViewModel : BaseViewModel
     public ICommand SaveImportedStudentsCommand { get; }
     public ICommand CancelCommand { get; }
 
-    public ImportGroupViewModel(AppDbContext dbContext)
+    public ImportGroupViewModel()
     {
-        _dbContext = dbContext;
+        _dbContext = new AppDbContext();
+        _importService = new StudentImportService(_dbContext);
 
         PickFileCommand = new Command(async () => await OnPickFileAsync());
         PasteFromClipboardCommand = new Command(async () => await OnPasteFromClipboardAsync());
@@ -115,7 +114,7 @@ public class ImportGroupViewModel : BaseViewModel
         {
             var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
             {
-                { DevicePlatform.Android, new[] { "text/plain", "text/csv", "text/comma-separated-values", "*/*" } },
+                { DevicePlatform.Android, new[] { "text/plain", "text/csv", "text/comma-separated-values", "application/csv", "*/*" } },
                 { DevicePlatform.WinUI, new[] { ".csv", ".txt" } }
             });
 
@@ -130,8 +129,7 @@ public class ImportGroupViewModel : BaseViewModel
             SelectedFileName = result.FileName;
 
             using var stream = await result.OpenReadAsync();
-            using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true);
-            RawStudentsText = await reader.ReadToEndAsync();
+            RawStudentsText = await _importService.ReadStreamTextAsync(stream);
 
             ParseRawTextToStudents();
         }
@@ -176,67 +174,20 @@ public class ImportGroupViewModel : BaseViewModel
         ImportedStudents.Clear();
         if (string.IsNullOrWhiteSpace(RawStudentsText)) return;
 
-        var lines = RawStudentsText
-            .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        var parsedList = _importService.ParseStudentsFromText(RawStudentsText, GroupId);
 
         int displayIndex = 1;
-        int generatedSeq = 1;
-
-        foreach (var rawLine in lines)
+        foreach (var dto in parsedList)
         {
-            var line = rawLine.Trim();
-            if (string.IsNullOrWhiteSpace(line)) continue;
-
-            if (displayIndex == 1 &&
-                (line.Contains("الاسم", StringComparison.OrdinalIgnoreCase) ||
-                 line.Contains("Name", StringComparison.OrdinalIgnoreCase)))
-            {
-                continue;
-            }
-
-            var parts = line.Split(new[] { ',', ';', '\t' }, StringSplitOptions.RemoveEmptyEntries)
-                            .Select(p => p.Trim())
-                            .ToArray();
-
-            string fullName = string.Empty;
-            string academicId = string.Empty;
-
-            if (parts.Length >= 2)
-            {
-                if (parts[0].All(char.IsDigit))
-                {
-                    academicId = parts[0];
-                    fullName = parts[1];
-                }
-                else
-                {
-                    fullName = parts[0];
-                    academicId = parts[1];
-                }
-            }
-            else
-            {
-                fullName = parts[0];
-            }
-
-            if (string.IsNullOrWhiteSpace(fullName)) continue;
-
-            var nameParts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            string resolvedAcademicId = string.IsNullOrWhiteSpace(academicId)
-                ? $"STD-{DateTime.Now:yyMM}{generatedSeq:000}"
-                : academicId;
-
-            generatedSeq++;
-
             ImportedStudents.Add(new ImportedStudentPreviewItem
             {
                 Index = displayIndex++,
-                FullName = fullName,
-                FirstName = nameParts.ElementAtOrDefault(0) ?? fullName,
-                SecondName = nameParts.ElementAtOrDefault(1) ?? string.Empty,
-                ThirdName = nameParts.ElementAtOrDefault(2) ?? string.Empty,
-                LastName = nameParts.Length > 3 ? string.Join(" ", nameParts.Skip(3)) : string.Empty,
-                AcademicId = resolvedAcademicId
+                FullName = dto.FullName,
+                FirstName = dto.FirstName,
+                SecondName = dto.SecondName,
+                ThirdName = dto.ThirdName,
+                LastName = dto.LastName,
+                AcademicId = dto.AcademicId
             });
         }
     }
@@ -276,40 +227,30 @@ public class ImportGroupViewModel : BaseViewModel
         {
             IsBusy = true;
 
-            _targetGroup ??= await _dbContext.Groups.FirstOrDefaultAsync(g => g.Id == GroupId);
-            int majorId = _targetGroup?.MajorId ?? 1;
-            string academicYear = _targetGroup?.AcademicYear ?? "المستوى الأول";
-
-            int addedCount = 0;
-            foreach (var item in ImportedStudents)
+            var dtos = ImportedStudents.Select(item => new ParsedStudentDto
             {
-                bool exists = await _dbContext.Students.AnyAsync(s =>
-                    s.GroupId == GroupId && s.AcademicId == item.AcademicId);
+                FullName = item.FullName,
+                FirstName = item.FirstName,
+                SecondName = item.SecondName,
+                ThirdName = item.ThirdName,
+                LastName = item.LastName,
+                AcademicId = item.AcademicId
+            }).ToList();
 
-                if (exists) continue;
-
-                var student = new Student
-                {
-                    FirstName = item.FirstName,
-                    SecondName = item.SecondName,
-                    ThirdName = item.ThirdName,
-                    LastName = item.LastName,
-                    AcademicId = item.AcademicId,
-                    GroupId = GroupId,
-                    MajorId = majorId,
-                    AcademicYear = academicYear
-                };
-
-                await _dbContext.Students.AddAsync(student);
-                addedCount++;
-            }
-
-            await _dbContext.SaveChangesAsync();
+            var result = await _importService.SaveImportedStudentsAsync(GroupId, dtos);
 
             if (Shell.Current != null)
             {
-                await Shell.Current.DisplayAlert("تم الاستيراد", $"تم استيراد {addedCount} طالب بنجاح إلى المجموعة.", "موافق");
-                await Shell.Current.GoToAsync("..");
+                string message = result.SkippedCount > 0
+                    ? $"تم استيراد {result.AddedCount} طالب بنجاح، وتم تخطي {result.SkippedCount} سجل (مكرر أو ناقص)."
+                    : $"تم استيراد {result.AddedCount} طالب بنجاح إلى المجموعة.";
+
+                await Shell.Current.DisplayAlert("نتيجة الاستيراد", message, "موافق");
+
+                if (result.Success)
+                {
+                    await Shell.Current.GoToAsync("..");
+                }
             }
         }
         catch (Exception ex)

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Ostathi.SubjectsPage"
+             x:Name="SubjectsRootPage"
+             Title="إدارة المواد الدراسية"
+             FlowDirection="RightToLeft"
+             BackgroundColor="{StaticResource DarkBackground}">
+
+    <Grid RowDefinitions="Auto, *" Padding="20">
+
+        <!-- Page header section -->
+        <Border Grid.Row="0" 
+                BackgroundColor="{StaticResource DarkSurface}" 
+                StrokeThickness="0" 
+                Padding="16,14" 
+                StrokeShape="RoundRectangle 0,0,20,20"
+                Margin="0,0,0,14">
+
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                    <Label Text="إدارة المواد الدراسية"
+                           FontSize="17"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource TextPrimary}" />
+                    <Label Text="اضغط على أي مادة لتعديلها"
+                           FontSize="11"
+                           TextColor="{StaticResource TextSecondary}" />
+                </VerticalStackLayout>
+
+                <Button Grid.Column="1"
+                        Text="+ إضافة مادة"
+                        Command="{Binding AddSubjectCommand}"
+                        BackgroundColor="{StaticResource AccentYellow}"
+                        TextColor="{StaticResource DarkBackground}"
+                        FontAttributes="Bold"
+                        FontSize="12"
+                        CornerRadius="12"
+                        HeightRequest="38"
+                        Padding="14,0"
+                        VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+        <!-- Subjects list CollectionView -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding FilteredSubjects}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="{StaticResource DarkSurface}"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 14"
+                            Padding="14"
+                            Margin="0,0,0,10">
+
+                        <!-- Navigate directly to AddUpdateSubject on tap -->
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer 
+                                Command="{Binding BindingContext.SubjectTappedCommand, Source={x:Reference SubjectsRootPage}}"
+                                CommandParameter="{Binding}" />
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
+
+                            <!-- Subject icon -->
+                            <Border Grid.Column="0" 
+                                    BackgroundColor="{StaticResource DarkBackground}" 
+                                    StrokeShape="RoundRectangle 10" 
+                                    HeightRequest="42" 
+                                    WidthRequest="42" 
+                                    StrokeThickness="0">
+                                <Label Text="📚" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+
+                            <!-- Subject name and description display -->
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Name}" 
+                                       FontSize="14" 
+                                       FontAttributes="Bold" 
+                                       TextColor="{StaticResource TextPrimary}" />
+                                <Label Text="{Binding Description, FallbackValue='بدون وصف'}" 
+                                       FontSize="11" 
+                                       TextColor="{StaticResource TextSecondary}"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="1" />
+                            </VerticalStackLayout>
+
+                            <!-- Context options button -->
+                            <Button Grid.Column="2"
+                                    Text="⋮"
+                                    Command="{Binding BindingContext.SubjectOptionsCommand, Source={x:Reference SubjectsRootPage}}"
+                                    CommandParameter="{Binding}"
+                                    BackgroundColor="Transparent"
+                                    TextColor="{StaticResource TextSecondary}"
+                                    FontSize="20"
+                                    FontAttributes="Bold"
+                                    WidthRequest="36"
+                                    HeightRequest="36"
+                                    Padding="0"
+                                    VerticalOptions="Center"
+                                    Margin="4,0" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8" Padding="20">
+                    <Label Text="📂" FontSize="32" HorizontalOptions="Center" />
+                    <Label Text="لا توجد أي مواد دراسية مسجلة حالياً" 
+                           FontSize="13" 
+                           TextColor="{StaticResource TextSecondary}" 
+                           HorizontalTextAlignment="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+    </Grid>
+
+</ContentPage>

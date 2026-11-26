@@ -2,11 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Ostathi.AddUpdateGroup"
-             Title="إضافة مجموعة جديدة"
+             x:Name="AddUpdateGroupPage"
+             Title="{Binding PageTitleText}"
              FlowDirection="RightToLeft"
              BackgroundColor="{StaticResource DarkBackground}">
 
-    <!-- Main page layout grid -->
     <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- Page header section -->
@@ -21,20 +21,19 @@
                        FontSize="17"
                        FontAttributes="Bold"
                        TextColor="{StaticResource TextPrimary}" />
-                <Label Text="إضافة مجموعة دراسية جديدة وتحديد التخصص والسنة الدراسية"
+                <Label Text="{Binding PageTitleText}"
                        FontSize="11"
                        TextColor="{StaticResource TextSecondary}" />
             </VerticalStackLayout>
         </Border>
 
-        <!-- Reordered scrollable form content -->
+        <!-- Scrollable form content -->
         <ScrollView Grid.Row="1" Padding="20">
             <VerticalStackLayout Spacing="16">
 
                 <!-- Major and AcademicYear side-by-side selection -->
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
 
-                    <!-- MajorId selection via MajorsList -->
                     <VerticalStackLayout Grid.Column="0" Spacing="6">
                         <Label Text="التخصص"
                                FontSize="12"
@@ -57,7 +56,6 @@
                         </Border>
                     </VerticalStackLayout>
 
-                    <!-- AcademicYear selection via AcademicYearsList -->
                     <VerticalStackLayout Grid.Column="1" Spacing="6">
                         <Label Text="السنة الدراسية"
                                FontSize="12"
@@ -69,6 +67,7 @@
                                 Padding="10,0">
                             <Picker ItemsSource="{Binding AcademicYearsList}"
                                     SelectedItem="{Binding SelectedAcademicYear}"
+                                    IsEnabled="{Binding IsAcademicYearEnabled}"
                                     Title="اختر السنة..."
                                     TitleColor="{StaticResource TextSecondary}"
                                     TextColor="{StaticResource TextPrimary}"
@@ -81,9 +80,9 @@
 
                 </Grid>
 
-                <!-- GroupName input -->
+                <!-- GroupNumber input -->
                 <VerticalStackLayout Spacing="6">
-                    <Label Text="اسم المجموعة"
+                    <Label Text="رقم المجموعة"
                            FontSize="12"
                            TextColor="{StaticResource TextSecondary}" />
                     <Border BackgroundColor="{StaticResource DarkSurface}"
@@ -91,9 +90,11 @@
                             HeightRequest="45"
                             StrokeThickness="0"
                             Padding="12,0">
-                        <Entry Text="{Binding GroupName}"
-                               Placeholder="مثال: مجموعة أ..."
-                               MaxLength="150"
+                        <Entry Text="{Binding GroupNumber}"
+                               IsEnabled="{Binding IsGroupNumberEnabled}"
+                               Placeholder="مثال: 1"
+                               Keyboard="Numeric"
+                               MaxLength="10"
                                FontSize="13"
                                TextColor="{StaticResource TextPrimary}"
                                PlaceholderColor="{StaticResource TextSecondary}"
@@ -123,7 +124,7 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- Import students secondary action -->
+                <!-- Import students button -->
                 <Button Text="استيراد الطلاب"
                         Command="{Binding ImportStudentsCommand}"
                         BackgroundColor="{StaticResource DarkSurface}"
@@ -136,6 +137,88 @@
                         HeightRequest="45"
                         Margin="0,4,0,0" />
 
+                <!-- قائمة الطلاب المستوردين بنفس ثيم بطاقات الطلاب -->
+                <Border IsVisible="{Binding HasImportedStudents}"
+                        BackgroundColor="{StaticResource DarkSurface}"
+                        StrokeShape="RoundRectangle 14"
+                        StrokeThickness="0"
+                        Padding="14">
+                    <VerticalStackLayout Spacing="10">
+
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Label Grid.Column="0"
+                                   Text="{Binding StudentsCountText}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource TextPrimary}"
+                                   VerticalOptions="Center" />
+                            <Label Grid.Column="1"
+                                   Text="{Binding RepresentativeSummaryText}"
+                                   FontSize="10"
+                                   TextColor="{StaticResource AccentYellow}"
+                                   VerticalOptions="Center" />
+                        </Grid>
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding ImportedStudents}"
+                                             Spacing="8">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BackgroundColor="{StaticResource DarkBackground}"
+                                            StrokeShape="RoundRectangle 14"
+                                            StrokeThickness="0"
+                                            Padding="14,12">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding BindingContext.SelectImportedStudentCommand, Source={x:Reference AddUpdateGroupPage}}"
+                                                                  CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+
+                                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                                            <Label Grid.Column="0"
+                                                   Text="{Binding Index, StringFormat='{}{0}.'}"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource AccentYellow}"
+                                                   VerticalOptions="Center" />
+
+                                            <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                                                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                                    <Label Text="{Binding DisplayName}"
+                                                           FontSize="14"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{StaticResource TextPrimary}" />
+                                                    <Label Text="(مندوب)"
+                                                           IsVisible="{Binding IsRepresentative}"
+                                                           FontSize="11"
+                                                           FontAttributes="Bold"
+                                                           TextColor="{StaticResource AccentYellow}"
+                                                           VerticalOptions="Center" />
+                                                </HorizontalStackLayout>
+                                                <Label Text="{Binding AcademicId, StringFormat='الرقم: {0}'}"
+                                                       FontSize="11"
+                                                       TextColor="{StaticResource TextSecondary}" />
+                                            </VerticalStackLayout>
+
+                                            <Button Grid.Column="2"
+                                                    Text="⋮"
+                                                    Command="{Binding BindingContext.StudentOptionsCommand, Source={x:Reference AddUpdateGroupPage}}"
+                                                    CommandParameter="{Binding .}"
+                                                    BackgroundColor="Transparent"
+                                                    TextColor="{StaticResource TextPrimary}"
+                                                    FontSize="18"
+                                                    FontAttributes="Bold"
+                                                    WidthRequest="36"
+                                                    HeightRequest="36"
+                                                    Padding="0"
+                                                    VerticalOptions="Center" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
             </VerticalStackLayout>
         </ScrollView>
 
@@ -146,9 +229,8 @@
                 Padding="16,12">
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
-                <!-- Save group button -->
                 <Button Grid.Column="0"
-                        Text="حفظ المجموعة"
+                        Text="{Binding SaveButtonText}"
                         Command="{Binding SaveGroupCommand}"
                         BackgroundColor="{StaticResource AccentYellow}"
                         TextColor="{StaticResource DarkBackground}"
@@ -157,7 +239,6 @@
                         CornerRadius="14"
                         HeightRequest="45" />
 
-                <!-- Cancel button -->
                 <Button Grid.Column="1"
                         Text="إلغاء"
                         Command="{Binding CancelCommand}"

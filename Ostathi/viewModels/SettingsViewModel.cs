@@ -5,7 +5,7 @@ using Microsoft.Maui.Controls;
 
 namespace Ostathi;
 
-public partial class SettingsViewModel : BindableObject
+public partial class SettingsViewModel : BaseViewModel
 {
     private bool _isNavigating;
 
@@ -17,6 +17,12 @@ public partial class SettingsViewModel : BindableObject
 
     // Command for navigating to the Majors Management page
     public ICommand OpenMajorsPageCommand { get; }
+
+    // Command for navigating to the Groups Management page
+    public ICommand OpenGroupsPageCommand { get; }
+
+    // Command for navigating to the Subjects Management page
+    public ICommand OpenSubjectsPageCommand { get; }
 
     // Command for navigating to the About page
     public ICommand OpenAboutPageCommand { get; }
@@ -30,6 +36,8 @@ public partial class SettingsViewModel : BindableObject
         OpenAcademicSettingsCommand = new Command(async () => await NavigateToAsync(nameof(AcademicSettingsPage)));
         OpenScheduleManagementCommand = new Command(async () => await NavigateToAsync(nameof(ScheduleManagementPage)));
         OpenMajorsPageCommand = new Command(async () => await NavigateToAsync(nameof(MajorsPage)));
+        OpenGroupsPageCommand = new Command(async () => await NavigateToAsync(nameof(GroupsPage)));
+        OpenSubjectsPageCommand = new Command(async () => await NavigateToAsync(nameof(SubjectsPage)));
         OpenAboutPageCommand = new Command(async () => await NavigateToAsync(nameof(AboutPage)));
         LogoutCommand = new Command(async () => await OnLogoutExecuted());
     }
@@ -37,15 +45,17 @@ public partial class SettingsViewModel : BindableObject
     // Safely navigate to a registered Shell route while preventing duplicate taps
     private async Task NavigateToAsync(string route)
     {
-        if (_isNavigating || Shell.Current == null) return;
+        if (_isNavigating || IsBusy || Shell.Current == null) return;
 
         try
         {
             _isNavigating = true;
+            IsBusy = true;
             await Shell.Current.GoToAsync(route);
         }
         finally
         {
+            IsBusy = false;
             _isNavigating = false;
         }
     }
@@ -53,11 +63,12 @@ public partial class SettingsViewModel : BindableObject
     // Handles Logout action
     private async Task OnLogoutExecuted()
     {
-        if (_isNavigating || Shell.Current == null) return;
+        if (_isNavigating || IsBusy || Shell.Current == null) return;
 
         try
         {
             _isNavigating = true;
+            IsBusy = true;
             bool confirm = await Shell.Current.DisplayAlert(
                 "تسجيل الخروج",
                 "هل أنت متأكد من رغبتك في تسجيل الخروج من النظام؟",
@@ -72,6 +83,7 @@ public partial class SettingsViewModel : BindableObject
         }
         finally
         {
+            IsBusy = false;
             _isNavigating = false;
         }
     }

@@ -22,6 +22,8 @@ namespace Ostathi.ViewModels
         public string SubjectName { get; set; } = string.Empty;
         public string MajorName { get; set; } = string.Empty;
         public string AcademicYear { get; set; } = string.Empty;
+        public string Status => GroupSubject.Status;
+        public string? Notes => GroupSubject.Notes;
     }
 
     public class GroupSubjectsManagementViewModel : BaseViewModel
@@ -99,8 +101,11 @@ namespace Ostathi.ViewModels
             OnPropertyChanged(nameof(IsEmpty));
         }
 
+        // Load subjects, majors, groups, and group-subject assignments
         public async Task LoadInitialDataAsync()
         {
+            if (IsBusy) return;
+
             try
             {
                 IsBusy = true;
@@ -167,6 +172,7 @@ namespace Ostathi.ViewModels
             }
         }
 
+        // Apply active filters for subject, major, and academic level
         private void ApplyFilters()
         {
             var query = _allItems.AsEnumerable();
@@ -199,6 +205,7 @@ namespace Ostathi.ViewModels
             });
         }
 
+        // Reset all active filters
         private void OnClearFiltersExecuted()
         {
             _selectedLevel = null;
@@ -212,9 +219,10 @@ namespace Ostathi.ViewModels
             ApplyFilters();
         }
 
+        // Remove selected subject assignment from group
         private async Task OnRemoveSubjectExecuted(GroupSubjectDisplayItem? item)
         {
-            if (item == null) return;
+            if (item == null || Shell.Current == null) return;
 
             bool confirm = await Shell.Current.DisplayAlert("تأكيد الإزالة", "هل أنت متأكد من إزالة هذه المادة من المجموعة؟", "نعم", "إلغاء");
             if (!confirm) return;
@@ -233,15 +241,14 @@ namespace Ostathi.ViewModels
             }
         }
 
+        // Navigate to assign subject page
         private async Task OnOpenAssignSubjectExecuted()
         {
-            if (Shell.Current != null)
-            {
-                await Shell.Current.GoToAsync(nameof(AddGroupSubjectPage));
-                await LoadInitialDataAsync();
-            }
+            if (Shell.Current == null) return;
+            await Shell.Current.GoToAsync(nameof(AddGroupSubjectPage));
         }
 
+        // Navigate to single group-subject management view
         private async Task OnOpenManageSubjectExecuted(GroupSubjectDisplayItem? item)
         {
             if (item == null || Shell.Current == null) return;
